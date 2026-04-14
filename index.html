@@ -1015,8 +1015,10 @@
     </div>
 
     <div class="nav-actions">
-      <button type="button" class="btn-ghost" onclick="openModal('modal-login')">Connexion</button>
-      <button type="button" class="btn-primary" onclick="openModal('modal-signup')">Inscription</button>
+      <button type="button" class="btn-ghost" id="btn-nav-login" onclick="openModal('modal-login')">Connexion</button>
+      <button type="button" class="btn-primary" id="btn-nav-signup" onclick="openModal('modal-signup')">Inscription</button>
+      <button type="button" class="btn-ghost" id="btn-nav-compte" style="display:none;" onclick="showPage('dashboard')">Mon compte</button>
+      <button type="button" class="btn-ghost" id="btn-nav-logout" style="display:none;" onclick="logout()">Déconnexion</button>
     </div>
   </nav>
 
@@ -1581,10 +1583,10 @@
         <p style="font-size:11px;color:var(--muted);text-align:center;line-height:1.5;">1 mois gratuit · Sans engagement · Résiliation en 1 clic</p>
       </div>
       <div class="form-success" id="signup-success">
-        <div class="form-success-icon">✓</div>
-        <h3>Compte créé !</h3>
-        <p>Notre équipe vous contacte sous 24h pour activer le SMS automatique sur votre ligne.</p>
-        <button type="button" class="btn-primary" style="margin-top:1rem;padding:10px 24px;" onclick="closeModal('modal-signup');showPage('dashboard')">Voir mon tableau de bord</button>
+        <div class="form-success-icon">✉</div>
+        <h3>Vérifiez vos emails !</h3>
+        <p>Un lien de confirmation a été envoyé à votre adresse.<br>Cliquez dessus pour activer votre compte — ça prend 10 secondes.</p>
+        <button type="button" class="btn-primary" style="margin-top:1rem;padding:10px 24px;" onclick="closeModal('modal-signup')">Fermer</button>
       </div>
       <div class="modal-footer">
         Déjà un compte ? <a onclick="switchModal('modal-signup','modal-login')">Se connecter</a>
@@ -1592,7 +1594,43 @@
     </div>
   </div>
 
+  <!-- Supabase JS client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script>
+    /* ─── SUPABASE ───────────────────────────────────── */
+    var SUPABASE_URL  = 'https://fgxbufcnvibasknwilxh.supabase.co';
+    var SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZneGJ1ZmNudmliYXNrbndpbHhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNTY2MTUsImV4cCI6MjA5MTczMjYxNX0.-ZIU_-DNSvvxPEl-LCiCyZKl2lSVJYHb_YlIxUy3q8M';
+    var _supabase     = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    /* ─── AUTH UI ────────────────────────────────────── */
+    function updateAuthUI(user) {
+      var loggedIn = !!user;
+      document.getElementById('btn-nav-login').style.display    = loggedIn ? 'none' : '';
+      document.getElementById('btn-nav-signup').style.display   = loggedIn ? 'none' : '';
+      document.getElementById('btn-nav-compte').style.display   = loggedIn ? '' : 'none';
+      document.getElementById('btn-nav-logout').style.display   = loggedIn ? '' : 'none';
+      if (loggedIn) {
+        var prenom = (user.user_metadata && user.user_metadata.prenom) ? user.user_metadata.prenom : user.email;
+        document.getElementById('btn-nav-compte').textContent = 'Bonjour ' + prenom;
+      }
+    }
+
+    _supabase.auth.onAuthStateChange(function(event, session) {
+      updateAuthUI(session ? session.user : null);
+      if (event === 'SIGNED_IN') {
+        closeModal('modal-login');
+        closeModal('modal-signup');
+        showPage('dashboard');
+      }
+      if (event === 'SIGNED_OUT') {
+        showPage('landing');
+      }
+    });
+
+    function logout() {
+      _supabase.auth.signOut();
+    }
+
     /* ─── NAVIGATION ─────────────────────────────────── */
     function showPage(name) {
       ['landing', 'dashboard', 'how', 'simulation'].forEach(function(p) {
@@ -1700,12 +1738,21 @@
       setError('login-password', 'err-login-password', !pass);                if (!pass) ok = false;
       if (!ok) return;
 
-      /*
-        TODO backend : POST /api/auth/login { email, password }
-        Pour l'instant → redirection vers dashboard (démo)
-      */
-      closeModal('modal-login');
-      showPage('dashboard');
+      var btn = document.querySelector('#login-form button.btn-primary');
+      btn.innerHTML = '<span class="spinner"></span>Connexion…';
+      btn.disabled  = true;
+
+      _supabase.auth.signInWithPassword({ email: email, password: pass })
+        .then(function(res) {
+          if (res.error) {
+            btn.innerHTML = 'Se connecter';
+            btn.disabled  = false;
+            showToast(res.error.message === 'Email not confirmed'
+              ? 'Confirmez votre email avant de vous connecter.'
+              : 'Email ou mot de passe incorrect.', true);
+          }
+          /* success handled by onAuthStateChange */
+        });
     }
 
     /* ─── MODAL SIGNUP ───────────────────────────────── */
@@ -1730,21 +1777,21 @@
         TODO backend : POST /api/auth/register { prenom, email, telephone, password }
         Pour l'instant → succès en démo après 1s
       */
-      fetch('/api/auth/register', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prenom: prenom, email: email, telephone: tel, password: pass })
-      })
-      .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
-      .then(function() {
-        document.getElementById('signup-form').style.display   = 'none';
-        document.getElementById('signup-success').style.display = 'block';
-        var footer = document.querySelector('#modal-signup .modal-footer');
-        if (footer) footer.style.display = 'none';
-      })
-      .catch(function() {
-        /* Démo : on affiche quand même le succès si le backend n'existe pas encore */
-        document.getElementById('signup-form').style.display   = 'none';
+      _supabase.auth.signUp({
+        email: email,
+        password: pass,
+        options: {
+          data: { prenom: prenom, telephone: tel },
+          emailRedirectTo: 'https://relion-five.vercel.app'
+        }
+      }).then(function(res) {
+        btn.innerHTML = 'Créer mon compte';
+        btn.disabled  = false;
+        if (res.error) {
+          showToast(res.error.message || 'Erreur lors de la création du compte.', true);
+          return;
+        }
+        document.getElementById('signup-form').style.display    = 'none';
         document.getElementById('signup-success').style.display = 'block';
         var footer = document.querySelector('#modal-signup .modal-footer');
         if (footer) footer.style.display = 'none';
