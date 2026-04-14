@@ -1,42 +1,46 @@
 /**
- * POST /api/auth/register
- * Crée un compte artisan.
+ * POST /api/auth/register  (endpoint auxiliaire serveur)
  *
- * Pour une vraie prod, connectez une base de données (PlanetScale, Supabase, MongoDB Atlas…).
- * En l'état, ce fichier illustre la structure et renvoie un succès.
+ * L'authentification principale est gérée côté client via @supabase/supabase-js.
+ * Cet endpoint peut être utilisé pour :
+ *  - Créer des enregistrements supplémentaires en DB après inscription
+ *  - Vérifier un token Supabase côté serveur
+ *  - Déclencher des actions post-inscription (email Stripe, webhook, etc.)
  *
  * Variables d'environnement :
- *   DATABASE_URL  – URL de connexion à votre base (si utilisée)
+ *   SUPABASE_URL          – URL du projet Supabase
+ *   SUPABASE_SERVICE_KEY  – Clé service_role (jamais exposée côté client)
  */
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Méthode non autorisée' });
 
-  const { prenom, email, telephone, password } = req.body || {};
+  const { prenom, email, telephone } = req.body || {};
 
-  if (!prenom || !email || !telephone || !password) {
-    return res.status(400).json({ error: 'Champs manquants' });
-  }
-  if (password.length < 6) {
-    return res.status(400).json({ error: 'Mot de passe trop court' });
+  if (!email) {
+    return res.status(400).json({ error: 'Email manquant' });
   }
 
   /*
-   * TODO : insérer l'artisan en base de données
-   * Exemple avec Supabase :
+   * Exemple d'action post-inscription avec Supabase service role :
    *
-   *   const { createClient } = require('@supabase/supabase-js');
-   *   const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
-   *   const { error } = await supabase.from('artisans').insert({ prenom, email, telephone });
-   *   if (error) return res.status(500).json({ error: error.message });
+   * const { createClient } = require('@supabase/supabase-js');
+   * const supabase = createClient(
+   *   process.env.SUPABASE_URL,
+   *   process.env.SUPABASE_SERVICE_KEY
+   * );
+   * const { error } = await supabase
+   *   .from('profiles')
+   *   .upsert({ email, prenom, telephone });
+   * if (error) return res.status(500).json({ error: error.message });
    */
 
-  console.log(`[register] Nouveau compte : ${prenom} <${email}> — ${telephone}`);
+  console.log(`[register] Post-inscription : ${prenom || ''} <${email}>`);
 
-  return res.status(200).json({ success: true, message: `Bienvenue ${prenom} !` });
+  return res.status(200).json({ success: true });
 };
