@@ -1984,6 +1984,185 @@
     }
   }
 
+
+  // ─── Dashboard : chargement des vraies données ───────────────────────────
+
+  async function loadDashboard() {
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (!session) return;
+    const userId = session.user.id;
+    const userEmail = session.user.email;
+    const isAdmin = userEmail === 'alix.sarikabadayi@gmail.com';
+
+    // Charger profil et appels en parallèle
+    const [{ data: profile }, { data: calls }] = await Promise.all([
+      _supabase.from('profiles').select('*').eq('id', userId).single(),
+      _supabase.from('missed_calls').select('*').eq('user_id', userId).order('called_at', { ascending: false }).limit(100)
+    ]);
+
+    const allCalls = calls || [];
+    const prenom = profile?.prenom || userEmail.split('@')[0] || 'Artisan';
+
+    // Mise à jour du sous-titre et du bouton nav
+    const dash = document.getElementById('page-dashboard');
+    const subtitle = dash?.querySelector('.dash-top p');
+    if (subtitle) {
+      const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+      const now = new Date();
+      subtitle.textContent = prenom + ' · ' + months[now.getMonth()] + ' ' + now.getFullYear();
+    }
+    const btnCompte = document.getElementById('btn-nav-compte');
+    if (btnCompte) btnCompte.textContent = 'Bonjour ' + prenom;
+
+    // Calcul des stats du mois courant
+    const now = new Date();
+    const callsMonth = allCalls.filter(function(c) {
+      var d = new Date(c.called_at);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+    const smsSent = callsMonth.filter(function(c){ return c.sms_sent; }).length;
+    const rappeles = allCalls.filter(function(c){ return c.status === 'rappelé'; }).length;
+
+    // Mise à jour des KPI cards
+    var kpiCards = document.querySelectorAll('.kpi-card');
+    if (kpiCards[0]) {
+      kpiCards[0].querySelector('.kpi-val').textContent = callsMonth.length;
+      kpiCards[0].querySelector('.kpi-delta').textContent = callsMonth.length > 0 ? smsSent + ' SMS envoyé' + (smsSent > 1 ? 's' : '') + ' automatiquement' : 'Aucun appel ce mois';
+    }
+    if (kpiCards[1]) {
+      kpiCards[1].querySelector('.kpi-val').textContent = smsSent;
+      var rate = callsMonth.length > 0 ? Math.round(smsSent / callsMonth.length * 100) : 0;
+      kpiCards[1].querySelector('.kpi-delta').textContent = rate + '% de taux de réponse SMS';
+    }
+    if (kpiCards[2]) {
+      kpiCards[2].querySelector('.kpi-val').textContent = rappeles;
+      kpiCards[2].querySelector('.kpi-delta').textContent = rappeles + ' rappel' + (rappeles > 1 ? 's' : '') + ' effectué' + (rappeles > 1 ? 's' : '');
+    }
+    if (kpiCards[3]) {
+      kpiCards[3].querySelector('.kpi-val').textContent = allCalls.length;
+      kpiCards[3].querySelector('.kpi-delta').textContent = 'Total depuis le début';
+    }
+
+    // Mise à jour du tableau
+    var tbody = document.getElementById('tbody');
+    if (tbody) {
+      if (allCalls.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">Aucun appel enregistré pour l\'instant. Configurez votre numéro Relion pour commencer.</td></tr>';
+      } else {
+        tbody.innerHTML = allCalls.slice(0, 20).map(function(call) {
+          var d = new Date(call.called_at);
+          var timeStr = d.getHours().toString().padStart(2,'0') + 'h' + d.getMinutes().toString().padStart(2,'0');
+          var dateStr = _formatCallDate(d);
+          var smsStr = call.sms_sent ? ('✓ ' + timeStr) : '—';
+          var statusBg = call.status === 'rappelé' ? '#3DBF80' : call.status === 'en_attente' ? '#F5A623' : '#1A56E8';
+          var statusLabel = call.status === 'rappelé' ? 'Rappelé' : call.status === 'en_attente' ? 'En attente' : 'Nouveau';
+          var action = call.status !== 'rappelé'
+            ? '<button onclick="markRappeled(\'' + call.id + '\',this)" style="padding:0.25rem 0.75rem;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:var(--text);cursor:pointer;font-size:0.8rem;">Rappeler</button>'
+            : '<span style="color:var(--muted);font-size:0.85rem">Fait</span>';
+          return '<tr style="border-bottom:1px solid rgba(255,255,255,0.05)">' +
+            '<td style="padding:0.75rem 0.5rem">' + (call.caller_number || '—') + '</td>' +
+            '<td style="padding:0.75rem 0.5rem">' + dateStr + '</td>' +
+            '<td style="padding:0.75rem 0.5rem">' + (call.motif || '—') + '</td>' +
+            '<td style="padding:0.75rem 0.5rem">' + smsStr + '</td>' +
+            '<td style="padding:0.75rem 0.5rem"><span style="font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:20px;background:' + statusBg + ';color:#fff;white-space:nowrap">' + statusLabel + '</span></td>' +
+            '<td style="padding:0.75rem 0.5rem">' + action + '</td>' +
+            '</tr>';
+        }).join('');
+      }
+    }
+
+    // Mise à jour en-tête tableau
+    var tableHead = document.querySelector('.table-head');
+    if (tableHead) {
+      var newCount = allCalls.filter(function(c){ return c.status === 'nouveau'; }).length;
+      tableHead.innerHTML =
+        '<span style="font-weight:700">Appels manqués récents</span>' +
+        '<div style="font-size:0.85rem;color:var(--muted)">' + allCalls.length + ' enregistré' + (allCalls.length !== 1 ? 's' : '') +
+        (newCount > 0 ? '&nbsp;·&nbsp;<span style="color:var(--blue);font-weight:600">' + newCount + ' nouveau' + (newCount > 1 ? 'x' : '') + '</span>' : '') +
+        '</div>';
+    }
+
+    // Alerte paiement échoué
+    if (profile?.subscription_status === 'past_due' && !document.getElementById('pay-fail-banner')) {
+      var banner = document.createElement('div');
+      banner.id = 'pay-fail-banner';
+      banner.style.cssText = 'background:rgba(192,80,80,0.15);border:1px solid rgba(192,80,80,0.4);border-radius:10px;padding:0.75rem 1.25rem;margin-bottom:1rem;font-size:0.9rem;display:flex;align-items:center;gap:0.75rem;';
+      banner.innerHTML = '<span>⚠️</span><span>Votre dernier paiement a échoué. <a href="https://billing.stripe.com" style="color:var(--blue)">Mettre à jour ma carte →</a></span>';
+      var dashWrap = document.querySelector('#page-dashboard .dash-wrap');
+      if (dashWrap) dashWrap.insertBefore(banner, dashWrap.firstChild);
+    }
+
+    // Bouton Résilier
+    if (!document.getElementById('btn-resilier')) {
+      var dashTop = document.querySelector('.dash-top');
+      if (dashTop) {
+        var btn = document.createElement('button');
+        btn.id = 'btn-resilier';
+        btn.textContent = 'Résilier l\'abonnement';
+        btn.onclick = openCancelModal;
+        btn.style.cssText = 'background:transparent;border:1px solid rgba(192,80,80,0.35);color:#E07070;padding:0.35rem 0.85rem;border-radius:8px;cursor:pointer;font-size:0.8rem;margin-top:0.5rem;display:block;';
+        dashTop.appendChild(btn);
+      }
+    }
+
+    // Vue admin
+    if (isAdmin) _loadAdminPanel();
+  }
+
+  function _formatCallDate(d) {
+    var now = new Date();
+    var yesterday = new Date(now); yesterday.setDate(yesterday.getDate()-1);
+    var t = d.getHours().toString().padStart(2,'0') + 'h' + d.getMinutes().toString().padStart(2,'0');
+    if (d.toDateString() === now.toDateString()) return 'Aujourd\'hui, ' + t;
+    if (d.toDateString() === yesterday.toDateString()) return 'Hier, ' + t;
+    return d.getDate().toString().padStart(2,'0') + '/' + (d.getMonth()+1).toString().padStart(2,'0') + ' ' + t;
+  }
+
+  async function markRappeled(callId, btn) {
+    btn.disabled = true; btn.textContent = '…';
+    var { error } = await _supabase.from('missed_calls').update({ status: 'rappelé' }).eq('id', callId);
+    if (!error) {
+      var row = btn.closest('tr');
+      row.cells[4].innerHTML = '<span style="font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:20px;background:#3DBF80;color:#fff">Rappelé</span>';
+      btn.closest('td').innerHTML = '<span style="color:var(--muted);font-size:0.85rem">Fait</span>';
+    } else { btn.disabled = false; btn.textContent = 'Rappeler'; }
+  }
+
+  async function _loadAdminPanel() {
+    if (document.getElementById('admin-panel')) return;
+    var { data: profiles } = await _supabase.from('profiles').select('*').order('created_at', { ascending: false });
+    if (!profiles || profiles.length === 0) return;
+    var panel = document.createElement('div');
+    panel.id = 'admin-panel';
+    panel.style.cssText = 'margin-top:2rem;padding:1.5rem;background:var(--surface2);border-radius:16px;border:1px solid rgba(74,144,232,0.3)';
+    var rows = profiles.map(function(p) {
+      var statusColor = p.subscription_status === 'active' ? '#3DBF80' : p.subscription_status === 'trial' ? '#1A56E8' : '#C05050';
+      return '<tr style="border-bottom:1px solid rgba(255,255,255,0.05)">' +
+        '<td style="padding:0.5rem 0.75rem">' + (p.prenom||'—') + '</td>' +
+        '<td style="padding:0.5rem 0.75rem">' + (p.telephone||'—') + '</td>' +
+        '<td style="padding:0.5rem 0.75rem">' + (p.activite||'—') + '</td>' +
+        '<td style="padding:0.5rem 0.75rem"><span style="font-size:0.75rem;padding:0.2rem 0.5rem;border-radius:4px;background:' + statusColor + ';color:#fff">' + (p.subscription_status||'—') + '</span></td>' +
+        '<td style="padding:0.5rem 0.75rem;color:var(--muted);font-size:0.8rem">' + (p.relion_number||'—') + '</td>' +
+        '<td style="padding:0.5rem 0.75rem;color:var(--muted);font-size:0.8rem">' + (p.created_at ? new Date(p.created_at).toLocaleDateString('fr-FR') : '—') + '</td>' +
+        '<td style="padding:0.5rem 0.75rem;color:var(--muted);font-size:0.8rem">' + (p.cancel_reason ? p.cancel_reason.substring(0,40) : '—') + '</td>' +
+        '</tr>';
+    }).join('');
+    panel.innerHTML = '<h2 style="margin:0 0 1rem;font-size:1rem;color:var(--blue)">👑 Admin — ' + profiles.length + ' compte' + (profiles.length>1?'s':'') + '</h2>' +
+      '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:0.85rem">' +
+      '<thead><tr style="color:var(--muted);text-align:left">' +
+      '<th style="padding:0.5rem 0.75rem">Prénom</th><th style="padding:0.5rem 0.75rem">Téléphone</th><th style="padding:0.5rem 0.75rem">Activité</th><th style="padding:0.5rem 0.75rem">Statut</th><th style="padding:0.5rem 0.75rem">N° Relion</th><th style="padding:0.5rem 0.75rem">Inscrit le</th><th style="padding:0.5rem 0.75rem">Raison résil.</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+    var dashWrap = document.querySelector('#page-dashboard .dash-wrap');
+    if (dashWrap) dashWrap.appendChild(panel);
+  }
+
+  // Patch showPage pour appeler loadDashboard automatiquement
+  var _origShowPage = showPage;
+  showPage = function(page) {
+    _origShowPage(page);
+    if (page === 'dashboard') loadDashboard();
+  };
+
   </script>
   <!-- MODAL NOUVEAU MOT DE PASSE (reset depuis email) -->
   <div class="modal-overlay" id="modal-new-password">
