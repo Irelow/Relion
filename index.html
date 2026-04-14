@@ -1261,7 +1261,7 @@
             <li>Rapport mensuel</li>
             <li>Support par email</li>
           </ul>
-          <button type="button" class="btn-plan" onclick="openModal('modal-signup','Essentiel')">Démarrer</button>
+          <button type="button" class="btn-plan" onclick="handleStartClick('Essentiel')">Démarrer</button>
         </div>
 
         <div class="pricing-card featured">
@@ -1277,7 +1277,7 @@
             <li>Tableau de bord complet</li>
             <li>Support prioritaire</li>
           </ul>
-          <button type="button" class="btn-plan-blue" onclick="openModal('modal-signup','Pro')">Démarrer</button>
+          <button type="button" class="btn-plan-blue" onclick="handleStartClick('Pro')">Démarrer</button>
         </div>
       </div>
     </section>
@@ -1544,7 +1544,7 @@
         <div style="text-align:right;margin-top:-4px;margin-bottom:4px;">
           <a style="font-size:13px;color:var(--blue-light);cursor:pointer;text-decoration:none;" onclick="showForgotPassword()">ÂMot de passe oublié ?</a>
         </div>
-        <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" onclick="submitLogin()">Se connecter</button>
+        <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" id="btn-login" onclick="submitLogin()">Se connecter</button>
       </div>
       <div id="forgot-form" style="display:none;flex-direction:column;gap:10px;">
         <p style="font-size:14px;color:var(--muted);margin-bottom:4px;">Entrez votre email, on vous envoie un lien pour réinitialiser votre mot de passe.</p>
@@ -1595,19 +1595,13 @@
           <input class="form-input" id="signup-tel" type="tel" placeholder="+33 6 12 34 56 78" autocomplete="tel" />
           <span class="field-error" id="err-signup-tel">Numéro invalide.</span>
         </div>
-        <div class="form-group">
-          <label class="form-label">Mot de passe</label>
-          <input class="form-input" id="signup-password" type="password" placeholder="8 caractères minimum" autocomplete="new-password" />
-          <span class="field-error" id="err-signup-password">6 caractères minimum.</span>
-        </div>
-        <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" id="btn-signup" onclick="submitSignup()">Créer mon compte</button>
+<button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" id="btn-signup" onclick="submitSignup()">Continuer vers le paiement →</button>
         <p style="font-size:11px;color:var(--muted);text-align:center;line-height:1.5;">1 mois gratuit · Sans engagement · Résiliation en 1 clic</p>
       </div>
-      <div class="form-success" id="signup-success">
-        <div class="form-success-icon">✉</div>
-        <h3>Vérifiez vos emails !</h3>
-        <p>Un lien de confirmation a été envoyé à votre adresse.<br>Cliquez dessus pour activer votre compte — ça prend 10 secondes.</p>
-        <button type="button" class="btn-primary" style="margin-top:1rem;padding:10px 24px;" onclick="closeModal('modal-signup')">Fermer</button>
+      <div cform-success" id="signup-success">
+        <div class="form-success-icon">&#x27F3;</div>
+        <h3>Redirection en cours…</h3>
+        <p>Vous allez être redirigé vers le paiement sécurisé.</p>
       </div>
       <div class="modal-footer">
         Déjà un compte ? <a onclick="switchModal('modal-signup','modal-login')">Se connecter</a>
@@ -1799,7 +1793,7 @@
       });
     }
 
-    /* ─── MODAL LOGIN ────────────────────────────────── */
+        /* ─── MODAL LOGIN ──────────────────── */
     function submitLogin() {
       var email = document.getElementById('login-email').value.trim();
       var pass  = document.getElementById('login-password').value;
@@ -1809,67 +1803,92 @@
       setError('login-password', 'err-login-password', !pass);                if (!pass) ok = false;
       if (!ok) return;
 
-      var btn = document.querySelector('#login-form button.btn-primary');
-      btn.innerHTML = '<span class="spinner"></span>Connexion…';
-      btn.disabled  = true;
+      var btn = document.getElementById('btn-login');
+      if (btn) { btn.innerHTML = '<span class="spinner"></span>Connexion…'; btn.disabled = true; }
 
-      _supabase.auth.signInWithPassword({ email: email, password: pass })
-        .then(function(res) {
-          if (res.error) {
-            btn.innerHTML = 'Se connecter';
-            btn.disabled  = false;
-            showToast(res.error.message === 'Email not confirmed'
-              ? 'Confirmez votre email avant de vous connecter.'
-              : 'Email ou mot de passe incorrect.', true);
-          }
-          /* success handled by onAuthStateChange */
-        });
+      // Vérifie si cet email est connu en localStorage
+      var stored = null;
+      try { stored = JSON.parse(localStorage.getItem('relion_user') || 'null'); } catch(e) {}
+
+      if (stored && stored.email === email) {
+        closeModal('modal-login');
+        showPage('dashboard');
+        return;
+      }
+
+      // Email inconnu → proposer de s'inscrire
+      if (btn) { btn.innerHTML = 'Se connecter'; btn.disabled = false; }
+      var errEl = document.getElementById('err-login-email');
+      if (errEl) { errEl.textContent = "Compte introuvable — inscrivez-vous d'abord."; }
+      setError('login-email', 'err-login-email', true);
     }
 
-    /* ─── MODAL SIGNUP ───────────────────────────────── */
+    /* ─── MODAL SIGNUP ─────────────────── */
     function submitSignup() {
       var prenom = document.getElementById('signup-prenom').value.trim();
       var email  = document.getElementById('signup-email').value.trim();
       var tel    = document.getElementById('signup-tel').value.trim();
-      var pass   = document.getElementById('signup-password').value;
+      var plan   = (document.getElementById('signup-plan-name') || {}).textContent || 'Essentiel';
 
       var ok = true;
-      setError('signup-prenom',   'err-signup-prenom',   !prenom);             if (!prenom) ok = false;
-      setError('signup-email',    'err-signup-email',    !isValidEmail(email)); if (!isValidEmail(email)) ok = false;
-      setError('signup-tel',      'err-signup-tel',      !isValidPhone(tel));   if (!isValidPhone(tel))   ok = false;
-      setError('signup-password', 'err-signup-password', pass.length < 6);      if (pass.length < 6)      ok = false;
+      setError('signup-prenom', 'err-signup-prenom', !prenom);             if (!prenom) ok = false;
+      setError('signup-email',  'err-signup-email',  !isValidEmail(email)); if (!isValidEmail(email)) ok = false;
+      setError('signup-tel',    'err-signup-tel',    !isValidPhone(tel));   if (!isValidPhone(tel))   ok = false;
       if (!ok) return;
 
       var btn = document.getElementById('btn-signup');
-      btn.innerHTML = '<span class="spinner"></span>Création…';
+      btn.innerHTML = '<span class="spinner"></span>Redirection vers le paiement…';
       btn.disabled  = true;
 
-      /*
-        TODO backend : POST /api/auth/register { prenom, email, telephone, password }
-        Pour l'instant → succès en démo après 1s
-      */
-      _supabase.auth.signUp({
-        email: email,
-        password: pass,
-        options: {
-          data: { prenom: prenom, telephone: tel },
-          emailRedirectTo: 'https://relion-five.vercel.app'
+      // Mémoriser l'utilisateur pour le login ultérieur
+      try { localStorage.setItem('relion_user', JSON.stringify({ prenom: prenom, email: email, telephone: tel })); } catch(e) {}
+
+      // Appeler Stripe directement
+      fetch('/api/subscribe', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prenom: prenom, email: email, telephone: tel, plan: plan })
+      })
+      .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function(data) {
+        if (data.url) {
+          document.getElementById('signup-form').style.display    = 'none';
+          document.getElementById('signup-success').style.display = 'block';
+          var footer = document.querySelector('#modal-signup .modal-footer');
+          if (footer) footer.style.display = 'none';
+          setTimeout(function() { window.location.href = data.url; }, 600);
+        } else {
+          throw new Error('no url');
         }
-      }).then(function(res) {
-        btn.innerHTML = 'Créer mon compte';
+      })
+      .catch(function() {
+        btn.innerHTML = 'Continuer vers le paiement →';
         btn.disabled  = false;
-        if (res.error) {
-          showToast(res.error.message || 'Erreur lors de la création du compte.', true);
-          return;
-        }
-        document.getElementById('signup-form').style.display    = 'none';
-        document.getElementById('signup-success').style.display = 'block';
-        var footer = document.querySelector('#modal-signup .modal-footer');
-        if (footer) footer.style.display = 'none';
+        showToast('Erreur lors de la redirection — réessayez.', true);
       });
     }
 
-    /* ─── SIMULATION (hero inline) ───────────────────── */
+    /* ─── BOUTON DÉMARRER (vérifie session) ─────── */
+    function handleStartClick(plan) {
+      var stored = null;
+      try { stored = JSON.parse(localStorage.getItem('relion_user') || 'null'); } catch(e) {}
+
+      if (stored && stored.email) {
+        showToast('Redirection vers le paiement…', false);
+        fetch('/api/subscribe', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prenom: stored.prenom, email: stored.email, telephone: stored.telephone, plan: plan })
+        })
+        .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
+        .then(function(data) { if (data.url) window.location.href = data.url; })
+        .catch(function() { openModal('modal-signup', plan); });
+      } else {
+        openModal('modal-signup', plan);
+      }
+    }
+
+/* ─── SIMULATION (hero inline) ───────────────────── */
     var simCallsMin = 1;
     var simCallsMax = 3;
 
