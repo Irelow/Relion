@@ -25,9 +25,11 @@ module.exports = async function handler(req, res) {
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
-      customer_email: email,
+      // Ne pas passer customer_email pour eviter que Stripe
+      // recycle un client existant et pre-remplisse sa carte
       line_items: [{ price: priceId, quantity: 1 }],
       metadata: {
+        email: email,
         prenom: prenom || '',
         telephone: telephone,
         activite: activite || '',
