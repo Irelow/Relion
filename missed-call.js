@@ -2,25 +2,26 @@
  * POST /api/missed-call   ← Webhook Twilio (appel manqué)
  *
  * COMMENT ÇA MARCHE :
- *  1. L'artisan obtient un numéro Twilio virtuel (ex. +33757XXXXXX) → ~1€/mois
- *  2. Il redirige ses appels professionnels vers ce numéro Twilio
- *     (sur iPhone/Android : réglages opérateur, ou via l'app Twilio)
- *  3. Twilio essaie de faire sonner le vrai mobile de l'artisan (ARTISAN_PHONE)
- *  4. Si l'artisan ne décroche pas → Twilio appelle CE webhook
- *  5. Ce webhook renvoie un TwiML "ne pas décrocher" + envoie le SMS au prospect
+ *  1. L'artisan obtient un numéro Twilio virtuel (relion_number)
+ *  2. Twilio redirige les appels vers l'artisan ; si pas de réponse → ce webhook
+ *  3. Ce webhook :
+ *     a) retrouve l'artisan via son relion_number (table profiles)
+ *     b) enregistre l'appel en base (table missed_calls)
+ *     c) envoie le SMS au prospect
+ *     d) notifie l'artisan
+ *     e) répond à Twilio avec un TwiML "raccrocher"
  *
  * Variables d'environnement :
  *   TWILIO_ACCOUNT_SID
  *   TWILIO_AUTH_TOKEN
- *   TWILIO_PHONE_NUMBER  – numéro Twilio expéditeur
- *   ARTISAN_PHONE        – vrai numéro mobile de l'artisan (pour le transfert d'appel)
- *   SMS_TEMPLATE         – texte du SMS (optionnel, sinon texte par défaut)
- *   RECALL_URL           – lien de rappel/formulaire à inclure dans le SMS
- *   WEBHOOK_SECRET       – token secret pour vérifier que c'est bien Twilio qui appelle
+ *   SUPABASE_URL
+ *   SUPABASE_SERVICE_KEY
+ *   WEBHOOK_URL            – URL complète de ce webhook (pour validation signature)
  */
 
 const twilio = require('twilio');
 const { twiml: { VoiceResponse } } = twilio;
+const { createClient } = require('@supabase/supabase-js');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -28,13 +29,11 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST')    return res.status(405).end();
 
-  // Vérification signature Twilio (sécurité)
+  // ── Vérification signature Twilio ─────────────────────────────────────────
   const twilioSignature = req.headers['x-twilio-signature'];
-  const webhookUrl      = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}/api/missed-call`
-    : process.env.WEBHOOK_URL;
+  const webhookUrl = process.env.WEBHOOK_URL || ('https://' + process.env.VERCEL_URL + '/api/missed-call');
 
-  if (webhookUrl && process.env.TWILIO_AUTH_TOKEN) {
+  if (webhookUrl && process.env.TWILIO_AUTH_TOKEN && twilioSignature) {
     const isValid = twilio.validateRequest(
       process.env.TWILIO_AUTH_TOKEN,
       twilioSignature,
@@ -42,51 +41,98 @@ module.exports = async function handler(req, res) {
       req.body
     );
     if (!isValid) {
-      console.warn('[missed-call] Signature invalide — requête rejetée');
+      console.warn('[missed-call] Signature Twilio invalide');
       return res.status(403).end();
     }
   }
 
-  const callerNumber = req.body.From;   // numéro qui a appelé
-  const artisanName  = process.env.ARTISAN_NAME || 'votre artisan';
-  const recallUrl    = process.env.RECALL_URL   || 'relion.fr/rappel';
+  const callerNumber  = req.body.From || '';  // numéro du prospect qui a appelé
+  const relionNumber  = req.body.To   || '';  // numéro Twilio de l'artisan
 
-  const smsBody = process.env.SMS_TEMPLATE
-    ? process.env.SMS_TEMPLATE
-        .replace('{nom}', artisanName)
-        .replace('{url}', recallUrl)
-    : `Bonjour, j'ai bien reçu votre appel.\n\nJe suis actuellement en intervention.\nVous pouvez remplir ce formulaire :\n${recallUrl}\n\nJe vous rappelle ensuite. — ${artisanName}`;
+  const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_KEY
+  );
 
-  try {
-    const client = twilio(
-      process.env.TWILIO_ACCOUNT_SID,
-      process.env.TWILIO_AUTH_TOKEN
-    );
-
-    // Envoi du SMS au prospect
-    await client.messages.create({
-      body: smsBody,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to:   callerNumber
-    });
-
-    console.log(`[missed-call] SMS envoyé à ${callerNumber}`);
-
-    // Optionnel : notifier aussi l'artisan
-    if (process.env.ARTISAN_PHONE) {
-      await client.messages.create({
-        body: `📞 Appel manqué de ${callerNumber} — SMS de réponse envoyé automatiquement. Relion.`,
-        from: process.env.TWILIO_PHONE_NUMBER,
-        to:   process.env.ARTISAN_PHONE
-      });
-    }
-
-  } catch (err) {
-    console.error('[missed-call] Erreur SMS :', err.message);
-    // On continue quand même pour répondre correctement à Twilio
+  // ── Trouver l'artisan via son numéro Relion ───────────────────────────────
+  let profile = null;
+  if (relionNumber) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, prenom, telephone, subscription_status')
+      .eq('relion_number', relionNumber)
+      .single();
+    profile = data;
   }
 
-  // Réponse TwiML à Twilio : raccrocher proprement
+  // ── Préparer le SMS ───────────────────────────────────────────────────────
+  const artisanName = (profile?.prenom) || process.env.ARTISAN_NAME || 'votre artisan';
+  const recallUrl   = process.env.RECALL_URL || 'relion.fr/rappel';
+
+  const smsBody = process.env.SMS_TEMPLATE
+    ? process.env.SMS_TEMPLATE.replace('{nom}', artisanName).replace('{url}', recallUrl)
+    : 'Bonjour, j\'ai bien reçu votre appel.\n\nJe suis actuellement en intervention.\nVous pouvez remplir ce formulaire :\n' + recallUrl + '\n\nJe vous rappelle ensuite. — ' + artisanName;
+
+  // ── Enregistrer l'appel en base ───────────────────────────────────────────
+  let callId = null;
+  if (profile) {
+    const { data: callData } = await supabase
+      .from('missed_calls')
+      .insert({
+        user_id:       profile.id,
+        caller_number: callerNumber,
+        called_at:     new Date().toISOString(),
+        sms_content:   smsBody,
+        status:        'nouveau'
+      })
+      .select('id')
+      .single();
+
+    callId = callData?.id;
+    console.log('[missed-call] Appel enregistré en base, id:', callId);
+  } else {
+    console.warn('[missed-call] Artisan introuvable pour le numéro:', relionNumber);
+  }
+
+  // ── Envoyer les SMS ───────────────────────────────────────────────────────
+  const sid   = process.env.TWILIO_ACCOUNT_SID;
+  const token = process.env.TWILIO_AUTH_TOKEN;
+  const from  = relionNumber || process.env.TWILIO_PHONE_NUMBER;
+
+  if (sid && token && callerNumber && from) {
+    try {
+      const client = twilio(sid, token);
+
+      // SMS au prospect
+      await client.messages.create({ body: smsBody, from, to: callerNumber });
+      console.log('[missed-call] SMS envoyé au prospect', callerNumber);
+
+      // Marquer le SMS comme envoyé en base
+      if (callId) {
+        await supabase
+          .from('missed_calls')
+          .update({ sms_sent: true })
+          .eq('id', callId);
+      }
+
+      // Notification à l'artisan
+      const artisanPhone = profile?.telephone || process.env.ARTISAN_PHONE;
+      if (artisanPhone) {
+        await client.messages.create({
+          body: '📞 Appel manqué de ' + callerNumber + '\nSMS de réponse envoyé automatiquement. — Relion',
+          from,
+          to: artisanPhone
+        });
+      }
+
+    } catch (err) {
+      console.error('[missed-call] Erreur SMS :', err.message);
+    }
+  } else {
+    console.log('[missed-call] SMS non envoyé — Twilio non configuré ou numéro manquant');
+  }
+
+  // ── Répondre à Twilio : raccrocher proprement ─────────────────────────────
   const twimlResponse = new VoiceResponse();
   twimlResponse.hangup();
 
