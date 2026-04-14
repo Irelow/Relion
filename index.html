@@ -124,11 +124,12 @@
       letter-spacing: -0.4px;
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 0;
     }
     .logo-icon {
       width: 42px;
       height: 42px;
+      margin-right: 9px;
       background: linear-gradient(135deg, #1A56E8, #5b6ef5);
       border-radius: 12px;
       display: flex;
@@ -218,20 +219,30 @@
     .hero-note span { color: #4ADE80; }
 
     .hero-banner {
-      position: relative;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 5rem;
+      align-items: center;
+      padding: 7rem 6% 4rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .hero-right {
       display: flex;
-      align-items: flex-start;
-      justify-content: center;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.5rem;
     }
 
     .hero-content {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 8rem 2rem 2.5rem;
-      max-width: 840px;
+      align-items: flex-start;
+      text-align: left;
+      padding: 0;
       width: 100%;
       position: relative;
       z-index: 2;
@@ -276,8 +287,8 @@
     .hero-sub {
       font-size: 18px;
       color: var(--muted);
-      max-width: 620px;
-      margin: 0 auto 2rem;
+      max-width: 100%;
+      margin: 0 0 2rem;
       line-height: 1.7;
     }
 
@@ -286,7 +297,7 @@
       flex-direction: column;
       gap: 10px;
       margin: 0 0 2rem;
-      max-width: 450px;
+      max-width: 100%;
       text-align: left;
     }
 
@@ -308,7 +319,7 @@
     .hero-cta {
       display: flex;
       gap: 12px;
-      justify-content: center;
+      justify-content: flex-start;
       flex-wrap: wrap;
       margin-bottom: 2rem;
     }
@@ -388,8 +399,8 @@
     }
 
     section {
-      padding: 5rem 2rem;
-      max-width: 1000px;
+      padding: 5rem 6%;
+      max-width: 1280px;
       margin: 0 auto;
     }
 
@@ -414,7 +425,7 @@
     .section-sub {
       font-size: 16px;
       color: var(--muted);
-      max-width: 560px;
+      max-width: 720px;
       line-height: 1.7;
     }
 
@@ -1378,6 +1389,8 @@
           </div>
         </div>
 
+      </div>
+      <div class="hero-right">
         <div class="hero-test">
           <div class="hero-test-badge">Démo en direct</div>
           <p>Appelez ce numéro et ne décrochez pas</p>
