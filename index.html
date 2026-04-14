@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relion — Ne perdez plus un seul appel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --blue: #1A56E8;
+      --blue-light: #4D7FFF;
+      --blue-dim: rgba(26,86,232,0.1);
+      --surface: #1C2030;
+      --surface2: #242840;
+      --border: rgba(255,255,255,0.10);
+      --text: #F0F2FA;
+      --muted: #9DA4BE;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --success: #3DBF80;
+      --danger: #C05050;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #141726;
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(20,23,38,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo { justify-self: start; }
+    .nav-links {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      justify-self: center;
+    }
+    .nav-actions {
+      justify-self: end;
+      display: flex;
+      gap: 8px;
+    }
+
+    .logo {
+      font-family: 'Sora', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .logo span { color: var(--blue); }
+
+    .btn-ghost {
+      padding: 7px 14px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 8px;
+      color: #C2C8E0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+    .btn-ghost:hover {
+      border-color: rgba(255,255,255,0.2);
+      color: var(--text);
+      background: rgba(255,255,255,0.09);
+    }
+
+    .btn-primary {
+      padding: 8px 20px;
+      background: var(--blue);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s, transform .1s;
+    }
+    .btn-primary:hover { background: var(--blue-light); }
+    .btn-primary:active { transform: scale(.98); }
+
+    .btn-hero {
+      padding: 16px 38px;
+      background: var(--blue);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-hero:hover { background: var(--blue-light); }
+    .btn-hero:active { transform: scale(.98); }
+
+    .btn-hero-outline {
+      padding: 13px 32px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .btn-hero-outline:hover {
+      border-color: rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .hero-note {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .hero-note span { color: #4ADE80; }
+
+    .hero-banner {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 8rem 2rem 2.5rem;
+      max-width: 840px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      background: var(--blue-dim);
+      border: 1px solid rgba(46,107,255,0.3);
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--blue-light);
+      margin-bottom: 1.25rem;
+      width: fit-content;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--blue);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .hero-content h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(30px, 4.8vw, 56px);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
+      max-width: 820px;
+    }
+    .hero-content h1 em {
+      font-style: normal;
+      color: var(--blue-light);
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 620px;
+      margin: 0 auto 2rem;
+      line-height: 1.7;
+    }
+
+    .hero-points {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 0 0 2rem;
+      max-width: 450px;
+      text-align: left;
+    }
+
+    .hero-point {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    .hero-point-icon {
+      color: var(--blue);
+      font-size: 10px;
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .sms-preview {
+      margin-top: 1.5rem;
+      max-width: 430px;
+      width: 100%;
+    }
+    .sms-shell {
+      background: #0f1220;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 16px;
+      text-align: left;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    }
+    .sms-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .sms-bubble {
+      background: var(--blue);
+      color: white;
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .hero-test {
+      margin-top: 1.75rem;
+      width: 100%;
+      max-width: 430px;
+      padding: 18px 20px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(255,255,255,0.02);
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+    }
+    .hero-test-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      margin-bottom: 10px;
+      border-radius: 999px;
+      background: var(--blue-dim);
+      border: 1px solid rgba(46,107,255,0.3);
+      color: var(--blue-light);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .hero-test p {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: .5rem;
+      line-height: 1.45;
+    }
+    .hero-test a {
+      display: block;
+      font-family: 'Sora', sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: .05em;
+      margin-bottom: .35rem;
+    }
+    .hero-test-help {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    section {
+      padding: 5rem 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: .75rem;
+    }
+
+    .section-title {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(24px, 3.5vw, 38px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      margin-bottom: 1rem;
+    }
+
+    .section-sub {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    .sim-btn {
+      padding: 8px 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .sim-btn:hover {
+      border-color: var(--blue);
+      color: var(--text);
+    }
+    .sim-btn.active {
+      background: var(--blue-dim);
+      border-color: var(--blue);
+      color: var(--blue-light);
+    }
+
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 3rem;
+    }
+
+    .feat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      transition: border-color .2s, transform .15s;
+    }
+    .feat-card:hover {
+      border-color: rgba(46,107,255,0.35);
+      transform: translateY(-2px);
+    }
+
+    .feat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--blue-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .feat-icon svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--blue-light);
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .feat-card h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: .5rem;
+    }
+    .feat-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 3rem;
+      max-width: 680px;
+    }
+
+    .pricing-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+    }
+    .pricing-card.featured {
+      border-color: var(--blue);
+      background: linear-gradient(135deg, #111A2E 0%, var(--surface) 100%);
+    }
+
+    .pricing-tag {
+      display: inline-block;
+      padding: 3px 12px;
+      background: var(--blue-dim);
+      border: 1px solid rgba(46,107,255,0.3);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--blue-light);
+      letter-spacing: .05em;
+      margin-bottom: 1rem;
+    }
+
+    .pricing-card h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: .5rem;
+    }
+
+    .pricing-price {
+      font-family: 'Sora', sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--blue-light);
+      margin: 1rem 0 .25rem;
+    }
+    .pricing-price sup { font-size: 18px; vertical-align: super; }
+    .pricing-price sub {
+      font-size: 14px;
+      color: var(--muted);
+      vertical-align: baseline;
+    }
+
+    .pricing-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .pricing-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+
+    .pricing-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+    .pricing-list li {
+      font-size: 14px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pricing-list li::before {
+      content: '';
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Ccircle cx='8' cy='8' r='7' stroke='%232E6BFF' stroke-width='1.2'/%3E%3Cpath d='M5 8l2 2 4-4' stroke='%232E6BFF' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
+
+    .btn-plan, .btn-plan-blue {
+      width: 100%;
+      padding: 11px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .btn-plan {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-plan:hover {
+      border-color: rgba(255,255,255,0.25);
+      background: var(--surface2);
+    }
+    .btn-plan-blue {
+      background: var(--blue);
+      border: none;
+      color: #fff;
+    }
+    .btn-plan-blue:hover { background: var(--blue-light); }
+
+    .versus-wrap {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-top: 2rem;
+    }
+
+    .versus-col { padding: 2rem 1.75rem; }
+    .versus-bad { background: #1E1420; }
+    .versus-good { background: #0F1B18; }
+
+    .versus-label {
+      font-family: 'Sora', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .versus-bad .versus-label { color: #C05050; }
+    .versus-good .versus-label { color: #3DBF80; }
+
+    .versus-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .versus-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .versus-num {
+      font-family: 'Sora', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      min-width: 52px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .versus-num.bad { color: #C05050; }
+    .versus-num.good { color: #3DBF80; }
+
+    .versus-text {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .versus-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface2);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      padding: 0 1rem;
+    }
+
+    .versus-vs {
+      font-family: 'Sora', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: .1em;
+      writing-mode: vertical-rl;
+    }
+
+    .cta-block {
+      text-align: center;
+      padding: 5rem 2rem 6rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .cta-block h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(24px, 4vw, 42px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      margin-bottom: 1rem;
+    }
+    .cta-block p {
+      font-size: 16px;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    .form-box {
+      max-width: 440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: white;
+      outline: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      transition: border-color .2s, background .2s;
+    }
+    .form-input:focus {
+      border-color: var(--blue);
+      background: #1c2135;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .footer-logo {
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text);
+    }
+    .footer-logo span { color: var(--blue); }
+
+    #page-dashboard { display: none; }
+    #page-landing { display: block; }
+
+    .dash-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 100px 2rem 3rem;
+    }
+
+    .dash-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .dash-top h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .dash-top p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 2rem;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .kpi-val {
+      font-family: 'Sora', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .kpi-delta {
+      font-size: 12px;
+      color: #4ADE80;
+      margin-top: 3px;
+    }
+    .kpi-delta.neg { color: #F87171; }
+
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .table-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table-head h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 16px;
+      color: var(--muted);
+      font-weight: 500;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge-new {
+      background: rgba(46,107,255,.15);
+      color: #5B8FFF;
+      border: 1px solid rgba(46,107,255,.25);
+    }
+    .badge-done {
+      background: rgba(74,222,128,.12);
+      color: #4ADE80;
+      border: 1px solid rgba(74,222,128,.2);
+    }
+    .badge-wait {
+      background: rgba(251,191,36,.12);
+      color: #FBBF24;
+      border: 1px solid rgba(251,191,36,.2);
+    }
+
+    .action-btn {
+      padding: 5px 14px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .action-btn:hover {
+      border-color: var(--blue);
+      color: var(--blue-light);
+      background: var(--blue-dim);
+    }
+    .action-btn:disabled {
+      opacity: .3;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #1A2B1A;
+      border: 1px solid rgba(74,222,128,.3);
+      color: #4ADE80;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+      z-index: 999;
+    }
+
+    @media (max-width: 900px) {
+      .feat-grid,
+      .pricing-grid,
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-content {
+        padding-top: 7rem;
+      }
+
+      .versus-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .versus-divider {
+        writing-mode: horizontal-tb;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .versus-vs {
+        writing-mode: horizontal-tb;
+      }
+    }
+
+    /* ── MODALS ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+      transform: translateY(12px);
+      transition: transform .2s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .modal-header h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-form { display: flex; flex-direction: column; gap: 10px; }
+    .modal-footer {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .modal-footer a { color: var(--blue-light); cursor: pointer; text-decoration: none; }
+    .modal-footer a:hover { text-decoration: underline; }
+    .form-label { font-size: 13px; color: var(--muted); margin-bottom: 4px; display: block; }
+    .form-group { display: flex; flex-direction: column; }
+    .input-error { border-color: #C05050 !important; }
+    .field-error { font-size: 12px; color: #E07070; margin-top: 4px; display: none; }
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 1.5rem 1rem;
+    }
+    .form-success-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(61,191,128,0.12);
+      border: 1px solid rgba(61,191,128,0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 24px;
+    }
+    .form-success h3 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: .5rem; }
+    .form-success p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 640px) {
+      nav {
+        padding: 1rem;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .nav-actions {
+        gap: 6px;
+      }
+
+      .hero-content h1 {
+        font-size: clamp(28px, 8vw, 42px);
+      }
+
+      .hero-sub {
+        font-size: 16px;
+      }
+
+      .btn-hero {
+        width: 100%;
+      }
+
+      .dash-wrap {
+        padding: 90px 1rem 2rem;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      section {
+        padding: 4rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="#" class="logo nav-logo" onclick="showPage('landing')">Reli<span>on</span></a>
+
+    <div class="nav-links">
+      <button type="button" class="btn-ghost" onclick="showPage('landing')">Accueil</button>
+      <button type="button" class="btn-ghost" onclick="showPage('how')">Comment ça marche</button>
+      <button type="button" class="btn-ghost" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Tarifs</button>
+    </div>
+
+    <div class="nav-actions">
+      <button type="button" class="btn-ghost" onclick="openModal('modal-login')">Connexion</button>
+      <button type="button" class="btn-primary" onclick="openModal('modal-signup')">Inscription</button>
+    </div>
+  </nav>
+
+  <!-- LANDING -->
+  <div id="page-landing">
+
+    <!-- HERO -->
+    <div class="hero-banner">
+      <div class="hero-content">
+        <div class="hero-badge">Pour les artisans partout en France</div>
+
+        <h1>
+          Ne laissez pas un client potentiel
+          <em>partir chez la concurrence.</em>
+        </h1>
+
+        <p class="hero-sub">
+          Quand vous ne décrochez pas, votre prospect appelle souvent le suivant.
+          Relion envoie automatiquement un SMS pour garder le contact, rassurer le client et vous permettre de rappeler au bon moment.
+        </p>
+
+        <div class="hero-cta">
+          <button type="button" class="btn-hero" style="font-size:20px;padding:19px 36px;" onclick="document.getElementById('section-contact').scrollIntoView({behavior:'smooth'})">
+            Arrêter de perdre des clients
+          </button>
+          <button type="button" class="btn-hero-outline" onclick="showPage('how')">
+            Voir comment ça marche
+          </button>
+        </div>
+
+        <div class="hero-points">
+          <div class="hero-point">
+            <span class="hero-point-icon">✦</span>
+            <span>SMS envoyé en 3 secondes dès l'appel manqué</span>
+          </div>
+          <div class="hero-point">
+            <span class="hero-point-icon">✦</span>
+            <span>Suivi de chaque prospect dans votre tableau de bord</span>
+          </div>
+          <div class="hero-point">
+            <span class="hero-point-icon">✦</span>
+            <span>1 mois gratuit — sans engagement</span>
+          </div>
+        </div>
+
+        <div class="hero-test">
+          <div class="hero-test-badge">Démo en direct</div>
+          <p>Appelez ce numéro et ne décrochez pas</p>
+          <a href="tel:0011223344">00 11 22 33 44</a>
+          <div class="hero-test-help">Vous verrez le SMS envoyé automatiquement</div>
+        </div>
+
+        <!-- APERÇU SMS -->
+        <div class="sms-preview">
+          <div class="sms-shell">
+            <div class="sms-label">SMS envoyé automatiquement</div>
+            <div class="sms-bubble">
+              Bonjour, j’ai bien reçu votre appel.<br><br>
+              Je suis actuellement en intervention.<br>
+              Vous pouvez remplir ce formulaire :<br>
+              relion.fr/rappel<br><br>
+              Je vous rappelle ensuite.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIMULATION -->
+    <div style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+      <div style="max-width:1100px;margin:0 auto;padding:3rem 2rem;display:grid;grid-template-columns:1fr 1.2fr 0.9fr;gap:2.5rem;align-items:center;">
+
+        <div>
+          <div style="font-size:14px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:1rem;">
+            Simulation
+          </div>
+          <h2 style="font-family:'Sora',sans-serif;font-size:36px;font-weight:700;line-height:1.15;margin:0;">
+            Combien perdez-vous<br>chaque mois ?
+          </h2>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+          <div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Appels manqués / semaine</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button type="button" class="sim-btn active" data-min="1" data-max="3" onclick="selectCalls(this)">1 – 3</button>
+              <button type="button" class="sim-btn" data-min="3" data-max="6" onclick="selectCalls(this)">3 – 6</button>
+              <button type="button" class="sim-btn" data-min="6" data-max="10" onclick="selectCalls(this)">6 – 10</button>
+              <button type="button" class="sim-btn" data-min="10" data-max="16" onclick="selectCalls(this)">10 +</button>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Valeur moyenne d'un chantier</div>
+            <div id="prev-value-wrap" style="display:flex;align-items:center;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--surface2);transition:border-color .2s;">
+              <input
+                type="number"
+                id="prev-value"
+                min="1"
+                placeholder="ex. 500"
+                style="flex:1;padding:11px 14px;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;"
+                oninput="runSim()"
+              />
+              <span style="padding:11px 14px;color:var(--muted);font-size:14px;border-left:1px solid var(--border);">€</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onclick="runSim()"
+            style="padding:12px;background:var(--blue);border:none;border-radius:var(--radius);color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:background .2s;"
+            onmouseover="this.style.background='var(--blue-light)'"
+            onmouseout="this.style.background='var(--blue)'"
+          >
+            Simuler
+          </button>
+        </div>
+
+        <div style="background:var(--surface2);border:1px solid rgba(61,191,128,0.3);border-radius:var(--radius-lg);padding:1.75rem;text-align:center;">
+          <div style="font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;">
+            CA récupérable / mois
+          </div>
+          <div style="font-family:'Sora',sans-serif;font-size:32px;font-weight:700;color:#3DBF80;min-height:42px;" id="prev-gain">—</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:12px;line-height:1.5;">
+            Estimation indicative<br>avec SMS automatique
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- AVANT / APRÈS -->
+    <section>
+      <div class="section-label">Comparaison</div>
+      <h2 class="section-title">Ce qui se passe sans vs avec Relion</h2>
+      <p class="section-sub">
+        Le problème n’est pas seulement l’appel manqué. C’est ce qui se passe juste après.
+      </p>
+
+      <div class="versus-wrap">
+        <div class="versus-col versus-bad">
+          <div class="versus-label">Sans Relion</div>
+          <div class="versus-rows">
+            <div class="versus-row">
+              <div class="versus-num bad">01</div>
+              <div class="versus-text">Appel manqué</div>
+            </div>
+            <div class="versus-row">
+              <div class="versus-num bad">02</div>
+              <div class="versus-text">Aucune réponse immédiate</div>
+            </div>
+            <div class="versus-row">
+              <div class="versus-num bad">03</div>
+              <div class="versus-text">Le client appelle un concurrent</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="versus-divider">
+          <div class="versus-vs">VS</div>
+        </div>
+
+        <div class="versus-col versus-good">
+          <div class="versus-label">Avec Relion</div>
+          <div class="versus-rows">
+            <div class="versus-row">
+              <div class="versus-num good">01</div>
+              <div class="versus-text">Appel manqué détecté</div>
+            </div>
+            <div class="versus-row">
+              <div class="versus-num good">02</div>
+              <div class="versus-text">SMS envoyé en 3 secondes</div>
+            </div>
+            <div class="versus-row">
+              <div class="versus-num good">03</div>
+              <div class="versus-text">Client rassuré, rappel facilité</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FONCTIONNALITÉS -->
+    <section>
+      <div class="section-label">Fonctionnalités</div>
+      <h2 class="section-title">Tout ce qu'il vous faut,<br>rien de superflu</h2>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          </div>
+          <h3>SMS immédiat</h3>
+          <p>Un message part dans les secondes qui suivent l'appel manqué — votre client sait que vous avez vu son appel.</p>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3>Rappel facilité</h3>
+          <p>Le prospect indique sa disponibilité par SMS. Vous rappelez au bon moment, avec les infos déjà sous les yeux.</p>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <h3>Tableau de bord clair</h3>
+          <p>Tous vos appels, leur avancement et le chiffre d'affaires récupéré dans une interface simple.</p>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-icon">
+            <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          </div>
+          <h3>Bilan mensuel</h3>
+          <p>Chaque mois, un récapitulatif : appels traités, prospects relancés, opportunités récupérées.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing">
+      <div class="section-label">Tarifs</div>
+      <h2 class="section-title">Payez seulement sur résultat</h2>
+      <p class="section-sub">
+        Pas d'abonnement, pas de frais cachés. Notre rémunération est liée à ce que Relion vous rapporte réellement.
+      </p>
+
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Essentiel</h3>
+          <div class="pricing-price"><sup>%</sup>5 <sub>par devis signé</sub></div>
+          <p class="pricing-desc">Idéal pour tester sans risque et mesurer l'impact réel sur vos appels manqués.</p>
+          <hr class="pricing-divider" />
+          <ul class="pricing-list">
+            <li>SMS de réponse automatique</li>
+            <li>Tableau de bord de base</li>
+            <li>Rapport mensuel</li>
+            <li>Support par email</li>
+          </ul>
+          <button type="button" class="btn-plan" onclick="openModal('modal-signup','Essentiel')">Démarrer</button>
+        </div>
+
+        <div class="pricing-card featured">
+          <div class="pricing-tag">Recommandé</div>
+          <h3>Pro</h3>
+          <div class="pricing-price"><sup>%</sup>8 <sub>par devis signé</sub></div>
+          <p class="pricing-desc">Pour automatiser davantage le suivi et ne laisser passer aucune opportunité sérieuse.</p>
+          <hr class="pricing-divider" />
+          <ul class="pricing-list">
+            <li>Tout l'Essentiel</li>
+            <li>Rappel automatique intelligent</li>
+            <li>Relances multi-messages</li>
+            <li>Tableau de bord complet</li>
+            <li>Support prioritaire</li>
+          </ul>
+          <button type="button" class="btn-plan-blue" onclick="openModal('modal-signup','Pro')">Démarrer</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL + FORM -->
+    <div class="cta-block" id="section-contact">
+      <h2>Testez Relion gratuitement</h2>
+      <p>On vous rappelle et on configure tout pour vous.</p>
+
+      <div class="form-box" id="form-contact-wrap">
+        <div class="form-group">
+          <input class="form-input" id="contact-prenom" type="text" placeholder="Votre prénom" autocomplete="given-name" />
+          <span class="field-error" id="err-prenom">Merci d'indiquer votre prénom.</span>
+        </div>
+        <div class="form-group">
+          <input class="form-input" id="contact-tel" type="tel" placeholder="Votre numéro (+33...)" autocomplete="tel" />
+          <span class="field-error" id="err-tel">Numéro invalide (ex. 06 12 34 56 78).</span>
+        </div>
+        <div class="form-group">
+          <input class="form-input" id="contact-activite" type="text" placeholder="Votre activité (plombier, chauffagiste...)" />
+          <span class="field-error" id="err-activite">Merci d'indiquer votre activité.</span>
+        </div>
+        <button type="button" class="btn-hero" id="btn-contact" onclick="submitContact()">Être rappelé</button>
+      </div>
+
+      <div class="form-success" id="contact-success">
+        <div class="form-success-icon">✓</div>
+        <h3>C'est noté !</h3>
+        <p>On vous rappelle sous 24h pour configurer Relion sur votre ligne.<br>Vous n'avez rien d'autre à faire.</p>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <section>
+      <div class="section-label">FAQ</div>
+      <h2 class="section-title">Questions fréquentes</h2>
+
+      <div style="margin-top:2rem;display:flex;flex-direction:column;gap:16px;max-width:760px;">
+        <div class="feat-card">
+          <h3>Est-ce que je garde mon numéro ?</h3>
+          <p>Oui. Relion fonctionne avec votre ligne actuelle. Vos clients continuent d'appeler votre numéro habituel.</p>
+        </div>
+
+        <div class="feat-card">
+          <h3>Combien de temps pour l’installation ?</h3>
+          <p>Configuration complète en moins de 48h. Vous n’avez rien à gérer techniquement de votre côté.</p>
+        </div>
+
+        <div class="feat-card">
+          <h3>Est-ce que je peux personnaliser le SMS ?</h3>
+          <p>Oui. Vous choisissez le message envoyé à vos clients pour qu’il corresponde à votre activité et à votre ton.</p>
+        </div>
+
+        <div class="feat-card">
+          <h3>Est-ce qu’il y a un engagement ?</h3>
+          <p>Non. Vous pouvez tester sans engagement et mesurer l’impact concret avant d’aller plus loin.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <span class="footer-logo">Reli<span>on</span></span>
+      <span>© 2026 Relion — France</span>
+      <span>contact@relion.fr</span>
+    </footer>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="page-dashboard">
+    <div class="dash-wrap">
+      <div class="dash-top">
+        <div>
+          <h1>Tableau de bord</h1>
+          <p>Martin Plomberie &nbsp;·&nbsp; Avril 2026</p>
+        </div>
+        <button type="button" class="btn-ghost" onclick="showPage('landing')">← Retour au site</button>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Appels manqués ce mois</div>
+          <div class="kpi-val">14</div>
+          <div class="kpi-delta">↑ +3 vs mars</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Prospects relancés</div>
+          <div class="kpi-val">11</div>
+          <div class="kpi-delta">79% de taux de rappel</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Devis envoyés</div>
+          <div class="kpi-val">7</div>
+          <div class="kpi-delta">↑ +2 cette semaine</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">CA récupéré</div>
+          <div class="kpi-val">4 200€</div>
+          <div class="kpi-delta">↑ Meilleur mois</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-head">
+          <h2>Appels manqués récents</h2>
+          <span style="font-size:12px;color:var(--muted);">5 entrées &nbsp;·&nbsp; 2 nouveaux</span>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Date & heure</th>
+              <th>Motif probable</th>
+              <th>SMS envoyé</th>
+              <th>Statut</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr>
+              <td>06 12 34 56 78</td>
+              <td>Aujourd'hui, 09h14</td>
+              <td>Fuite détectée</td>
+              <td>✓ 09h14</td>
+              <td><span class="badge badge-new">Nouveau</span></td>
+              <td><button type="button" class="action-btn" onclick="markDone(this)">Rappeler</button></td>
+            </tr>
+            <tr>
+              <td>Sophie Riedinger</td>
+              <td>Aujourd'hui, 08h51</td>
+              <td>Installation robinet</td>
+              <td>✓ 08h51</td>
+              <td><span class="badge badge-wait">En attente</span></td>
+              <td><button type="button" class="action-btn" onclick="markDone(this)">Rappeler</button></td>
+            </tr>
+            <tr>
+              <td>Jean-Paul Muller</td>
+              <td>Hier, 17h30</td>
+              <td>Chauffe-eau HS</td>
+              <td>✓ 17h30</td>
+              <td><span class="badge badge-done">Rappelé</span></td>
+              <td><button type="button" class="action-btn" disabled>Fait</button></td>
+            </tr>
+            <tr>
+              <td>07 89 01 23 45</td>
+              <td>Hier, 14h12</td>
+              <td>Devis rénovation</td>
+              <td>✓ 14h13</td>
+              <td><span class="badge badge-done">Rappelé</span></td>
+              <td><button type="button" class="action-btn" disabled>Fait</button></td>
+            </tr>
+            <tr>
+              <td>Fatima Benali</td>
+              <td>11/04, 11h05</td>
+              <td>Dégât des eaux</td>
+              <td>✓ 11h05</td>
+              <td><span class="badge badge-new">Nouveau</span></td>
+              <td><button type="button" class="action-btn" onclick="markDone(this)">Rappeler</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMENT ÇA MARCHE -->
+  <div id="page-how" style="display:none;">
+    <div class="dash-wrap" style="max-width:700px;">
+      <div class="dash-top">
+        <div>
+          <h1>Comment ça marche</h1>
+          <p>Trois étapes, aucune action compliquée.</p>
+        </div>
+        <button type="button" class="btn-ghost" onclick="showPage('landing')">← Retour</button>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="feat-card">
+          <div style="font-family:'Sora',sans-serif;font-size:48px;font-weight:700;color:rgba(46,107,255,0.12);line-height:1;margin-bottom:1rem;">01</div>
+          <h3>L'appel part sans réponse</h3>
+          <p>Relion détecte l'appel manqué instantanément, quelle que soit votre ligne configurée.</p>
+        </div>
+
+        <div class="feat-card">
+          <div style="font-family:'Sora',sans-serif;font-size:48px;font-weight:700;color:rgba(46,107,255,0.12);line-height:1;margin-bottom:1rem;">02</div>
+          <h3>Un SMS part en votre nom</h3>
+          <p>Le prospect reçoit un message personnalisé en 3 secondes — avant de chercher ailleurs. Vous choisissez le texte à l'avance, Relion l'envoie à votre place.</p>
+        </div>
+
+        <div class="feat-card">
+          <div style="font-family:'Sora',sans-serif;font-size:48px;font-weight:700;color:rgba(46,107,255,0.12);line-height:1;margin-bottom:1rem;">03</div>
+          <h3>Vous rappelez au bon moment</h3>
+          <p>Tout est dans votre tableau de bord : nom, numéro, heure, statut du prospect. Vous rappelez quand vous êtes disponible.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE SIMULATION -->
+  <div id="page-simulation" style="display:none;">
+    <div class="dash-wrap" style="max-width:600px;">
+      <div class="dash-top">
+        <div>
+          <h1>Simulation</h1>
+          <p>Estimez ce que vous perdez chaque mois.</p>
+        </div>
+        <button type="button" class="btn-ghost" onclick="showPage('landing')">← Retour</button>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="kpi-card">
+          <div class="kpi-label">Appels manqués par semaine</div>
+          <input type="range" min="1" max="30" value="5" id="sim-calls" oninput="calcSim()" style="width:100%;margin:10px 0 4px;">
+          <div style="font-family:'Sora',sans-serif;font-size:28px;font-weight:700;" id="sim-calls-out">5</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Valeur moyenne d'un chantier (€)</div>
+          <input type="range" min="100" max="5000" step="100" value="500" id="sim-value" oninput="calcSim()" style="width:100%;margin:10px 0 4px;">
+          <div style="font-family:'Sora',sans-serif;font-size:28px;font-weight:700;" id="sim-value-out">500 €</div>
+        </div>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <div class="kpi-label">Perdu par mois sans Relion</div>
+            <div style="font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:#C05050;margin-top:4px;" id="sim-lost">—</div>
+          </div>
+          <div>
+            <div class="kpi-label">Récupérable avec Relion</div>
+            <div style="font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:#3DBF80;margin-top:4px;" id="sim-gain">—</div>
+          </div>
+        </div>
+
+        <p style="font-size:12px;color:var(--muted);">
+          Estimation illustrative basée sur vos appels manqués et une récupération partielle via SMS automatique.
+        </p>
+
+        <button type="button" class="btn-plan-blue" onclick="showPage('landing')">Je veux essayer gratuitement</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Statut mis à jour ✓</div>
+
+  <!-- MODAL CONNEXION -->
+  <div class="modal-overlay" id="modal-login" onclick="handleOverlayClick(event,'modal-login')">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Connexion</h2>
+        <button class="modal-close" onclick="closeModal('modal-login')">✕</button>
+      </div>
+      <div class="modal-form" id="login-form">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="login-email" type="email" placeholder="vous@exemple.fr" autocomplete="email" />
+          <span class="field-error" id="err-login-email">Email invalide.</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <input class="form-input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password" />
+          <span class="field-error" id="err-login-password">Mot de passe requis.</span>
+        </div>
+        <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" onclick="submitLogin()">Se connecter</button>
+      </div>
+      <div class="modal-footer">
+        Pas encore de compte ? <a onclick="switchModal('modal-login','modal-signup')">Créer un compte</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL INSCRIPTION -->
+  <div class="modal-overlay" id="modal-signup" onclick="handleOverlayClick(event,'modal-signup')">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Créer un compte</h2>
+        <button class="modal-close" onclick="closeModal('modal-signup')">✕</button>
+      </div>
+      <div id="signup-plan-badge" style="display:none;margin-bottom:1rem;">
+        <span style="display:inline-block;padding:4px 12px;background:var(--blue-dim);border:1px solid rgba(46,107,255,0.3);border-radius:20px;font-size:12px;color:var(--blue-light);">Plan <strong id="signup-plan-name"></strong> sélectionné</span>
+      </div>
+      <div class="modal-form" id="signup-form">
+        <div class="form-group">
+          <label class="form-label">Prénom</label>
+          <input class="form-input" id="signup-prenom" type="text" placeholder="Jean" autocomplete="given-name" />
+          <span class="field-error" id="err-signup-prenom">Prénom requis.</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="signup-email" type="email" placeholder="vous@exemple.fr" autocomplete="email" />
+          <span class="field-error" id="err-signup-email">Email invalide.</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Numéro de téléphone professionnel</label>
+          <input class="form-input" id="signup-tel" type="tel" placeholder="+33 6 12 34 56 78" autocomplete="tel" />
+          <span class="field-error" id="err-signup-tel">Numéro invalide.</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <input class="form-input" id="signup-password" type="password" placeholder="8 caractères minimum" autocomplete="new-password" />
+          <span class="field-error" id="err-signup-password">6 caractères minimum.</span>
+        </div>
+        <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" id="btn-signup" onclick="submitSignup()">Créer mon compte</button>
+        <p style="font-size:11px;color:var(--muted);text-align:center;line-height:1.5;">1 mois gratuit · Sans engagement · Résiliation en 1 clic</p>
+      </div>
+      <div class="form-success" id="signup-success">
+        <div class="form-success-icon">✓</div>
+        <h3>Compte créé !</h3>
+        <p>Notre équipe vous contacte sous 24h pour activer le SMS automatique sur votre ligne.</p>
+        <button type="button" class="btn-primary" style="margin-top:1rem;padding:10px 24px;" onclick="closeModal('modal-signup');showPage('dashboard')">Voir mon tableau de bord</button>
+      </div>
+      <div class="modal-footer">
+        Déjà un compte ? <a onclick="switchModal('modal-signup','modal-login')">Se connecter</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ─── NAVIGATION ─────────────────────────────────── */
+    function showPage(name) {
+      ['landing', 'dashboard', 'how', 'simulation'].forEach(function(p) {
+        var el = document.getElementById('page-' + p);
+        if (el) el.style.display = (p === name) ? 'block' : 'none';
+      });
+      window.scrollTo(0, 0);
+    }
+
+    /* ─── MODALS ─────────────────────────────────────── */
+    function openModal(id, plan) {
+      var overlay = document.getElementById(id);
+      if (!overlay) return;
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      if (id === 'modal-signup' && plan) {
+        var badge = document.getElementById('signup-plan-badge');
+        var name  = document.getElementById('signup-plan-name');
+        if (badge && name) { badge.style.display = 'block'; name.textContent = plan; }
+      }
+    }
+
+    function closeModal(id) {
+      var overlay = document.getElementById(id);
+      if (overlay) overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function handleOverlayClick(e, id) {
+      if (e.target === e.currentTarget) closeModal(id);
+    }
+
+    function switchModal(from, to) {
+      closeModal(from);
+      setTimeout(function() { openModal(to); }, 180);
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        ['modal-login', 'modal-signup'].forEach(closeModal);
+      }
+    });
+
+    /* ─── HELPERS VALIDATION ─────────────────────────── */
+    function isValidPhone(v) {
+      return /^[\d\s\+\-\.]{8,15}$/.test(v.trim());
+    }
+    function isValidEmail(v) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+    }
+    function setError(inputId, errId, show) {
+      var inp = document.getElementById(inputId);
+      var err = document.getElementById(errId);
+      if (!inp || !err) return;
+      if (show) {
+        inp.classList.add('input-error');
+        err.style.display = 'block';
+      } else {
+        inp.classList.remove('input-error');
+        err.style.display = 'none';
+      }
+    }
+
+    /* ─── FORMULAIRE CONTACT (landing) ───────────────── */
+    function submitContact() {
+      var prenom   = document.getElementById('contact-prenom').value.trim();
+      var tel      = document.getElementById('contact-tel').value.trim();
+      var activite = document.getElementById('contact-activite').value.trim();
+
+      var ok = true;
+      setError('contact-prenom',   'err-prenom',   !prenom);       if (!prenom)   ok = false;
+      setError('contact-tel',      'err-tel',      !isValidPhone(tel)); if (!isValidPhone(tel)) ok = false;
+      setError('contact-activite', 'err-activite', !activite);     if (!activite) ok = false;
+      if (!ok) return;
+
+      var btn = document.getElementById('btn-contact');
+      btn.innerHTML = '<span class="spinner"></span>Envoi…';
+      btn.disabled  = true;
+
+      fetch('/api/contact', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prenom: prenom, telephone: tel, activite: activite })
+      })
+      .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function() {
+        document.getElementById('form-contact-wrap').style.display = 'none';
+        document.getElementById('contact-success').style.display    = 'block';
+      })
+      .catch(function() {
+        btn.innerHTML = 'Être rappelé';
+        btn.disabled  = false;
+        showToast('Une erreur est survenue — réessayez.', true);
+      });
+    }
+
+    /* ─── MODAL LOGIN ────────────────────────────────── */
+    function submitLogin() {
+      var email = document.getElementById('login-email').value.trim();
+      var pass  = document.getElementById('login-password').value;
+
+      var ok = true;
+      setError('login-email',    'err-login-email',    !isValidEmail(email)); if (!isValidEmail(email)) ok = false;
+      setError('login-password', 'err-login-password', !pass);                if (!pass) ok = false;
+      if (!ok) return;
+
+      /*
+        TODO backend : POST /api/auth/login { email, password }
+        Pour l'instant → redirection vers dashboard (démo)
+      */
+      closeModal('modal-login');
+      showPage('dashboard');
+    }
+
+    /* ─── MODAL SIGNUP ───────────────────────────────── */
+    function submitSignup() {
+      var prenom = document.getElementById('signup-prenom').value.trim();
+      var email  = document.getElementById('signup-email').value.trim();
+      var tel    = document.getElementById('signup-tel').value.trim();
+      var pass   = document.getElementById('signup-password').value;
+
+      var ok = true;
+      setError('signup-prenom',   'err-signup-prenom',   !prenom);             if (!prenom) ok = false;
+      setError('signup-email',    'err-signup-email',    !isValidEmail(email)); if (!isValidEmail(email)) ok = false;
+      setError('signup-tel',      'err-signup-tel',      !isValidPhone(tel));   if (!isValidPhone(tel))   ok = false;
+      setError('signup-password', 'err-signup-password', pass.length < 6);      if (pass.length < 6)      ok = false;
+      if (!ok) return;
+
+      var btn = document.getElementById('btn-signup');
+      btn.innerHTML = '<span class="spinner"></span>Création…';
+      btn.disabled  = true;
+
+      /*
+        TODO backend : POST /api/auth/register { prenom, email, telephone, password }
+        Pour l'instant → succès en démo après 1s
+      */
+      fetch('/api/auth/register', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prenom: prenom, email: email, telephone: tel, password: pass })
+      })
+      .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function() {
+        document.getElementById('signup-form').style.display   = 'none';
+        document.getElementById('signup-success').style.display = 'block';
+        var footer = document.querySelector('#modal-signup .modal-footer');
+        if (footer) footer.style.display = 'none';
+      })
+      .catch(function() {
+        /* Démo : on affiche quand même le succès si le backend n'existe pas encore */
+        document.getElementById('signup-form').style.display   = 'none';
+        document.getElementById('signup-success').style.display = 'block';
+        var footer = document.querySelector('#modal-signup .modal-footer');
+        if (footer) footer.style.display = 'none';
+      });
+    }
+
+    /* ─── SIMULATION (hero inline) ───────────────────── */
+    var simCallsMin = 1;
+    var simCallsMax = 3;
+
+    function selectCalls(btn) {
+      document.querySelectorAll('.sim-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      simCallsMin = parseInt(btn.dataset.min, 10);
+      simCallsMax = parseInt(btn.dataset.max, 10);
+      runSim();
+    }
+
+    function runSim() {
+      var input  = document.getElementById('prev-value');
+      var wrap   = document.getElementById('prev-value-wrap');
+      var val    = parseFloat(input.value);
+      var result = document.getElementById('prev-gain');
+      if (!val || val <= 0) { wrap.style.borderColor = '#E05555'; result.textContent = '—'; return; }
+      wrap.style.borderColor = '';
+      var gainMin = Math.round(simCallsMin * 4 * 0.65 * val);
+      var gainMax = Math.round(simCallsMax * 4 * 0.65 * val);
+      result.textContent = gainMin.toLocaleString('fr-FR') + ' – ' + gainMax.toLocaleString('fr-FR') + ' €';
+    }
+
+    /* ─── SIMULATION (page dédiée) ───────────────────── */
+    function calcSim() {
+      var calls = parseInt(document.getElementById('sim-calls').value, 10);
+      var value = parseInt(document.getElementById('sim-value').value, 10);
+      document.getElementById('sim-calls-out').textContent = calls;
+      document.getElementById('sim-value-out').textContent = value.toLocaleString('fr-FR') + ' €';
+      var perMonth = calls * 4;
+      document.getElementById('sim-lost').textContent = Math.round(perMonth * 0.85 * value).toLocaleString('fr-FR') + ' €';
+      document.getElementById('sim-gain').textContent = Math.round(perMonth * 0.65 * value).toLocaleString('fr-FR') + ' €';
+    }
+
+    /* ─── DASHBOARD : marquer rappelé ───────────────── */
+    function markDone(btn) {
+      var row   = btn.closest('tr');
+      var badge = row.querySelector('.badge');
+      badge.className   = 'badge badge-done';
+      badge.textContent = 'Rappelé';
+      btn.disabled      = true;
+      btn.textContent   = 'Fait';
+      showToast('Statut mis à jour ✓', false);
+    }
+
+    /* ─── TOAST ─────────────────────────────────────── */
+    function showToast(msg, isError) {
+      var t = document.getElementById('toast');
+      t.textContent  = msg;
+      t.style.background   = isError ? '#2B1A1A' : '#1A2B1A';
+      t.style.borderColor  = isError ? 'rgba(192,80,80,.3)' : 'rgba(74,222,128,.3)';
+      t.style.color        = isError ? '#E07070' : '#4ADE80';
+      t.style.display = 'block';
+      setTimeout(function() { t.style.display = 'none'; }, 2500);
+    }
+
+    calcSim();
+  </script>
+</body>
+</html>
