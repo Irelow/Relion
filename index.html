@@ -1074,6 +1074,79 @@
         padding: 4rem 1rem;
       }
     }
+    /* ── Page Métiers ──────────────────────── */
+    .metiers-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 7rem 2rem 5rem;
+    }
+    .metiers-hero {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    .metiers-hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 1.25rem;
+    }
+    .metiers-hero p {
+      font-size: 1.125rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.75;
+    }
+    .metiers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 4rem;
+    }
+    .metier-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem 1.5rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .metier-card:hover {
+      border-color: rgba(26,86,232,0.5);
+      transform: translateY(-2px);
+    }
+    .metier-icon {
+      font-size: 2rem;
+      margin-bottom: 0.875rem;
+    }
+    .metier-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    .metier-card p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .metiers-cta {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      text-align: center;
+    }
+    .metiers-cta h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .metiers-cta p {
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      font-size: 0.9375rem;
+    }
   </style>
 </head>
 <body>
@@ -1086,6 +1159,7 @@
       <button type="button" class="btn-nav-link" onclick="showPage('how')">Comment ça marche</button>
       <button type="button" class="btn-nav-link" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Tarifs</button>
       <button class="btn-nav-link" onclick="openContactModal()">Contact</button>
+      <button class="btn-nav-link" onclick="showPage('metiers')">Métiers</button>
     </div>
 
     <div class="nav-actions">
@@ -1095,6 +1169,70 @@
       <button type="button" class="btn-nav-login" id="btn-nav-logout" style="display:none;" onclick="logout()">Déconnexion</button>
     </div>
   </nav>
+
+  <!-- MÉTIERS -->
+  <div id="page-metiers" style="display:none;">
+    <div class="metiers-wrap">
+      <div class="metiers-hero">
+        <h1>Relion est fait pour<br><em>les artisans qui bougent.</em></h1>
+        <p>Vous êtes sur le terrain toute la journée. Vous ne pouvez pas répondre à chaque appel. Relion rappelle automatiquement vos prospects — pour que vous ne perdiez plus un seul client.</p>
+      </div>
+
+      <div class="metiers-grid">
+        <div class="metier-card">
+          <div class="metier-icon">🔧</div>
+          <h3>Plombier</h3>
+          <p>Entre deux chantiers, les appels s'accumulent. Relion répond à votre place et rappelle le client dès que vous êtes libre.</p>
+        </div>
+        <div class="metier-card">
+          <div class="metier-icon">⚡</div>
+          <h3>Électricien</h3>
+          <p>Un client qui ne vous joint pas appelle le suivant. Avec Relion, il reçoit un SMS de rappel immédiat et reste dans votre pipeline.</p>
+        </div>
+        <div class="metier-card">
+          <div class="metier-icon">🏗️</div>
+          <h3>Maçon</h3>
+          <p>Sur le chantier, le téléphone est le cadet de vos soucis. Relion transforme chaque appel manqué en opportunité capturée.</p>
+        </div>
+        <div class="metier-card">
+          <div class="metier-icon">🪟</div>
+          <h3>Menuisier</h3>
+          <p>Vos devis se gagnent avant même le rendez-vous. Relion qualifie le prospect et vous prépare le terrain.</p>
+        </div>
+        <div class="metier-card">
+          <div class="metier-icon">🎨</div>
+          <h3>Peintre</h3>
+          <p>Chaque appel manqué est un devis de moins. Relion rappelle systématiquement — vous n'avez plus qu'à vous concentrer sur le travail.</p>
+        </div>
+        <div class="metier-card">
+          <div class="metier-icon">🔒</div>
+          <h3>Serrurier</h3>
+          <p>Les urgences n'attendent pas. Relion détecte le contexte de l'appel et priorise les rappels selon l'urgence.</p>
+        </div>
+        <div class="metier-card">
+          <div class="metier-icon">🌿</div>
+          <h3>Paysagiste</h3>
+          <p>Saison chargée ou pas, Relion maintient votre agenda plein sans que vous leviez le petit doigt.</p>
+        </div>
+        <div class="metier-card">
+          <div class="metier-icon">🏠</div>
+          <h3>Chauffagiste</h3>
+          <p>En période de froid, les appels explosent. Relion trie, rappelle et qualifie — vous gérez les urgences réelles.</p>
+        </div>
+        <div class="metier-card">
+          <div class="metier-icon">🪚</div>
+          <h3>Carreleur</h3>
+          <p>Un artisan qui répond vite inspire confiance. Relion vous donne cette image pro — même quand vous êtes les mains dans le mortier.</p>
+        </div>
+      </div>
+
+      <div class="metiers-cta">
+        <h2>Votre métier n'est pas dans la liste&nbsp;?</h2>
+        <p>Relion fonctionne pour tout artisan qui travaille seul ou en petite équipe et ne peut pas être joignable en permanence.</p>
+        <button class="btn-primary" onclick="handleStartClick('Essentiel')">Essayer gratuitement 30 jours →</button>
+      </div>
+    </div>
+  </div>
 
   <!-- LANDING -->
   <div id="page-landing">
@@ -1723,7 +1861,7 @@
 
     /* ─── NAVIGATION ─────────────────────────────────── */
     function showPage(name) {
-      ['landing', 'dashboard', 'how', 'simulation'].forEach(function(p) {
+      ['landing', 'dashboard', 'how', 'simulation', 'metiers'].forEach(function(p) {
         var el = document.getElementById('page-' + p);
         if (el) el.style.display = (p === name) ? 'block' : 'none';
       });
