@@ -124,12 +124,11 @@
       letter-spacing: -0.4px;
       display: flex;
       align-items: center;
-      gap: 0;
+      gap: 9px;
     }
     .logo-icon {
       width: 42px;
       height: 42px;
-      margin-right: 9px;
       background: linear-gradient(135deg, #1A56E8, #5b6ef5);
       border-radius: 12px;
       display: flex;
@@ -219,30 +218,20 @@
     .hero-note span { color: #4ADE80; }
 
     .hero-banner {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 5rem;
-      align-items: center;
-      padding: 7rem 6% 4rem;
-      max-width: 1400px;
-      margin: 0 auto;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .hero-right {
+      position: relative;
       display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 1.5rem;
+      align-items: flex-start;
+      justify-content: center;
     }
 
     .hero-content {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: flex-start;
-      text-align: left;
-      padding: 0;
+      align-items: center;
+      text-align: center;
+      padding: 8rem 2rem 2.5rem;
+      max-width: 840px;
       width: 100%;
       position: relative;
       z-index: 2;
@@ -287,8 +276,8 @@
     .hero-sub {
       font-size: 18px;
       color: var(--muted);
-      max-width: 100%;
-      margin: 0 0 2rem;
+      max-width: 620px;
+      margin: 0 auto 2rem;
       line-height: 1.7;
     }
 
@@ -297,7 +286,7 @@
       flex-direction: column;
       gap: 10px;
       margin: 0 0 2rem;
-      max-width: 100%;
+      max-width: 450px;
       text-align: left;
     }
 
@@ -319,7 +308,7 @@
     .hero-cta {
       display: flex;
       gap: 12px;
-      justify-content: flex-start;
+      justify-content: center;
       flex-wrap: wrap;
       margin-bottom: 2rem;
     }
@@ -399,8 +388,8 @@
     }
 
     section {
-      padding: 5rem 6%;
-      max-width: 1280px;
+      padding: 5rem 2rem;
+      max-width: 1000px;
       margin: 0 auto;
     }
 
@@ -425,7 +414,7 @@
     .section-sub {
       font-size: 16px;
       color: var(--muted);
-      max-width: 720px;
+      max-width: 560px;
       line-height: 1.7;
     }
 
@@ -1352,8 +1341,6 @@
 
     <!-- HERO -->
     <div class="hero-banner">
-
-      <!-- Texte hero full-width centré -->
       <div class="hero-content">
         <div class="hero-badge">Pour les artisans partout en France</div>
 
@@ -1368,116 +1355,49 @@
         </p>
 
         <div class="hero-cta">
-          <button type="button" class="btn-primary btn-hero" onclick="openModal('modal-signup')">
+          <button type="button" class="btn-hero" style="font-size:20px;padding:19px 36px;" onclick="document.getElementById('section-contact').scrollIntoView({behavior:'smooth'})">
             Arrêter de perdre des clients
           </button>
           <button type="button" class="btn-hero-outline" onclick="showPage('how')">
-            Comment ça marche
+            Voir comment ça marche
           </button>
         </div>
 
-        <p class="hero-note"><span>✓</span> Sans engagement · Résultats dès la première semaine</p>
-      </div>
-
-      <!-- Deux cartes démo premium -->
-      <div class="hero-demos">
-
-        <!-- Carte 1 : Chat IA premium -->
-        <div class="demo-chat-card">
-          <div class="demo-chat-header">
-            <div class="demo-chat-status">
-              <span class="status-dot"></span>
-              <span class="demo-chat-name">IA Relion — Active</span>
-              <span class="demo-chat-company">· Martin Plomberie</span>
-            </div>
-            <div class="demo-metric-badge">
-              <div class="demo-metric-label">Clients sauvés aujourd'hui</div>
-              <div class="demo-metric-value">12</div>
-            </div>
+        <div class="hero-points">
+          <div class="hero-point">
+            <span class="hero-point-icon">✦</span>
+            <span>SMS envoyé en 3 secondes dès l'appel manqué</span>
           </div>
-          <div class="chat-messages">
-            <div class="chat-event">📞 Appel manqué <span>· il y a 4 secondes</span></div>
-            <div class="msg-ai">
-              <div class="msg-ai-avatar">IA</div>
-              <div class="msg-ai-bubble">Bonjour, je suis l'assistant de Martin. Il est actuellement en intervention.<br><br>Puis-je prendre votre message ou planifier un rappel ?</div>
-            </div>
-            <div class="msg-caller">
-              <div class="msg-caller-icon">👤</div>
-              <div class="msg-caller-bubble">Oui, j'ai une fuite urgente. Pouvez-vous rappeler ce matin ?</div>
-            </div>
-            <div class="msg-ai">
-              <div class="msg-ai-avatar">IA</div>
-              <div class="msg-ai-bubble">Bien noté. Martin vous rappelle avant 12h. ✓</div>
-            </div>
+          <div class="hero-point">
+            <span class="hero-point-icon">✦</span>
+            <span>Suivi de chaque prospect dans votre tableau de bord</span>
           </div>
-          <div class="chat-footer">
-            <span class="chat-tag">✓ Appel manqué</span>
-            <span class="chat-tag">✓ SMS envoyé</span>
-            <span class="chat-tag chat-tag-success">✓ Client conservé</span>
+          <div class="hero-point">
+            <span class="hero-point-icon">✦</span>
+            <span>1 mois gratuit — sans engagement</span>
           </div>
         </div>
 
-        <!-- Carte 2 : Flow appel manqué premium -->
-        <div class="demo-call-card">
-          <div class="demo-call-header">
-            <div class="demo-call-title">Ce qui se passe en coulisses</div>
-            <div class="demo-call-subtitle">À chaque appel manqué, automatiquement</div>
-          </div>
-          <div class="call-flow">
-            <div class="flow-step">
-              <div class="flow-step-icon">📞</div>
-              <div class="flow-step-content">
-                <div class="flow-step-label">Appel manqué</div>
-                <div class="flow-step-desc">Vous êtes en intervention</div>
-              </div>
-              <div class="flow-step-time">0s</div>
-            </div>
-            <div class="flow-connector"></div>
-            <div class="flow-step flow-step-active">
-              <div class="flow-step-icon">🤖</div>
-              <div class="flow-step-content">
-                <div class="flow-step-label">Relion se déclenche</div>
-                <div class="flow-step-desc">Détection instantanée</div>
-              </div>
-              <div class="flow-step-time">3s</div>
-            </div>
-            <div class="flow-connector"></div>
-            <div class="flow-step">
-              <div class="flow-step-icon">💬</div>
-              <div class="flow-step-content">
-                <div class="flow-step-label">SMS personnalisé envoyé</div>
-                <div class="flow-step-desc">Votre message, votre ton</div>
-              </div>
-              <div class="flow-step-time">4s</div>
-            </div>
-            <div class="flow-connector"></div>
-            <div class="flow-step flow-step-success">
-              <div class="flow-step-icon">✅</div>
-              <div class="flow-step-content">
-                <div class="flow-step-label">Client rappelé · Chantier signé</div>
-                <div class="flow-step-desc">Prospect converti</div>
-              </div>
-              <div class="flow-step-time">+2h</div>
-            </div>
-          </div>
-          <div class="demo-stats">
-            <div class="stat-item">
-              <div class="stat-value stat-value-blue">94%</div>
-              <div class="stat-label">taux de réponse</div>
-            </div>
-            <div class="stat-sep"></div>
-            <div class="stat-item">
-              <div class="stat-value">3s</div>
-              <div class="stat-label">réaction moyenne</div>
-            </div>
-            <div class="stat-sep"></div>
-            <div class="stat-item">
-              <div class="stat-value stat-value-green">3.2×</div>
-              <div class="stat-label">plus de rappels</div>
+        <div class="hero-test">
+          <div class="hero-test-badge">Démo en direct</div>
+          <p>Appelez ce numéro et ne décrochez pas</p>
+          <a href="tel:0011223344">00 11 22 33 44</a>
+          <div class="hero-test-help">Vous verrez le SMS envoyé automatiquement</div>
+        </div>
+
+        <!-- APERÇU SMS -->
+        <div class="sms-preview">
+          <div class="sms-shell">
+            <div class="sms-label">SMS envoyé automatiquement</div>
+            <div class="sms-bubble">
+              Bonjour, j’ai bien reçu votre appel.<br><br>
+              Je suis actuellement en intervention.<br>
+              Vous pouvez remplir ce formulaire :<br>
+              relion.fr/rappel<br><br>
+              Je vous rappelle ensuite.
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
