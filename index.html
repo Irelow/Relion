@@ -1540,9 +1540,29 @@
           <input class="form-input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password" />
           <span class="field-error" id="err-login-password">Mot de passe requis.</span>
         </div>
+        <div style="text-align:right;margin-top:-4px;margin-bottom:4px;">
+          <a style="font-size:13px;color:var(--blue-light);cursor:pointer;text-decoration:none;" onclick="showForgotPassword()">ÂMot de passe oublié ?</a>
+        </div>
         <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" onclick="submitLogin()">Se connecter</button>
       </div>
-      <div class="modal-footer">
+      <div id="forgot-form" style="display:none;flex-direction:column;gap:10px;">
+        <p style="font-size:14px;color:var(--muted);margin-bottom:4px;">Entrez votre email, on vous envoie un lien pour réinitialiser votre mot de passe.</p>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="forgot-email" type="email" placeholder="vous@exemple.fr" autocomplete="email" />
+        </div>
+        <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;" id="btn-forgot" onclick="submitForgotPassword()">Envoyer le lien</button>
+        <div style="text-align:center;margin-top:4px;">
+          <a style="font-size:13px;color:var(--blue-light);cursor:pointer;" onclick="showLoginForm()">← Retour à la connexion</a>
+        </div>
+      </div>
+      <div class="form-success" id="forgot-success" style="display:none;">
+        <div class="form-success-icon">✉</div>
+        <h3>Email envoyé !</h3>
+        <p>Vérifiez votre boîte mail et cliquez sur le lien pour créer un nouveau mot de passe.</p>
+        <button type="button" class="btn-primary" style="margin-top:1rem;padding:10px 24px;" onclick="closeModal('modal-login');showLoginForm()">Fermer</button>
+      </div>
+      <div class="modal-footer" id="login-footer">
         Pas encore de compte ? <a onclick="switchModal('modal-login','modal-signup')">Créer un compte</a>
       </div>
     </div>
@@ -1625,6 +1645,9 @@
       if (event === 'SIGNED_OUT') {
         showPage('landing');
       }
+      if (event === 'PASSWORD_RECOVERY') {
+        openModal('modal-new-password');
+      }
     });
 
     function logout() {
@@ -1671,7 +1694,7 @@
 
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
-        ['modal-login', 'modal-signup'].forEach(closeModal);
+        ['modal-login', 'modal-signup', 'modal-new-password'].forEach(closeModal);
       }
     });
 
@@ -1725,6 +1748,53 @@
         btn.innerHTML = 'Être rappelé';
         btn.disabled  = false;
         showToast('Une erreur est survenue — réessayez.', true);
+      });
+    }
+
+    /* ─── MOT DE PASSE OUBLIÉ ────────────────── */
+    function showForgotPassword() {
+      document.getElementById('login-form').style.display   = 'none';
+      document.getElementById('forgot-form').style.display  = 'flex';
+      document.getElementById('login-footer').style.display = 'none';
+      document.querySelector('#modal-login .modal-header h2').textContent = 'Réinitialiser le mot de passe';
+    }
+    function showLoginForm() {
+      document.getElementById('forgot-form').style.display   = 'none';
+      document.getElementById('forgot-success').style.display = 'none';
+      document.getElementById('login-form').style.display    = 'flex';
+      document.getElementById('login-footer').style.display  = '';
+      document.querySelector('#modal-login .modal-header h2').textContent = 'Connexion';
+    }
+    function submitForgotPassword() {
+      var email = document.getElementById('forgot-email').value.trim();
+      if (!isValidEmail(email)) { showToast('Email invalide.', true); return; }
+      var btn = document.getElementById('btn-forgot');
+      btn.innerHTML = '<span class="spinner"></span>Envoi…';
+      btn.disabled  = true;
+      _supabase.auth.resetPasswordForEmail(email, { redirectTo: 'https://relion-five.vercel.app' })
+        .then(function(res) {
+          btn.innerHTML = 'Envoyer le lien';
+          btn.disabled  = false;
+          if (res.error) { showToast(res.error.message || 'Erreur.', true); return; }
+          document.getElementById('forgot-form').style.display    = 'none';
+          document.getElementById('forgot-success').style.display = 'block';
+        });
+    }
+    function submitNewPassword() {
+      var pass = document.getElementById('new-password').value;
+      var errEl = document.getElementById('err-new-password');
+      if (pass.length < 6) { errEl.style.display = 'block'; return; }
+      errEl.style.display = 'none';
+      var btn = document.getElementById('btn-new-password');
+      btn.innerHTML = '<span class="spinner"></span>Enregistrement…';
+      btn.disabled  = true;
+      _supabase.auth.updateUser({ password: pass }).then(function(res) {
+        btn.innerHTML = 'Enregistrer le mot de passe';
+        btn.disabled  = false;
+        if (res.error) { showToast(res.error.message || 'Erreur.', true); return; }
+        closeModal('modal-new-password');
+        showToast('Mot de passe mis à jour ✓', false);
+        showPage('dashboard');
       });
     }
 
@@ -1857,5 +1927,23 @@
 
     calcSim();
   </script>
+  <!-- MODAL NOUVEAU MOT DE PASSE (reset depuis email) -->
+  <div class="modal-overlay" id="modal-new-password">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Nouveau mot de passe</h2>
+      </div>
+      <div class="modal-form" id="new-password-form">
+        <p style="font-size:14px;color:var(--muted);">Choisissez un nouveau mot de passe pour votre compte Relion.</p>
+        <div class="form-group">
+          <label class="form-label">Nouveau mot de passe</label>
+          <input class="form-input" id="new-password" type="password" placeholder="8 caractères minimum" autocomplete="new-password" />
+          <span class="field-error" id="err-new-password">6 caractères minimum.</span>
+        </div>
+        <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;" id="btn-new-password" onclick="submitNewPassword()">Enregistrer le mot de passe</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
