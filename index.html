@@ -38,36 +38,106 @@
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      display: flex;
       align-items: center;
-      padding: 1rem 2rem;
-      background: rgba(20,23,38,0.88);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 64px;
+      background: rgba(12,15,28,0.82);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border-bottom: 1px solid rgba(255,255,255,0.055);
+      box-shadow: 0 1px 32px rgba(0,0,0,0.35);
     }
 
-    .nav-logo { justify-self: start; }
+    .nav-logo { display: flex; align-items: center; }
     .nav-links {
       display: flex;
-      gap: 6px;
+      gap: 2px;
       align-items: center;
-      justify-self: center;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .nav-links .btn-ghost {
+      color: rgba(255,255,255,0.55);
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      letter-spacing: 0.01em;
+      transition: color 0.18s, background 0.18s;
+    }
+    .nav-links .btn-ghost:hover {
+      color: rgba(255,255,255,0.95);
+      background: rgba(255,255,255,0.07);
     }
     .nav-actions {
-      justify-self: end;
       display: flex;
-      gap: 8px;
+      align-items: center;
+      gap: 6px;
     }
-
+    .btn-nav-login {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: color 0.18s, background 0.18s;
+      font-family: inherit;
+    }
+    .btn-nav-login:hover {
+      color: rgba(255,255,255,0.95);
+      background: rgba(255,255,255,0.07);
+    }
+    .btn-nav-cta {
+      background: linear-gradient(135deg, #1A56E8 0%, #5b6ef5 100%);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.5rem 1.25rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.01em;
+      box-shadow: 0 0 18px rgba(26,86,232,0.38);
+      transition: transform 0.15s, box-shadow 0.18s, opacity 0.15s;
+    }
+    .btn-nav-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 22px rgba(26,86,232,0.55);
+      opacity: 0.93;
+    }
     .logo {
       font-family: 'Sora', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
+      font-size: 21px;
+      font-weight: 800;
+      color: #fff;
       text-decoration: none;
+      letter-spacing: -0.4px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
     }
-    .logo span { color: var(--blue); }
+    .logo-icon {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, #1A56E8, #5b6ef5);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 900;
+      color: #fff;
+      box-shadow: 0 0 14px rgba(26,86,232,0.5);
+      flex-shrink: 0;
+    }
+    .logo span { color: #8090ff; }
 
     .btn-ghost {
       padding: 7px 14px;
@@ -1006,20 +1076,23 @@
 <body>
 
   <nav>
-    <a href="#" class="logo nav-logo" onclick="showPage('landing')">Reli<span>on</span></a>
+    <a href="#" class="logo nav-logo" onclick="showPage('landing')">
+      <span class="logo-icon">R</span>
+      Reli<span>on</span>
+    </a>
 
     <div class="nav-links">
       <button type="button" class="btn-ghost" onclick="showPage('landing')">Accueil</button>
       <button type="button" class="btn-ghost" onclick="showPage('how')">Comment ça marche</button>
       <button type="button" class="btn-ghost" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Tarifs</button>
-    <button class="btn-ghost" onclick="openContactModal()">Nous contacter</button>
+      <button class="btn-ghost" onclick="openContactModal()">Contact</button>
     </div>
 
     <div class="nav-actions">
-      <button type="button" class="btn-ghost" id="btn-nav-login" onclick="openModal('modal-login')">Connexion</button>
-      <button type="button" class="btn-primary" id="btn-nav-signup" onclick="openModal('modal-signup')">Inscription</button>
-      <button type="button" class="btn-ghost" id="btn-nav-compte" style="display:none;" onclick="showPage('dashboard')">Mon compte</button>
-      <button type="button" class="btn-ghost" id="btn-nav-logout" style="display:none;" onclick="logout()">Déconnexion</button>
+      <button type="button" class="btn-nav-login" id="btn-nav-login" onclick="openModal('modal-login')">Connexion</button>
+      <button type="button" class="btn-nav-cta"   id="btn-nav-signup" onclick="openModal('modal-signup')">Essai gratuit →</button>
+      <button type="button" class="btn-nav-login" id="btn-nav-compte" style="display:none;" onclick="showPage('dashboard')">Mon compte</button>
+      <button type="button" class="btn-nav-login" id="btn-nav-logout" style="display:none;" onclick="logout()">Déconnexion</button>
     </div>
   </nav>
 
