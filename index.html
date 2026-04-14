@@ -1635,7 +1635,6 @@
       if (event === 'SIGNED_IN') {
         closeModal('modal-login');
         closeModal('modal-signup');
-        showPage('dashboard');
       }
       if (event === 'SIGNED_OUT') {
         showPage('landing');
@@ -1949,6 +1948,7 @@
 
   // ─── Détection paramètres Stripe après redirection ──────────────────────
   document.addEventListener('DOMContentLoaded', function() {
+  showPage('landing');
     var params = new URLSearchParams(window.location.search);
     var sp = params.get('stripe');
     if (sp) {
