@@ -59,19 +59,21 @@
       left: 50%;
       transform: translateX(-50%);
     }
-    .nav-links .btn-ghost {
-      color: rgba(255,255,255,0.55);
+    .nav-links .btn-nav-link {
+      color: rgba(255,255,255,0.6);
       font-size: 1.05rem;
       font-weight: 500;
       padding: 0.55rem 1rem;
       border-radius: 8px;
-      letter-spacing: 0.01em;
-      background: transparent !important;
+      background: transparent;
+      border: none;
+      cursor: pointer;
       transition: color 0.2s;
+      font-family: inherit;
     }
-    .nav-links .btn-ghost:hover {
+    .nav-links .btn-nav-link:hover {
       color: #7eb3ff;
-      background: transparent !important;
+      background: transparent;
     }
     .nav-actions {
       display: flex;
@@ -115,7 +117,7 @@
     }
     .logo {
       font-family: 'Sora', sans-serif;
-      font-size: 21px;
+      font-size: 32px;
       font-weight: 800;
       color: #fff;
       text-decoration: none;
@@ -125,14 +127,14 @@
       gap: 9px;
     }
     .logo-icon {
-      width: 30px;
-      height: 30px;
+      width: 42px;
+      height: 42px;
       background: linear-gradient(135deg, #1A56E8, #5b6ef5);
-      border-radius: 9px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
+      font-size: 18px;
       font-weight: 900;
       color: #fff;
       box-shadow: 0 0 14px rgba(26,86,232,0.5);
@@ -1080,10 +1082,10 @@
     <a href="#" class="logo nav-logo" onclick="showPage('landing')"><span class="logo-icon">R</span>Reli<span>on</span></a>
 
     <div class="nav-links">
-      <button type="button" class="btn-ghost" onclick="showPage('landing')">Accueil</button>
-      <button type="button" class="btn-ghost" onclick="showPage('how')">Comment ça marche</button>
-      <button type="button" class="btn-ghost" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Tarifs</button>
-      <button class="btn-ghost" onclick="openContactModal()">Contact</button>
+      <button type="button" class="btn-nav-link" onclick="showPage('landing')">Accueil</button>
+      <button type="button" class="btn-nav-link" onclick="showPage('how')">Comment ça marche</button>
+      <button type="button" class="btn-nav-link" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Tarifs</button>
+      <button class="btn-nav-link" onclick="openContactModal()">Contact</button>
     </div>
 
     <div class="nav-actions">
