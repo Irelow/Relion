@@ -42,7 +42,22 @@ module.exports = async function handler(req, res) {
       )
     `;
 
-    return res.status(200).json({ success: true, message: 'Tables users et appointments creees' });
+    await sql`
+      CREATE TABLE IF NOT EXISTS pending_registrations (
+        id            SERIAL PRIMARY KEY,
+        email         VARCHAR(255) UNIQUE NOT NULL,
+        telephone     VARCHAR(20) NOT NULL,
+        prenom        VARCHAR(100) NOT NULL,
+        nom           VARCHAR(100),
+        password_hash VARCHAR(255) NOT NULL,
+        resend_count  INT DEFAULT 0,
+        last_resend_at TIMESTAMPTZ DEFAULT NOW(),
+        created_at    TIMESTAMPTZ DEFAULT NOW(),
+        expires_at    TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '24 hours')
+      )
+    `;
+
+    return res.status(200).json({ success: true, message: 'Tables users, appointments et pending_registrations creees' });
   } catch (err) {
     console.error('[setup-db] Erreur:', err.message);
     return res.status(500).json({ error: err.message });
