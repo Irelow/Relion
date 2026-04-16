@@ -1527,6 +1527,183 @@
       .stat-number { font-size: 44px; }
       footer { flex-direction: column; align-items: flex-start; }
     }
+
+    /* ═══════════════════ SECTION RDV ═══════════════════ */
+    .rdv-section {
+      padding: 7rem 3rem;
+      text-align: center;
+      background: linear-gradient(180deg, transparent 0%, rgba(26,86,232,0.06) 100%);
+      border-top: 1px solid var(--border2);
+    }
+    .rdv-section h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      margin: 12px 0 16px;
+    }
+    .rdv-section p {
+      color: var(--muted);
+      font-size: 17px;
+      margin-bottom: 32px;
+      line-height: 1.7;
+    }
+
+    /* ═══════════════════ DRAWER RDV ════════════════════ */
+    .rdv-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .rdv-overlay.open { display: flex; }
+    .rdv-panel {
+      background: #1e2236;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: min(680px, 95vw);
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 32px;
+      position: relative;
+    }
+    .rdv-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .rdv-panel-header h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .rdv-panel-header button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background .2s;
+    }
+    .rdv-panel-header button:hover { background: var(--surface); }
+    .rdv-body { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    @media (max-width: 560px) { .rdv-body { grid-template-columns: 1fr; } }
+
+    /* Calendar */
+    .rdv-cal-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .rdv-cal-nav span {
+      font-weight: 600;
+      font-size: 15px;
+      text-transform: capitalize;
+    }
+    .rdv-cal-nav button {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .rdv-cal-nav button:hover { background: var(--surface2); }
+    .rdv-cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+    .rdv-cal-weekdays span {
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .rdv-cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .rdv-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all .15s;
+    }
+    .rdv-day.empty { cursor: default; }
+    .rdv-day.past { color: rgba(255,255,255,0.2); cursor: not-allowed; }
+    .rdv-day.weekend { color: rgba(255,255,255,0.25); cursor: not-allowed; }
+    .rdv-day.available:hover { background: var(--surface2); border-color: var(--border); }
+    .rdv-day.selected { background: var(--blue); color: white; border-color: var(--blue); }
+    .rdv-day.today { border-color: rgba(26,86,232,0.4); }
+
+    /* Slots */
+    .rdv-slots-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .rdv-slots-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .rdv-slot {
+      padding: 9px 6px;
+      text-align: center;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid var(--border2);
+      background: var(--surface);
+      cursor: pointer;
+      transition: all .15s;
+      color: var(--text);
+    }
+    .rdv-slot:hover { background: var(--surface2); border-color: var(--border); }
+    .rdv-slot.selected { background: var(--blue); border-color: var(--blue); color: white; }
+    .rdv-slot.booked { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
+    .rdv-placeholder {
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+      padding: 40px 0;
+    }
+    .rdv-success-wrap {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .rdv-success-icon {
+      width: 64px; height: 64px;
+      background: rgba(61,191,128,0.15);
+      border: 1px solid rgba(61,191,128,0.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 20px;
+    }
   </style>
 </head>
 <body>
@@ -1547,7 +1724,7 @@
     </div>
     <div class="nav-actions">
       <button class="btn-ghost" type="button" onclick="openModal('modal-login')">Connexion</button>
-      <a class="btn-nav-cta" href="javascript:void(0)" onclick="scrollTo_('#contact')">Essai gratuit</a>
+      <button class="btn-nav-cta" type="button" onclick="openModal('modal-signup')">Inscription</button>
     </div>
   </nav>
 
@@ -1873,45 +2050,94 @@
   </div>
 
   <!-- CTA + FORM -->
-  <div class="cta-section" id="contact">
-    <div class="cta-inner">
-      <div class="cta-left">
-        <div class="section-label">Commencer</div>
-        <h2>PRÊT À RÉCUPÉRER VOS CLIENTS ?</h2>
-        <p>On vous rappelle dans la journée. On configure tout pour vous. Vous n'avez rien d'autre à faire.</p>
-        <div class="cta-trust">
-          <div class="cta-trust-item"><div class="cta-trust-dot"></div>Sans engagement ni abonnement</div>
-          <div class="cta-trust-item"><div class="cta-trust-dot"></div>Configuration complète, à votre place</div>
-          <div class="cta-trust-item"><div class="cta-trust-dot"></div>Vous gardez votre numéro de téléphone actuel</div>
-          <div class="cta-trust-item"><div class="cta-trust-dot"></div>Tarification simple et transparente</div>
+  <!-- SECTION RDV -->
+  <div class="rdv-section" id="contact">
+    <div class="section-label">Support</div>
+    <h2>Vous avez une question ?</h2>
+    <p>Nous prenons le temps pour nos artisans.<br>Réservez un appel de 30 min avec notre équipe.</p>
+    <button type="button" class="btn-primary" style="font-size:16px;padding:14px 32px;" onclick="openRdvDrawer()">Prendre rendez-vous →</button>
+  </div>
+
+  <!-- DRAWER RDV -->
+  <div class="rdv-overlay" id="rdv-overlay" onclick="if(event.target===this)closeRdvDrawer()">
+    <div class="rdv-panel">
+      <div class="rdv-panel-header">
+        <h3>Prendre rendez-vous</h3>
+        <button onclick="closeRdvDrawer()">✕</button>
+      </div>
+
+      <!-- Vue : Invite à se connecter -->
+      <div id="rdv-view-login">
+        <div style="text-align:center;padding:16px 0 24px;">
+          <div style="font-size:40px;margin-bottom:16px;">📅</div>
+          <h3 style="margin-bottom:10px;font-family:'Sora',sans-serif;">Réserver un appel</h3>
+          <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:28px;">Connectez-vous pour pré-remplir vos informations et retrouver votre rendez-vous facilement.</p>
+          <button type="button" class="btn-primary" style="width:100%;margin-bottom:10px;" onclick="rdvDoLogin()">Se connecter</button>
+          <button type="button" class="btn-ghost" style="width:100%;" onclick="rdvContinueGuest()">Continuer sans compte →</button>
         </div>
       </div>
 
-      <div class="cta-form-box">
-        <div id="form-contact-wrap">
-          <p class="form-title">Être rappelé gratuitement</p>
-          <p class="form-sub">Complétez en 30 secondes — on s'occupe du reste.</p>
-          <div class="form-group">
-            <input class="form-input" id="contact-prenom" type="text" placeholder="Votre prénom" autocomplete="given-name" />
-            <span class="field-error" id="err-prenom">Merci d'indiquer votre prénom.</span>
+      <!-- Vue principale : calendrier + créneaux -->
+      <div id="rdv-view-main">
+        <div class="rdv-body">
+          <!-- Calendrier -->
+          <div>
+            <div class="rdv-cal-nav">
+              <button onclick="rdvPrevMonth()">‹</button>
+              <span id="rdv-month-label"></span>
+              <button onclick="rdvNextMonth()">›</button>
+            </div>
+            <div class="rdv-cal-weekdays">
+              <span>Lu</span><span>Ma</span><span>Me</span><span>Je</span><span>Ve</span><span>Sa</span><span>Di</span>
+            </div>
+            <div class="rdv-cal-grid" id="rdv-cal-grid"></div>
           </div>
-          <div class="form-group">
-            <input class="form-input" id="contact-tel" type="tel" placeholder="Votre numéro (+33...)" autocomplete="tel" />
-            <span class="field-error" id="err-tel">Numéro invalide (ex. 06 12 34 56 78).</span>
+          <!-- Créneaux + formulaire -->
+          <div>
+            <div class="rdv-placeholder" id="rdv-placeholder">← Sélectionnez une date</div>
+            <div id="rdv-slots-content" style="display:none;">
+              <p class="rdv-slots-title" id="rdv-slots-title"></p>
+              <div class="rdv-slots-grid" id="rdv-slots-grid"></div>
+              <div id="rdv-booking-form" style="display:none;">
+                <div class="form-group" style="margin-top:12px;">
+                  <input class="form-input" id="rdv-name" type="text" placeholder="Votre prénom" autocomplete="given-name" />
+                </div>
+                <div class="form-group">
+                  <input class="form-input" id="rdv-phone" type="tel" placeholder="Votre numéro de téléphone" autocomplete="tel" />
+                </div>
+                <button type="button" class="btn-primary" style="width:100%;margin-top:4px;" id="btn-rdv-confirm" onclick="submitRdv()">Confirmer →</button>
+              </div>
+            </div>
           </div>
-          <div class="form-group">
-            <input class="form-input" id="contact-activite" type="text" placeholder="Votre activité (plombier, électricien...)" />
-            <span class="field-error" id="err-activite">Merci d'indiquer votre activité.</span>
-          </div>
-          <button type="button" class="btn-submit" id="btn-contact" onclick="submitContact()">Être rappelé aujourd'hui →</button>
-        </div>
-
-        <div class="form-success" id="contact-success">
-          <div class="form-success-icon">✓</div>
-          <h3>C'est noté !</h3>
-          <p>On vous rappelle sous 24h pour configurer Relion sur votre ligne.<br>Vous n'avez rien d'autre à faire.</p>
         </div>
       </div>
+
+      <!-- Vue : RDV déjà existant (affiché si doublon détecté) -->
+      <div id="rdv-view-existing" style="display:none;">
+        <div style="background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:20px;margin-bottom:20px;">
+          <p style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Votre rendez-vous existant</p>
+          <p id="rdv-existing-info" style="font-size:16px;font-weight:600;line-height:1.8;white-space:pre-line;"></p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button type="button" class="btn-primary" style="flex:1;" onclick="modifierRdv()">Modifier la date</button>
+          <button type="button" class="btn-ghost" style="flex:1;color:#E07070;" onclick="annulerRdv()">Annuler ce RDV</button>
+        </div>
+        <button type="button" class="btn-ghost" style="width:100%;margin-top:8px;" onclick="closeRdvDrawer()">Fermer</button>
+      </div>
+
+      <!-- Vue : Succès -->
+      <div id="rdv-view-success" style="display:none;">
+        <div class="rdv-success-wrap">
+          <div class="rdv-success-icon">✓</div>
+          <h3 style="margin-bottom:12px;">Rendez-vous confirmé !</h3>
+          <p id="rdv-success-msg" style="color:var(--muted);line-height:1.7;white-space:pre-line;"></p>
+          <div style="display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap;">
+            <button type="button" class="btn-primary" onclick="modifierRdv()">Modifier la date</button>
+            <button type="button" class="btn-ghost" onclick="closeRdvDrawer()">Fermer</button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2176,34 +2402,47 @@
       <h2>Créer un compte</h2>
       <button class="modal-close" onclick="closeModal('modal-signup')">✕</button>
     </div>
-    <div id="signup-plan-badge" style="display:none;margin-bottom:1rem;">
-      <span style="display:inline-block;padding:4px 12px;background:var(--blue-dim);border:1px solid rgba(46,107,255,0.3);border-radius:20px;font-size:12px;color:var(--blue-light);">Plan <strong id="signup-plan-name"></strong> sélectionné</span>
-    </div>
-    <div class="modal-form" id="signup-form">
-      <div class="form-group">
-        <label class="form-label">Prénom</label>
-        <input class="form-input" id="signup-prenom" type="text" placeholder="Jean" autocomplete="given-name" />
-        <span class="field-error" id="err-signup-prenom">Prénom requis.</span>
+    <div class="modal-form" id="register-form">
+      <div style="display:flex;gap:10px;">
+        <div class="form-group" style="flex:1;">
+          <label class="form-label">Prénom <span style="color:var(--danger)">*</span></label>
+          <input class="form-input" id="reg-prenom" type="text" placeholder="Jean" autocomplete="given-name" />
+          <span class="field-error" id="err-reg-prenom">Prénom requis.</span>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label class="form-label">Nom</label>
+          <input class="form-input" id="reg-nom" type="text" placeholder="Dupont" autocomplete="family-name" />
+        </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Email</label>
-        <input class="form-input" id="signup-email" type="email" placeholder="vous@exemple.fr" autocomplete="email" />
-        <span class="field-error" id="err-signup-email">Email invalide.</span>
+        <label class="form-label">Email <span style="color:var(--danger)">*</span></label>
+        <input class="form-input" id="reg-email" type="email" placeholder="vous@exemple.fr" autocomplete="email" />
+        <span class="field-error" id="err-reg-email">Email invalide.</span>
       </div>
       <div class="form-group">
-        <label class="form-label">Numéro de téléphone professionnel</label>
-        <input class="form-input" id="signup-tel" type="tel" placeholder="+33 6 12 34 56 78" autocomplete="tel" />
-        <span class="field-error" id="err-signup-tel">Numéro invalide.</span>
+        <label class="form-label">Téléphone professionnel <span style="color:var(--danger)">*</span></label>
+        <input class="form-input" id="reg-tel" type="tel" placeholder="+33 6 12 34 56 78" autocomplete="tel" />
+        <span class="field-error" id="err-reg-tel">Numéro invalide.</span>
       </div>
-      <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" id="btn-signup" onclick="submitSignup()">Continuer vers le paiement →</button>
-      <p style="font-size:11px;color:var(--muted);text-align:center;line-height:1.5;margin-top:8px;">1 mois gratuit · Sans engagement · Résiliation en 1 clic</p>
+      <div class="form-group">
+        <label class="form-label">Mot de passe <span style="color:var(--danger)">*</span></label>
+        <input class="form-input" id="reg-password" type="password" placeholder="8 caractères minimum" autocomplete="new-password" />
+        <span class="field-error" id="err-reg-password">8 caractères minimum.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirmer le mot de passe <span style="color:var(--danger)">*</span></label>
+        <input class="form-input" id="reg-password2" type="password" placeholder="Répétez votre mot de passe" autocomplete="new-password" />
+        <span class="field-error" id="err-reg-password2">Les mots de passe ne correspondent pas.</span>
+      </div>
+      <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" id="btn-register" onclick="submitRegister()">Créer mon compte →</button>
+      <p style="font-size:11px;color:var(--muted);text-align:center;line-height:1.5;margin-top:8px;">30 jours d'essai gratuit · Sans engagement · Résiliation en 1 clic</p>
     </div>
-    <div class="form-success" id="signup-success">
-      <div class="form-success-icon">⟳</div>
-      <h3>Redirection en cours…</h3>
-      <p>Vous allez être redirigé vers le paiement sécurisé.</p>
+    <div class="form-success" id="register-success" style="display:none;">
+      <div class="form-success-icon">✓</div>
+      <h3>Compte créé !</h3>
+      <p>Bienvenue sur Relion. Vous allez recevoir un email de confirmation.</p>
     </div>
-    <div class="modal-footer">Déjà un compte ? <a onclick="switchModal('modal-signup','modal-login')">Se connecter</a></div>
+    <div class="modal-footer">Déjà un compte ? <a href="javascript:void(0)" onclick="switchModal('modal-signup','modal-login')">Se connecter</a></div>
   </div>
 </div>
 
@@ -2294,6 +2533,7 @@
   }
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') ['modal-login', 'modal-signup'].forEach(closeModal);
+
   });
 
   /* ─── VALIDATION ─────────────────────────────────── */
@@ -2433,8 +2673,14 @@
       localStorage.setItem('relion_token', res.data.token);
       loadDashboard(res.data.user);
       closeModal('modal-login');
-      showPage('dashboard');
       if (btn) { btn.innerHTML = 'Se connecter'; btn.disabled = false; }
+      // Si l'utilisateur venait du drawer RDV → rouvrir le drawer
+      if (rdv.pendingAfterLogin) {
+        rdv.pendingAfterLogin = false;
+        setTimeout(openRdvDrawer, 200);
+      } else {
+        showPage('dashboard');
+      }
     })
     .catch(function() {
       if (btn) { btn.innerHTML = 'Se connecter'; btn.disabled = false; }
@@ -2442,58 +2688,84 @@
     });
   }
 
-  /* ─── MODAL SIGNUP ───────────────────────────────── */
-  function submitSignup() {
-    var prenom = document.getElementById('signup-prenom').value.trim();
-    var email  = document.getElementById('signup-email').value.trim();
-    var tel    = document.getElementById('signup-tel').value.trim();
-    var plan   = (document.getElementById('signup-plan-name') || {}).textContent || 'Essentiel';
+  /* ─── MODAL INSCRIPTION ─────────────────────────── */
+  function submitRegister() {
+    var prenom   = document.getElementById('reg-prenom').value.trim();
+    var nom      = document.getElementById('reg-nom').value.trim();
+    var email    = document.getElementById('reg-email').value.trim();
+    var tel      = document.getElementById('reg-tel').value.trim();
+    var password = document.getElementById('reg-password').value;
+    var password2= document.getElementById('reg-password2').value;
     var ok = true;
-    setError('signup-prenom', 'err-signup-prenom', !prenom);              if (!prenom) ok = false;
-    setError('signup-email',  'err-signup-email',  !isValidEmail(email)); if (!isValidEmail(email)) ok = false;
-    setError('signup-tel',    'err-signup-tel',    !isValidPhone(tel));   if (!isValidPhone(tel))   ok = false;
+
+    setError('reg-prenom',    'err-reg-prenom',    !prenom);                              if (!prenom) ok = false;
+    setError('reg-email',     'err-reg-email',     !isValidEmail(email));                 if (!isValidEmail(email)) ok = false;
+    setError('reg-tel',       'err-reg-tel',       !isValidPhone(tel));                   if (!isValidPhone(tel)) ok = false;
+    setError('reg-password',  'err-reg-password',  password.length < 8);                  if (password.length < 8) ok = false;
+    setError('reg-password2', 'err-reg-password2', password !== password2);               if (password !== password2) ok = false;
     if (!ok) return;
-    var btn = document.getElementById('btn-signup');
-    btn.innerHTML = '<span class="spinner"></span>Redirection vers le paiement…';
+
+    var btn = document.getElementById('btn-register');
+    btn.innerHTML = '<span class="spinner"></span>Création en cours…';
     btn.disabled  = true;
-    try { localStorage.setItem('relion_user', JSON.stringify({ prenom: prenom, email: email, telephone: tel })); } catch(e) {}
-    fetch('https://relion-five.vercel.app/api/subscribe', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prenom: prenom, email: email, telephone: tel, plan: plan })
+
+    fetch(API + '/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prenom: prenom, nom: nom, email: email, telephone: tel, password: password })
     })
-    .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
-    .then(function(data) {
-      if (data.url) {
-        document.getElementById('signup-form').style.display    = 'none';
-        document.getElementById('signup-success').style.display = 'block';
+    .then(function(r) { return r.json().then(function(d) { return { status: r.status, data: d }; }); })
+    .then(function(res) {
+      if (res.status === 200 && res.data.token) {
+        // Succès → stocker le token et connecter directement
+        localStorage.setItem('relion_token', res.data.token);
+        document.getElementById('register-form').style.display = 'none';
+        document.getElementById('register-success').style.display = 'block';
         var footer = document.querySelector('#modal-signup .modal-footer');
         if (footer) footer.style.display = 'none';
-        setTimeout(function() { window.location.href = data.url; }, 600);
-      } else { throw new Error('no url'); }
+        setTimeout(function() {
+          closeModal('modal-signup');
+          loadDashboard(res.data.user);
+          showToast('Bienvenue sur Relion ! 🎉 Votre essai de 30 jours commence maintenant.');
+          // Réinitialiser le form pour une prochaine ouverture
+          setTimeout(function() {
+            document.getElementById('register-form').style.display = '';
+            document.getElementById('register-success').style.display = 'none';
+            if (footer) footer.style.display = '';
+            btn.innerHTML = 'Créer mon compte →';
+            btn.disabled = false;
+            ['reg-prenom','reg-nom','reg-email','reg-tel','reg-password','reg-password2'].forEach(function(id) {
+              var el = document.getElementById(id);
+              if (el) el.value = '';
+            });
+          }, 500);
+        }, 1200);
+      } else if (res.status === 409) {
+        btn.innerHTML = 'Créer mon compte →';
+        btn.disabled  = false;
+        showToast('Un compte existe déjà avec cet email. Connectez-vous !', true);
+        setTimeout(function() { switchModal('modal-signup', 'modal-login'); }, 1500);
+      } else {
+        throw new Error(res.data.error || 'Erreur');
+      }
     })
-    .catch(function() {
-      btn.innerHTML = 'Continuer vers le paiement →';
+    .catch(function(err) {
+      btn.innerHTML = 'Créer mon compte →';
       btn.disabled  = false;
-      showToast('Erreur lors de la redirection — réessayez.', true);
+      showToast((err && err.message) || 'Erreur lors de la création — réessayez.', true);
     });
   }
 
   /* ─── BOUTON DÉMARRER ────────────────────────────── */
   function handleStartClick(plan) {
-    var stored = null;
-    try { stored = JSON.parse(localStorage.getItem('relion_user') || 'null'); } catch(e) {}
-    if (stored && stored.email) {
-      showToast('Redirection vers le paiement…', false);
-      fetch('https://relion-five.vercel.app/api/subscribe', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prenom: stored.prenom, email: stored.email, telephone: stored.telephone, plan: plan })
-      })
-      .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
-      .then(function(data) { if (data.url) window.location.href = data.url; })
-      .catch(function() { openModal('modal-signup', plan); });
-    } else {
-      openModal('modal-signup', plan);
+    // Si déjà connecté, ouvrir dashboard directement
+    var token = localStorage.getItem('relion_token');
+    if (token) {
+      showToast('Vous êtes déjà connecté ! Gérez votre abonnement depuis votre espace.');
+      return;
     }
+    // Sinon → inscription
+    openModal('modal-signup');
   }
 
   /* ─── SIMULATEUR (hero) ──────────────────────────── */
@@ -2552,6 +2824,232 @@
 
   calcSim();
 
+  /* ─── SYSTÈME DE RENDEZ-VOUS ─────────────────────── */
+  var rdv = {
+    year: new Date().getFullYear(),
+    month: new Date().getMonth(),
+    selectedDate: null,
+    selectedTime: null,
+    bookedSlots: [],
+    phone: null,
+    name: null,
+    existingDate: null,
+    existingTime: null
+  };
+
+  var ALL_SLOTS = [
+    '09:00','09:30','10:00','10:30','11:00','11:30',
+    '14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30'
+  ];
+
+  var MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+
+  function rdvShowView(view) {
+    ['login','main','existing','success'].forEach(function(v) {
+      document.getElementById('rdv-view-' + v).style.display = (v === view) ? 'block' : 'none';
+    });
+  }
+
+  function openRdvDrawer() {
+    rdv.year = new Date().getFullYear();
+    rdv.month = new Date().getMonth();
+    rdv.selectedDate = null; rdv.selectedTime = null;
+    rdv.existingDate = null; rdv.existingTime = null; rdv.existingPhone = null;
+    document.getElementById('rdv-placeholder').style.display = 'block';
+    document.getElementById('rdv-slots-content').style.display = 'none';
+    document.getElementById('rdv-booking-form').style.display = 'none';
+    document.getElementById('rdv-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    var token = localStorage.getItem('relion_token');
+    if (token) {
+      // Connecté → pré-remplir et aller direct au calendrier
+      fetch(API + '/api/auth/me', { headers: { 'Authorization': 'Bearer ' + token } })
+        .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+        .then(function(data) {
+          var u = data.user;
+          var nameEl  = document.getElementById('rdv-name');
+          var phoneEl = document.getElementById('rdv-phone');
+          if (nameEl)  nameEl.value  = u.prenom || '';
+          if (phoneEl) phoneEl.value = u.telephone || '';
+          rdvShowView('main');
+          renderRdvCalendar();
+        })
+        .catch(function() { rdvShowView('login'); });
+    } else {
+      rdvShowView('login');
+    }
+  }
+
+  function rdvDoLogin() {
+    // Fermer le drawer, ouvrir le modal login, rouvrir le drawer après
+    rdv.pendingAfterLogin = true;
+    closeRdvDrawer();
+    openModal('modal-login');
+  }
+
+  function rdvContinueGuest() {
+    rdvShowView('main');
+    renderRdvCalendar();
+  }
+
+  function closeRdvDrawer() {
+    document.getElementById('rdv-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function rdvPrevMonth() {
+    if (rdv.month === 0) { rdv.month = 11; rdv.year--; } else rdv.month--;
+    renderRdvCalendar();
+  }
+  function rdvNextMonth() {
+    if (rdv.month === 11) { rdv.month = 0; rdv.year++; } else rdv.month++;
+    renderRdvCalendar();
+  }
+
+  function renderRdvCalendar() {
+    document.getElementById('rdv-month-label').textContent = MONTHS_FR[rdv.month] + ' ' + rdv.year;
+    var grid = document.getElementById('rdv-cal-grid');
+    grid.innerHTML = '';
+    var today = new Date(); today.setHours(0,0,0,0);
+    var startDow = (new Date(rdv.year, rdv.month, 1).getDay() + 6) % 7;
+    var daysInMonth = new Date(rdv.year, rdv.month + 1, 0).getDate();
+    for (var i = 0; i < startDow; i++) {
+      var b = document.createElement('div'); b.className = 'rdv-day empty'; grid.appendChild(b);
+    }
+    for (var d = 1; d <= daysInMonth; d++) {
+      var date = new Date(rdv.year, rdv.month, d);
+      var dow = date.getDay();
+      var el = document.createElement('div'); el.className = 'rdv-day'; el.textContent = d;
+      var ds = rdv.year + '-' + String(rdv.month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+      if (date < today) { el.classList.add('past'); }
+      else if (dow === 0 || dow === 6) { el.classList.add('weekend'); }
+      else {
+        el.classList.add('available');
+        if (date.toDateString() === today.toDateString()) el.classList.add('today');
+        if (rdv.selectedDate === ds) el.classList.add('selected');
+        (function(s) { el.onclick = function() { selectRdvDate(s); }; })(ds);
+      }
+      grid.appendChild(el);
+    }
+  }
+
+  function selectRdvDate(dateStr) {
+    rdv.selectedDate = dateStr; rdv.selectedTime = null;
+    renderRdvCalendar();
+    document.getElementById('rdv-placeholder').style.display = 'none';
+    document.getElementById('rdv-slots-content').style.display = 'block';
+    document.getElementById('rdv-booking-form').style.display = 'none';
+    var parts = dateStr.split('-');
+    var label = new Date(+parts[0], +parts[1]-1, +parts[2]).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' });
+    document.getElementById('rdv-slots-title').textContent = label.charAt(0).toUpperCase() + label.slice(1);
+    var g = document.getElementById('rdv-slots-grid');
+    g.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;grid-column:1/-1;">Chargement…</div>';
+    fetch(API + '/api/appointments/slots?date=' + dateStr)
+      .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function(data) { rdv.bookedSlots = data.booked || []; renderRdvSlots(); })
+      .catch(function() { rdv.bookedSlots = []; renderRdvSlots(); });
+  }
+
+  function renderRdvSlots() {
+    var grid = document.getElementById('rdv-slots-grid');
+    grid.innerHTML = '';
+    ALL_SLOTS.forEach(function(time) {
+      var el = document.createElement('button');
+      el.type = 'button'; el.className = 'rdv-slot'; el.textContent = time;
+      if (rdv.bookedSlots.indexOf(time) !== -1) { el.classList.add('booked'); el.disabled = true; }
+      else {
+        if (rdv.selectedTime === time) el.classList.add('selected');
+        el.onclick = function() {
+          rdv.selectedTime = time; renderRdvSlots();
+          document.getElementById('rdv-booking-form').style.display = 'block';
+          document.getElementById('rdv-booking-form').scrollIntoView({ behavior:'smooth', block:'nearest' });
+        };
+      }
+      grid.appendChild(el);
+    });
+  }
+
+  function submitRdv() {
+    var name  = (document.getElementById('rdv-name')  || {}).value || '';
+    var phone = (document.getElementById('rdv-phone') || {}).value || '';
+    if (!name.trim())          { showToast('Prénom requis.', true); return; }
+    if (!isValidPhone(phone))  { showToast('Numéro invalide.', true); return; }
+    if (!rdv.selectedDate || !rdv.selectedTime) { showToast('Sélectionnez un créneau.', true); return; }
+
+    var btn = document.getElementById('btn-rdv-confirm');
+    btn.innerHTML = '<span class="spinner"></span>Confirmation…'; btn.disabled = true;
+
+    fetch(API + '/api/appointments/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: rdv.selectedDate, time: rdv.selectedTime, name: name.trim(), phone: phone.trim() })
+    })
+    .then(function(r) { return r.json().then(function(d){ return {ok:r.ok, status:r.status, data:d}; }); })
+    .then(function(res) {
+      btn.innerHTML = 'Confirmer →'; btn.disabled = false;
+      // Doublon détecté : afficher le RDV existant
+      if (res.status === 409 && res.data.existing) {
+        rdv.existingDate  = res.data.existing.date;
+        rdv.existingTime  = res.data.existing.time_slot;
+        rdv.existingPhone = phone.trim();
+        var d = new Date(res.data.existing.date + 'T12:00:00');
+        var label = d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+        document.getElementById('rdv-existing-info').textContent =
+          '📅 ' + label.charAt(0).toUpperCase() + label.slice(1) + '\n⏰ ' + res.data.existing.time_slot;
+        rdvShowView('existing');
+        return;
+      }
+      if (!res.ok) {
+        showToast(res.data.error || 'Créneau déjà pris.', true);
+        rdv.bookedSlots.push(rdv.selectedTime); rdv.selectedTime = null;
+        renderRdvSlots(); document.getElementById('rdv-booking-form').style.display = 'none';
+        return;
+      }
+      // Succès
+      rdv.existingDate = rdv.selectedDate; rdv.existingTime = rdv.selectedTime; rdv.existingPhone = phone.trim();
+      var parts = rdv.selectedDate.split('-');
+      var dd = new Date(+parts[0], +parts[1]-1, +parts[2]);
+      var dateLabel = dd.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+      document.getElementById('rdv-success-msg').textContent =
+        'Le ' + dateLabel + ' à ' + rdv.selectedTime + '\nNous vous appellerons au ' + phone.trim() + '.';
+      rdvShowView('success');
+    })
+    .catch(function() {
+      btn.innerHTML = 'Confirmer →'; btn.disabled = false;
+      showToast('Erreur — réessayez.', true);
+    });
+  }
+
+  function annulerRdv() {
+    if (!confirm('Confirmer l\'annulation ?')) return;
+    fetch(API + '/api/appointments/cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: rdv.existingDate, time: rdv.existingTime, phone: rdv.existingPhone || '' })
+    })
+    .then(function() { showToast('Rendez-vous annulé.'); closeRdvDrawer(); })
+    .catch(function() { showToast('Erreur — réessayez.', true); });
+  }
+
+  function modifierRdv() {
+    // Libérer l'ancien créneau silencieusement
+    if (rdv.existingDate && rdv.existingTime) {
+      fetch(API + '/api/appointments/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: rdv.existingDate, time: rdv.existingTime, phone: rdv.existingPhone || '' })
+      }).catch(function() {});
+    }
+    rdv.existingDate = null; rdv.existingTime = null;
+    rdv.selectedDate = null; rdv.selectedTime = null;
+    document.getElementById('rdv-placeholder').style.display = 'block';
+    document.getElementById('rdv-slots-content').style.display = 'none';
+    document.getElementById('rdv-booking-form').style.display = 'none';
+    rdvShowView('main');
+    renderRdvCalendar();
+  }
+
   // Vérifier si déjà connecté au chargement
   initAuth();
 
@@ -2566,5 +3064,3 @@
 </script>
 </body>
 </html>
-
-    
