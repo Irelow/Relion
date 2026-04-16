@@ -3,23 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Relion — Ne perdez plus un seul appel</title>
+  <title>Relion — Ne perdez plus un seul client</title>
+  <script>if('scrollRestoration'in history)history.scrollRestoration='manual';if(sessionStorage.getItem('sy'))document.documentElement.style.visibility='hidden';</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }h
-    html { scroll-behavior: smooth; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { }
 
     :root {
       --blue: #1A56E8;
       --blue-light: #4D7FFF;
-      --blue-dim: rgba(26,86,232,0.1);
-      --surface: #1C2030;
-      --surface2: #242840;
-      --border: rgba(255,255,255,0.10);
-      --text: #F0F2FA;
-      --muted: #9DA4BE;
+      --blue-dim: rgba(26,86,232,0.15);
+      --surface: rgba(255,255,255,0.09);
+      --surface2: rgba(255,255,255,0.13);
+      --border: rgba(255,255,255,0.18);
+      --border2: rgba(255,255,255,0.11);
+      --text: #F5F7FF;
+      --muted: #A0A8C8;
+      --bg: #181b2e;
       --radius: 12px;
       --radius-lg: 20px;
       --success: #3DBF80;
@@ -27,533 +30,1038 @@
     }
 
     body {
-      font-family: 'DM Sans', sans-serif;
-      background: #141726;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
       color: var(--text);
       line-height: 1.6;
       overflow-x: hidden;
     }
 
+    /* ═══════════════════════════════ NAV ═══════════════════════════════ */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
-      z-index: 100;
+      z-index: 200;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 3.5rem;
-      height: 90px;
-      background: rgba(12,15,28,0.82);
-      backdrop-filter: blur(24px) saturate(180%);
-      -webkit-backdrop-filter: blur(24px) saturate(180%);
-      border-bottom: 1px solid rgba(255,255,255,0.055);
-      box-shadow: 0 1px 32px rgba(0,0,0,0.35);
+      padding: 1.08rem 3rem;
+      transition: background .3s, border-color .3s;
+    }
+    nav {
+      background: rgba(8,8,16,0.25);
+    }
+    nav.scrolled {
+      background: rgba(8,8,16,0.50);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border2);
     }
 
-    .nav-logo { display: flex; align-items: center; margin-left: 2rem; }
-    .nav-links {
-      display: flex;
-      gap: 2px;
-      align-items: center;
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-    .nav-links .btn-nav-link {
-      color: rgba(255,255,255,0.6);
-      font-size: 1.05rem;
-      font-weight: 500;
-      padding: 0.55rem 1rem;
-      border-radius: 8px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      transition: color 0.2s;
-      font-family: inherit;
-    }
-    .nav-links .btn-nav-link:hover {
-      color: #7eb3ff;
-      background: transparent;
-    }
-    .nav-actions {
+    .nav-left {
       display: flex;
       align-items: center;
-      gap: 6px;
-    }
-    .btn-nav-login {
-      color: rgba(255,255,255,0.6);
-      font-size: 1.0rem;
-      font-weight: 500;
-      padding: 0.55rem 1rem;
-      border-radius: 8px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      transition: color 0.18s, background 0.18s;
-      font-family: inherit;
-    }
-    .btn-nav-login:hover {
-      color: rgba(255,255,255,0.95);
-      background: rgba(255,255,255,0.07);
-    }
-    .btn-nav-cta {
-      background: linear-gradient(135deg, #1A56E8 0%, #5b6ef5 100%);
-      color: #fff;
-      font-weight: 600;
-      font-size: 1.0rem;
-      padding: 0.6rem 1.4rem;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-      letter-spacing: 0.01em;
-      box-shadow: 0 0 18px rgba(26,86,232,0.38);
-      transition: transform 0.15s, box-shadow 0.18s, opacity 0.15s;
-    }
-    .btn-nav-cta:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 22px rgba(26,86,232,0.55);
-      opacity: 0.93;
+      gap: 3.5rem;
+      margin-left: 175px;
     }
     .logo {
       font-family: 'Sora', sans-serif;
-      font-size: 32px;
-      font-weight: 800;
-      color: #fff;
+      font-size: 39px;
+      font-weight: 700;
+      color: var(--text);
       text-decoration: none;
-      letter-spacing: -0.4px;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-    }
-    .logo-icon {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, #1A56E8, #5b6ef5);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: 900;
-      color: #fff;
-      box-shadow: 0 0 14px rgba(26,86,232,0.5);
+      letter-spacing: -0.03em;
       flex-shrink: 0;
     }
-    .logo span { color: #8090ff; }
+    .logo span { color: var(--blue); margin-left: 2.5px; }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 21px;
+      font-weight: 500;
+      color: #ffffff;
+      text-decoration: none;
+      transition: color .2s;
+      white-space: nowrap;
+    }
+    .nav-links a:hover { color: #1A56E8; }
+
+    .nav-actions { display: flex; gap: 10px; align-items: center; }
 
     .btn-ghost {
-      padding: 7px 14px;
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.09);
+      padding: 8px 18px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.15);
       border-radius: 8px;
-      color: #C2C8E0;
-      font-family: 'DM Sans', sans-serif;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
       font-size: 14px;
       cursor: pointer;
       text-decoration: none;
-      transition: border-color .2s, color .2s, background .2s;
+      transition: all .2s;
     }
-    .btn-ghost:hover {
-      border-color: rgba(255,255,255,0.2);
-      color: var(--text);
-      background: rgba(255,255,255,0.09);
-    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
 
-    .btn-primary {
-      padding: 8px 20px;
+    .btn-nav-cta {
+      padding: 9px 22px;
       background: var(--blue);
       border: none;
       border-radius: 8px;
       color: #fff;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
       text-decoration: none;
-      transition: background .2s, transform .1s;
+      transition: all .2s;
     }
-    .btn-primary:hover { background: var(--blue-light); }
-    .btn-primary:active { transform: scale(.98); }
+    .btn-nav-cta:hover { background: var(--blue-light); transform: translateY(-1px); }
 
-    .btn-hero {
-      padding: 16px 38px;
-      background: var(--blue);
-      border: none;
-      border-radius: 10px;
-      color: #fff;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 18px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background .2s, transform .1s;
-      text-decoration: none;
-      display: inline-flex;
+    /* ═══════════════════════════════ HERO ══════════════════════════════ */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 680px;
+      display: flex;
       align-items: center;
       justify-content: center;
-    }
-    .btn-hero:hover { background: var(--blue-light); }
-    .btn-hero:active { transform: scale(.98); }
-
-    .btn-hero-outline {
-      padding: 13px 32px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 16px;
-      cursor: pointer;
-      transition: border-color .2s, background .2s;
-    }
-    .btn-hero-outline:hover {
-      border-color: rgba(255,255,255,0.25);
-      background: rgba(255,255,255,0.03);
+      text-align: center;
+      overflow: hidden;
     }
 
-    .hero-note {
-      font-size: 13px;
-      color: var(--muted);
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      z-index: 0;
+      filter: brightness(0.6) saturate(0.7);
     }
-    .hero-note span { color: #4ADE80; }
 
-    .hero-banner {
-      position: relative;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(8,8,16,0.2) 0%,
+        rgba(8,8,16,0.45) 60%,
+        rgba(8,8,16,1) 100%
+      );
+      z-index: 1;
     }
 
     .hero-content {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 8rem 2rem 2.5rem;
-      max-width: 840px;
-      width: 100%;
       position: relative;
       z-index: 2;
+      max-width: 900px;
+      padding: 0 2rem;
     }
 
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 14px;
-      background: var(--blue-dim);
-      border: 1px solid rgba(46,107,255,0.3);
-      border-radius: 20px;
-      font-size: 13px;
-      color: var(--blue-light);
-      margin-bottom: 1.25rem;
-      width: fit-content;
-    }
-    .hero-badge::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      background: var(--blue);
-      border-radius: 50%;
+    .hero-eyebrow {
       display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--blue-light);
+      margin-bottom: 1.5rem;
+      padding: 6px 16px;
+      border: 1px solid rgba(77,127,255,0.3);
+      border-radius: 999px;
+      background: rgba(26,86,232,0.08);
     }
 
-    .hero-content h1 {
-      font-family: 'Sora', sans-serif;
-      font-size: clamp(30px, 4.8vw, 56px);
-      font-weight: 700;
-      line-height: 1.08;
-      letter-spacing: -0.02em;
-      margin-bottom: 1.25rem;
-      max-width: 820px;
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(64px, 10vw, 130px);
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+      color: #fff;
+      margin-bottom: 0.6rem;
+      text-shadow: 0 4px 40px rgba(0,0,0,0.6);
     }
-    .hero-content h1 em {
+    .hero-title em {
       font-style: normal;
-      color: var(--blue-light);
+      color: transparent;
+      -webkit-text-stroke: 2px rgba(255,255,255,0.9);
     }
 
     .hero-sub {
-      font-size: 18px;
-      color: var(--muted);
-      max-width: 620px;
-      margin: 0 auto 2rem;
-      line-height: 1.7;
+      font-size: clamp(16px, 2vw, 20px);
+      color: rgba(255,255,255,0.7);
+      max-width: 580px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.65;
+      font-weight: 300;
     }
 
-    .hero-points {
+    .btn-hero-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 26px 62px;
+      background: var(--blue);
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 31px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .25s;
+      box-shadow: 0 0 40px rgba(26,86,232,0.4);
+    }
+    .btn-hero-main:hover {
+      background: var(--blue-light);
+      transform: translateY(-2px);
+      box-shadow: 0 0 60px rgba(26,86,232,0.55);
+    }
+
+    .hero-note {
+      margin-top: 0.5rem;
+      font-size: 15.5px;
+      color: rgba(255,255,255,0.4);
+    }
+    .hero-note span { color: rgba(74,222,128,0.8); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin: 0 0 2rem;
-      max-width: 450px;
-      text-align: left;
-    }
-
-    .hero-point {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 15px;
-      color: var(--muted);
-    }
-
-    .hero-point-icon {
-      color: var(--blue);
-      font-size: 10px;
-      margin-top: 5px;
-      flex-shrink: 0;
-    }
-
-    .hero-cta {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 2rem;
-    }
-
-    .sms-preview {
-      margin-top: 1.5rem;
-      max-width: 430px;
-      width: 100%;
-    }
-    .sms-shell {
-      background: #0f1220;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 14px 16px;
-      text-align: left;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-    }
-    .sms-label {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-    .sms-bubble {
-      background: var(--blue);
-      color: white;
-      padding: 14px 16px;
-      border-radius: 14px;
-      font-size: 14px;
-      line-height: 1.55;
-    }
-
-    .hero-test {
-      margin-top: 1.75rem;
-      width: 100%;
-      max-width: 430px;
-      padding: 18px 20px;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      background: rgba(255,255,255,0.02);
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
-    }
-    .hero-test-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      margin-bottom: 10px;
-      border-radius: 999px;
-      background: var(--blue-dim);
-      border: 1px solid rgba(46,107,255,0.3);
-      color: var(--blue-light);
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.3);
       font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .08em;
+      letter-spacing: .1em;
       text-transform: uppercase;
+      animation: bounce 2.5s infinite;
     }
-    .hero-test p {
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: .5rem;
-      line-height: 1.45;
-    }
-    .hero-test a {
-      display: block;
-      font-family: 'Sora', sans-serif;
-      font-size: 30px;
-      font-weight: 700;
-      color: var(--text);
-      text-decoration: none;
-      letter-spacing: .05em;
-      margin-bottom: .35rem;
-    }
-    .hero-test-help {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.45;
+    .hero-scroll svg { opacity: 0.4; }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
     }
 
-    section {
-      padding: 5rem 2rem;
-      max-width: 1000px;
+    /* ═══════════════════════════════ STAT HERO ════════════════════════ */
+    .stat-hero {
+      padding: 6rem 3rem 5.5rem;
+      text-align: center;
+      background: rgba(255,255,255,0.02);
+      border-top: 1px solid var(--border2);
+      border-bottom: 1px solid var(--border2);
+    }
+    .stat-hero-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(110px, 16vw, 200px);
+      line-height: 0.88;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+    .stat-hero-num span { color: var(--blue-light); }
+    .stat-hero-label {
+      font-size: 18px;
+      color: var(--muted);
+      margin-top: 1.75rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.65;
+    }
+    .stat-hero-label strong { color: var(--text); }
+
+    /* ═══════════════════════════════ SECTIONS ══════════════════════════ */
+    .section {
+      padding: 7rem 3rem;
+      max-width: 1180px;
       margin: 0 auto;
     }
 
     .section-label {
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: .12em;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .2em;
       text-transform: uppercase;
-      color: var(--blue);
-      margin-bottom: .75rem;
+      color: var(--blue-light);
+      margin-bottom: 1rem;
     }
 
     .section-title {
       font-family: 'Sora', sans-serif;
-      font-size: clamp(24px, 3.5vw, 38px);
+      font-size: clamp(28px, 3.5vw, 46px);
       font-weight: 700;
-      line-height: 1.15;
-      letter-spacing: -0.015em;
-      margin-bottom: 1rem;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
     }
 
     .section-sub {
-      font-size: 16px;
+      font-size: 17px;
       color: var(--muted);
-      max-width: 560px;
+      max-width: 580px;
       line-height: 1.7;
     }
 
-    .sim-btn {
-      padding: 8px 16px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--muted);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all .15s;
+    /* ═══════════════════════════════ SCENARIO ══════════════════════════ */
+    .scenario-section {
+      padding: 7rem 3rem;
+      background: linear-gradient(155deg, rgba(26,86,232,0.06) 0%, transparent 55%);
     }
-    .sim-btn:hover {
-      border-color: var(--blue);
-      color: var(--text);
-    }
-    .sim-btn.active {
-      background: var(--blue-dim);
-      border-color: var(--blue);
-      color: var(--blue-light);
-    }
-
-    .feat-grid {
+    .scenario-inner {
+      max-width: 1180px;
+      margin: 0 auto;
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-top: 3rem;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
     }
+    .scenario-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--blue-light);
+      margin-bottom: 1.25rem;
+    }
+    .scenario-title {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(26px, 3.2vw, 42px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 2rem;
+    }
+    .scenario-story { display: flex; flex-direction: column; gap: 1rem; }
+    .story-beat {
+      display: flex;
+      gap: .875rem;
+      align-items: flex-start;
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      font-size: 14.5px;
+      line-height: 1.65;
+    }
+    .story-beat.bad {
+      background: rgba(255,50,50,0.05);
+      border: 1px solid rgba(255,50,50,0.1);
+      color: var(--muted);
+    }
+    .story-beat.good {
+      background: rgba(26,86,232,0.07);
+      border: 1px solid rgba(26,86,232,0.18);
+      color: var(--muted);
+    }
+    .beat-icon { flex-shrink: 0; font-size: 17px; margin-top: 1px; }
 
-    .feat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      transition: border-color .2s, transform .15s;
+    /* Phone mockup */
+    .phone-wrap { display: flex; justify-content: center; }
+    /* ═══════════════════ iPHONE 15 PRO MOCKUP ═══════════════════ */
+    .iph-wrap {
+      position: relative;
+      width: 264px;
+      flex-shrink: 0;
     }
-    .feat-card:hover {
-      border-color: rgba(46,107,255,0.35);
-      transform: translateY(-2px);
+    /* Boutons latéraux gauche */
+    .iph-btn-action {
+      position: absolute; left: -3px; top: 88px;
+      width: 3px; height: 28px;
+      background: linear-gradient(180deg, #3a3836, #2a2825);
+      border-radius: 2px 0 0 2px;
     }
-
-    .feat-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: var(--blue-dim);
+    .iph-btn-vol-up {
+      position: absolute; left: -3px; top: 128px;
+      width: 3px; height: 46px;
+      background: linear-gradient(180deg, #3a3836, #2a2825);
+      border-radius: 2px 0 0 2px;
+    }
+    .iph-btn-vol-dn {
+      position: absolute; left: -3px; top: 182px;
+      width: 3px; height: 46px;
+      background: linear-gradient(180deg, #3a3836, #2a2825);
+      border-radius: 2px 0 0 2px;
+    }
+    /* Bouton power droite */
+    .iph-btn-power {
+      position: absolute; right: -3px; top: 140px;
+      width: 3px; height: 70px;
+      background: linear-gradient(180deg, #3a3836, #2a2825);
+      border-radius: 0 2px 2px 0;
+    }
+    /* Cadre titane */
+    .iph-frame {
+      width: 264px;
+      background: linear-gradient(160deg, #4e4b47 0%, #2e2c2a 35%, #3c3a37 65%, #282624 100%);
+      border-radius: 50px;
+      padding: 4px;
+      box-shadow:
+        0 0 0 0.5px rgba(255,255,255,0.15),
+        inset 0 0 0 0.5px rgba(0,0,0,0.4),
+        0 60px 100px rgba(0,0,0,0.7),
+        0 0 40px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    /* Écran */
+    .iph-screen {
+      background: #0a0a0e;
+      border-radius: 46px;
+      overflow: hidden;
+      position: relative;
+      height: 531px;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Dynamic Island */
+    .iph-di {
+      height: 46px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 1rem;
+      background: #0a0a0e;
     }
-    .feat-icon svg {
-      width: 20px;
-      height: 20px;
-      stroke: var(--blue-light);
-      fill: none;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+    .iph-di-pill {
+      width: 100px; height: 28px;
+      background: #000;
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: flex-end;
+      padding-right: 8px;
+    }
+    .iph-di-pill::after {
+      content: '';
+      width: 9px; height: 9px; border-radius: 50%;
+      background: #111118;
+      border: 1.5px solid rgba(255,255,255,0.06);
+    }
+    /* Statusbar */
+    .iph-statusbar {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 0 22px 6px;
+      font-size: 11px; font-weight: 600;
+      color: rgba(255,255,255,0.9);
+      font-family: 'Inter', sans-serif;
+      letter-spacing: -0.03em;
+    }
+    .iph-statusbar-icons { display: flex; align-items: center; gap: 5px; }
+    /* Header conversation */
+    .iph-header {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding: 10px 16px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .iph-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #60a5fa);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: #fff;
+      font-family: 'Inter', sans-serif; flex-shrink: 0;
+    }
+    .iph-contact-name { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.92); letter-spacing: -0.01em; }
+    .iph-contact-sub { font-size: 9.5px; color: rgba(255,255,255,0.3); margin-top: 1px; }
+    /* Corps SMS */
+    .iph-body {
+      padding: 12px; background: #0a0a0e;
+      display: flex; flex-direction: column; gap: 8px;
+      flex: 1;
+    }
+    .iph-sms-missed { text-align: center; }
+    .iph-sms-missed span {
+      display: inline-block;
+      background: rgba(255,59,48,0.08);
+      border: 1px solid rgba(255,59,48,0.18);
+      color: #ff6b6b; border-radius: 20px;
+      padding: 3px 10px; font-size: 9px;
+      font-family: 'Inter', sans-serif;
+    }
+    .iph-bubble {
+      max-width: 83%; padding: 8px 12px;
+      border-radius: 18px; font-size: 11px;
+      line-height: 1.5; color: #fff;
+      font-family: 'Inter', sans-serif;
+    }
+    .iph-bubble.out {
+      background: #2563eb; align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .iph-meta {
+      font-size: 8.5px; color: rgba(255,255,255,0.25);
+      margin-top: 3px; text-align: right;
+      font-family: 'Inter', sans-serif;
+    }
+    .iph-badge {
+      margin: 0 12px 14px;
+      padding: 7px 11px;
+      background: rgba(37,99,235,0.1);
+      border: 1px solid rgba(37,99,235,0.18);
+      border-radius: 12px; font-size: 9.5px; color: #60a5fa;
+      display: flex; align-items: center; gap: 7px;
+      font-family: 'Inter', sans-serif;
+    }
+    .iph-badge svg { flex-shrink: 0; width: 11px; height: 11px; stroke: #60a5fa; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    /* ════════════════════════════════════════════════════════════ */
+
+    .phone-mockup {
+      width: 252px;
+      background: #0e0e12;
+      border-radius: 52px;
+      border: 1px solid rgba(255,255,255,0.13);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.04),
+        0 0 0 7px rgba(255,255,255,0.025),
+        0 60px 100px rgba(0,0,0,0.65);
+      overflow: hidden;
+      position: relative;
+    }
+    /* Dynamic Island */
+    .phone-notch {
+      height: 38px;
+      background: #0e0e12;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .phone-notch-pill {
+      width: 88px; height: 24px;
+      background: #000;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 7px;
+      gap: 5px;
+    }
+    .phone-notch-pill::before {
+      content: '';
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #1a1a22;
+      border: 1.5px solid rgba(255,255,255,0.08);
+    }
+    .phone-statusbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2px 22px 4px;
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+      font-family: 'Inter', sans-serif;
+      letter-spacing: -0.02em;
+    }
+    .phone-statusbar-icons {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .phone-header {
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .phone-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #60a5fa);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      color: #fff;
+    }
+    .phone-contact-name { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.92); letter-spacing: -0.01em; }
+    .phone-contact-sub { font-size: 9.5px; color: rgba(255,255,255,0.32); margin-top: 1px; }
+    .phone-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #0e0e12;
+      min-height: 310px;
+    }
+    .sms-missed { text-align: center; padding: 4px 0 2px; }
+    .sms-missed span {
+      display: inline-block;
+      background: rgba(255,59,48,0.08);
+      border: 1px solid rgba(255,59,48,0.18);
+      color: #ff6b6b;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 9px;
+      font-family: 'Inter', sans-serif;
+    }
+    .bubble {
+      max-width: 83%;
+      padding: 8px 12px;
+      border-radius: 18px;
+      font-size: 11px;
+      line-height: 1.5;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+    }
+    .bubble.out {
+      background: #2563eb;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .bubble.in {
+      background: rgba(255,255,255,0.08);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .bubble-meta {
+      font-size: 8.5px;
+      color: rgba(255,255,255,0.25);
+      margin-top: 3px;
+      font-family: 'Inter', sans-serif;
+    }
+    .bubble-meta.r { text-align: right; }
+    .phone-badge {
+      margin: 0 12px 12px;
+      padding: 7px 11px;
+      background: rgba(37,99,235,0.12);
+      border: 1px solid rgba(37,99,235,0.2);
+      border-radius: 12px;
+      font-size: 9.5px;
+      color: #60a5fa;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'Inter', sans-serif;
+    }
+    .phone-badge svg { flex-shrink: 0; width: 11px; height: 11px; stroke: #60a5fa; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ═══════════════════════════════ HOW ═══════════════════════════════ */
+    /* ═══════════════════════════ HOW IT WORKS ══════════════════════════ */
+    .how-section {
+      padding: 9rem 3rem;
+      border-top: 1px solid var(--border2);
+    }
+    .how-inner { max-width: 1180px; margin: 0 auto; text-align: center; }
+    .how-flow {
+      margin-top: 5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+    }
+    .how-arrow {
+      width: 60px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.12);
+    }
+    .how-arrow svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.5; fill: none; }
+    .how-flow > div:nth-child(2) { margin-left: -60px; }
+    .how-card {
+      width: 300px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .how-card-visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+    .how-card-label {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+.how-card-text {
+      font-family: 'Sora', sans-serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: -0.01em;
     }
 
-    .feat-card h3 {
+    /* ── Mock: Phone call screen ── */
+    .mock-phone-call {
+      width: 155px;
+      background: linear-gradient(160deg, #1a2a3a 0%, #0d1520 100%);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 28px;
+      padding: 1.1rem 1rem 1.3rem;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .mock-phone-notch {
+      width: 50px; height: 5px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 10px; margin-bottom: 0.6rem;
+    }
+    .mock-call-avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.5);
+    }
+    .mock-call-avatar svg { width: 26px; height: 26px; }
+    .mock-call-label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9); margin-top: 0.3rem; }
+    .mock-call-sub { font-size: 10px; color: rgba(255,255,255,0.4); }
+    .mock-call-num { font-size: 11px; color: rgba(255,255,255,0.55); margin-bottom: 0.6rem; }
+    .mock-call-btns { display: flex; gap: 1.6rem; margin-top: 0.4rem; }
+    .mock-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mock-btn svg { width: 18px; height: 18px; }
+    .mock-btn.decline { background: #ef4444; transform: rotate(135deg); }
+    .mock-btn.accept { background: #22c55e; }
+
+    /* ── Mock: SMS screen ── */
+    .mock-sms-screen {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+    .mock-sms-top {
+      display: flex; align-items: center; gap: 0.65rem;
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.03);
+    }
+    .mock-sms-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.45); flex-shrink: 0;
+    }
+    .mock-sms-avatar svg { width: 16px; height: 16px; }
+    .mock-sms-contact { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.8); }
+    .mock-sms-body {
+      padding: 0.9rem 0.9rem 0.8rem;
+      display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end;
+    }
+    .mock-sms-missed-line {
+      align-self: center;
+      font-size: 9.5px; color: rgba(255,255,255,0.28);
+      background: rgba(255,255,255,0.05);
+      border-radius: 20px; padding: 2px 10px;
+    }
+    .mock-sms-bubble-out {
+      background: linear-gradient(135deg, #2563eb, #60a5fa);
+      border-radius: 16px 16px 3px 16px;
+      padding: 0.6rem 0.8rem;
+      font-size: 11px; color: #fff; line-height: 1.5;
+      max-width: 92%;
+    }
+    .mock-sms-check { font-size: 9px; color: rgba(255,255,255,0.3); }
+
+    /* ── Mock: Dashboard ── */
+    .mock-dash {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px; overflow: hidden;
+    }
+    .mock-dash-titlebar {
+      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0.65rem 0.9rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.03);
+    }
+    .mock-dash-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .mock-dash-dot.r { background: #ef4444; }
+    .mock-dash-dot.y { background: #f59e0b; }
+    .mock-dash-dot.g { background: #22c55e; }
+    .mock-dash-title { font-size: 10px; color: rgba(255,255,255,0.4); margin-left: 0.4rem; flex: 1; }
+    .mock-dash-badge-new {
+      font-size: 9px; font-weight: 700; color: #60a5fa;
+      background: rgba(96,165,250,0.12);
+      border: 1px solid rgba(96,165,250,0.2);
+      border-radius: 20px; padding: 2px 8px;
+    }
+    .mock-dash-cols {
+      display: grid; grid-template-columns: 1fr auto auto;
+      gap: 0.5rem; padding: 0.4rem 0.9rem;
+      font-size: 9px; color: rgba(255,255,255,0.25);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .mock-dash-row {
+      display: grid; grid-template-columns: auto 1fr auto;
+      align-items: center; gap: 0.6rem;
+      padding: 0.6rem 0.9rem;
+    }
+    .mock-dash-row.active { background: rgba(96,165,250,0.05); }
+    .mock-dash-row + .mock-dash-row { border-top: 1px solid rgba(255,255,255,0.04); }
+    .mock-dash-avatar {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: linear-gradient(135deg, #2563eb, #60a5fa);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .mock-dash-avatar.muted { background: rgba(255,255,255,0.08); }
+    .mock-dash-name { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.85); }
+    .mock-dash-name.muted { color: rgba(255,255,255,0.4); }
+    .mock-dash-info { font-size: 9.5px; color: rgba(255,255,255,0.35); }
+    .mock-status {
+      font-size: 9px; font-weight: 600; border-radius: 20px; padding: 3px 9px; flex-shrink: 0;
+    }
+    .mock-status.new { color: #34d399; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.2); }
+    .mock-status.rappel { color: #f59e0b; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); }
+
+    /* ═══════════════════════════════ FEATURES ══════════════════════════ */
+    .features-section { padding: 7rem 3rem; }
+    .features-inner { max-width: 1180px; margin: 0 auto; }
+    .feat-list {
+      margin-top: 3.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border2);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .feat-item {
+      padding: 2rem 2.25rem;
+      background: var(--bg);
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      transition: background .2s;
+    }
+    .feat-item:hover { background: rgba(255,255,255,0.025); }
+    .feat-item-icon {
+      width: 42px; height: 42px;
+      flex-shrink: 0;
+      border-radius: 11px;
+      background: var(--blue-dim);
+      border: 1px solid rgba(26,86,232,0.2);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .feat-item-icon svg {
+      width: 19px; height: 19px;
+      stroke: var(--blue-light);
+      fill: none; stroke-width: 1.8;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .feat-item-title {
       font-family: 'Sora', sans-serif;
-      font-size: 16px;
+      font-size: 15px; font-weight: 600;
+      margin-bottom: .35rem; color: var(--text);
+    }
+    .feat-item-desc { font-size: 13.5px; color: var(--muted); line-height: 1.65; }
+
+    /* ═══════════════════════════════ SIMULATEUR ════════════════════════ */
+    .sim-section {
+      padding: 7rem 3rem;
+      background: linear-gradient(180deg, transparent 0%, rgba(26,86,232,0.04) 50%, transparent 100%);
+    }
+    .sim-inner { max-width: 1180px; margin: 0 auto; }
+    .sim-wrap {
+      margin-top: 3.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .sim-controls { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    .sim-control-block {
+      padding: 1.5rem 1.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-lg);
+    }
+    .sim-control-label {
+      font-size: 13px;
       font-weight: 600;
-      margin-bottom: .5rem;
-    }
-    .feat-card p {
-      font-size: 14px;
       color: var(--muted);
-      line-height: 1.6;
+      margin-bottom: .85rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
     }
+    .sim-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .sim-btn {
+      padding: 8px 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .sim-btn:hover { border-color: var(--border); color: var(--text); }
+    .sim-btn.active {
+      background: var(--blue-dim);
+      border-color: rgba(26,86,232,0.4);
+      color: var(--blue-light);
+    }
+
+    .sim-input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 10px 16px;
+    }
+    #prev-value-wrap { border: none; background: transparent; padding: 0; }
+
+    .sim-currency { font-size: 18px; color: var(--muted); }
+    #prev-value {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Sora', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      width: 120px;
+    }
+    #prev-value::placeholder { color: rgba(255,255,255,0.2); }
+
+    .sim-result {
+      padding: 2.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .sim-result-label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .4rem; }
+    .sim-result-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 54px;
+      line-height: 1;
+      color: var(--success);
+    }
+    .sim-result-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .sim-cta {
+      display: inline-flex;
+      padding: 14px 28px;
+      background: var(--blue);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .2s;
+      text-align: center;
+      justify-content: center;
+    }
+    .sim-cta:hover { background: var(--blue-light); transform: translateY(-1px); }
+
+    /* ═══════════════════════════════ PRICING ═══════════════════════════ */
+    .pricing-section { padding: 11rem 3rem 7rem; background: rgba(255,255,255,0.025); }
+    .pricing-inner { max-width: 1180px; margin: 0 auto; }
+    .pricing-sim-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 2rem;
+      margin-top: 1.75rem;
+      align-items: start;
+    }
+    .sim-panel {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-lg);
+      padding: 2rem 2.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .sim-panel-head { margin-bottom: 0.25rem; }
+    .sim-panel-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .sim-panel-sub { font-size: 13px; color: var(--muted); }
 
     .pricing-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-top: 3rem;
-      max-width: 680px;
+      gap: 1.5rem;
+      margin-top: 1.75rem;
+      max-width: 760px;
     }
 
     .pricing-card {
+      padding: 2.5rem 2.25rem;
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border2);
       border-radius: var(--radius-lg);
-      padding: 2rem;
+      position: relative;
+      transition: border-color .2s;
     }
     .pricing-card.featured {
-      border-color: var(--blue);
-      background: linear-gradient(135deg, #111A2E 0%, var(--surface) 100%);
+      border-color: rgba(26,86,232,0.35);
+      background: rgba(26,86,232,0.06);
     }
 
     .pricing-tag {
-      display: inline-block;
-      padding: 3px 12px;
-      background: var(--blue-dim);
-      border: 1px solid rgba(46,107,255,0.3);
-      border-radius: 20px;
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 14px;
+      background: var(--blue);
+      border-radius: 999px;
       font-size: 11px;
-      font-weight: 500;
-      color: var(--blue-light);
-      letter-spacing: .05em;
-      margin-bottom: 1rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #fff;
+      white-space: nowrap;
     }
 
     .pricing-card h3 {
       font-family: 'Sora', sans-serif;
       font-size: 20px;
       font-weight: 700;
-      margin-bottom: .5rem;
+      margin-bottom: .75rem;
     }
 
     .pricing-price {
-      font-family: 'Sora', sans-serif;
-      font-size: 36px;
-      font-weight: 700;
-      color: var(--blue-light);
-      margin: 1rem 0 .25rem;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 62px;
+      line-height: 1;
+      color: #fff;
+      margin-bottom: .35rem;
     }
-    .pricing-price sup { font-size: 18px; vertical-align: super; }
-    .pricing-price sub {
-      font-size: 14px;
-      color: var(--muted);
-      vertical-align: baseline;
-    }
+    .pricing-price sup { font-size: 24px; vertical-align: super; }
+    .pricing-price sub { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 400; color: var(--muted); }
 
-    .pricing-desc {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 1.5rem;
-      line-height: 1.5;
-    }
+    .pricing-desc { font-size: 14px; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6; }
 
     .pricing-divider {
       border: none;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid var(--border2);
       margin-bottom: 1.5rem;
     }
 
@@ -562,446 +1070,164 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
     }
     .pricing-list li {
       font-size: 14px;
       color: var(--muted);
       display: flex;
-      align-items: center;
-      gap: 8px;
+      gap: 10px;
+      align-items: flex-start;
     }
     .pricing-list li::before {
       content: '';
       width: 16px;
       height: 16px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234ADE80' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center/contain no-repeat;
       flex-shrink: 0;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Ccircle cx='8' cy='8' r='7' stroke='%232E6BFF' stroke-width='1.2'/%3E%3Cpath d='M5 8l2 2 4-4' stroke='%232E6BFF' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+      margin-top: 1px;
     }
 
-    .btn-plan, .btn-plan-blue {
-      width: 100%;
-      padding: 11px;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: .2s;
-    }
     .btn-plan {
-      background: transparent;
+      width: 100%;
+      padding: 13px;
+      background: rgba(255,255,255,0.07);
       border: 1px solid var(--border);
+      border-radius: 10px;
       color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
     }
-    .btn-plan:hover {
-      border-color: rgba(255,255,255,0.25);
-      background: var(--surface2);
-    }
+    .btn-plan:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+
     .btn-plan-blue {
+      width: 100%;
+      padding: 13px;
       background: var(--blue);
       border: none;
+      border-radius: 10px;
       color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      box-shadow: 0 0 30px rgba(26,86,232,0.3);
     }
     .btn-plan-blue:hover { background: var(--blue-light); }
 
-    .versus-wrap {
+    /* ═══════════════════════════════ CTA FORM ══════════════════════════ */
+    .cta-section {
+      padding: 7rem 3rem;
+      background: linear-gradient(135deg, rgba(26,86,232,0.07) 0%, transparent 60%);
+      border-top: 1px solid var(--border2);
+      border-bottom: 1px solid var(--border2);
+    }
+    .cta-inner {
+      max-width: 1180px;
+      margin: 0 auto;
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .cta-left h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(42px, 5vw, 70px);
+      line-height: 0.97;
+      margin-bottom: 1.25rem;
+    }
+    .cta-left p { font-size: 16px; color: var(--muted); line-height: 1.7; }
+
+    .cta-trust {
       margin-top: 2rem;
-    }
-
-    .versus-col { padding: 2rem 1.75rem; }
-    .versus-bad { background: #1E1420; }
-    .versus-good { background: #0F1B18; }
-
-    .versus-label {
-      font-family: 'Sora', sans-serif;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      margin-bottom: 1.5rem;
-    }
-
-    .versus-bad .versus-label { color: #C05050; }
-    .versus-good .versus-label { color: #3DBF80; }
-
-    .versus-rows {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-
-    .versus-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .versus-num {
-      font-family: 'Sora', sans-serif;
-      font-size: 22px;
-      font-weight: 700;
-      min-width: 52px;
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    .versus-num.bad { color: #C05050; }
-    .versus-num.good { color: #3DBF80; }
-
-    .versus-text {
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-
-    .versus-divider {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--surface2);
-      border-left: 1px solid var(--border);
-      border-right: 1px solid var(--border);
-      padding: 0 1rem;
-    }
-
-    .versus-vs {
-      font-family: 'Sora', sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--muted);
-      letter-spacing: .1em;
-      writing-mode: vertical-rl;
-    }
-
-    .cta-block {
-      text-align: center;
-      padding: 5rem 2rem 6rem;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .cta-block h2 {
-      font-family: 'Sora', sans-serif;
-      font-size: clamp(24px, 4vw, 42px);
-      font-weight: 700;
-      line-height: 1.15;
-      letter-spacing: -0.015em;
-      margin-bottom: 1rem;
-    }
-    .cta-block p {
-      font-size: 16px;
-      color: var(--muted);
-      margin-bottom: 2rem;
-    }
-
-    .form-box {
-      max-width: 440px;
-      margin: 0 auto;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
-
-    .form-input {
-      width: 100%;
-      padding: 13px 14px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: white;
-      outline: none;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      transition: border-color .2s, background .2s;
-    }
-    .form-input:focus {
-      border-color: var(--blue);
-      background: #1c2135;
-    }
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 2rem;
+    .cta-trust-item {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .footer-logo {
-      font-family: 'Sora', sans-serif;
-      font-weight: 700;
-      font-size: 16px;
-      color: var(--text);
-    }
-    .footer-logo span { color: var(--blue); }
-
-    #page-dashboard { display: none; }
-    #page-landing { display: block; }
-
-    .dash-wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 100px 2rem 3rem;
-    }
-
-    .dash-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .dash-top h1 {
-      font-family: 'Sora', sans-serif;
-      font-size: 22px;
-      font-weight: 700;
-    }
-    .dash-top p {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 2rem;
-    }
-
-    .kpi-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-    }
-
-    .kpi-label {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .kpi-val {
-      font-family: 'Sora', sans-serif;
-      font-size: 28px;
-      font-weight: 700;
-    }
-
-    .kpi-delta {
-      font-size: 12px;
-      color: #4ADE80;
-      margin-top: 3px;
-    }
-    .kpi-delta.neg { color: #F87171; }
-
-    .table-wrap {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-    }
-
-    .table-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .table-head h2 {
-      font-family: 'Sora', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    th {
-      text-align: left;
-      padding: 10px 16px;
-      color: var(--muted);
-      font-weight: 500;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface2);
-    }
-
-    td {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
-      color: var(--text);
-    }
-
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,0.02); }
-
-    .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 500;
-    }
-    .badge-new {
-      background: rgba(46,107,255,.15);
-      color: #5B8FFF;
-      border: 1px solid rgba(46,107,255,.25);
-    }
-    .badge-done {
-      background: rgba(74,222,128,.12);
-      color: #4ADE80;
-      border: 1px solid rgba(74,222,128,.2);
-    }
-    .badge-wait {
-      background: rgba(251,191,36,.12);
-      color: #FBBF24;
-      border: 1px solid rgba(251,191,36,.2);
-    }
-
-    .action-btn {
-      padding: 5px 14px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px;
-      cursor: pointer;
-      transition: border-color .2s, background .2s;
-    }
-    .action-btn:hover {
-      border-color: var(--blue);
-      color: var(--blue-light);
-      background: var(--blue-dim);
-    }
-    .action-btn:disabled {
-      opacity: .3;
-      cursor: default;
-      pointer-events: none;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: #1A2B1A;
-      border: 1px solid rgba(74,222,128,.3);
-      color: #4ADE80;
-      padding: 10px 20px;
-      border-radius: 8px;
+      gap: 10px;
       font-size: 14px;
-      display: none;
-      z-index: 999;
+      color: var(--muted);
+    }
+    .cta-trust-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--success);
+      border-radius: 50%;
+      flex-shrink: 0;
     }
 
-    @media (max-width: 900px) {
-      .feat-grid,
-      .pricing-grid,
-      .kpi-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hero-content {
-        padding-top: 7rem;
-      }
-
-      .versus-wrap {
-        grid-template-columns: 1fr;
-      }
-
-      .versus-divider {
-        writing-mode: horizontal-tb;
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-top: 1px solid var(--border);
-        border-bottom: 1px solid var(--border);
-      }
-
-      .versus-vs {
-        writing-mode: horizontal-tb;
-      }
-    }
-
-    /* ── MODALS ── */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.65);
-      backdrop-filter: blur(4px);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .2s;
-    }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal {
-      background: var(--surface);
+    .cta-form-box {
+      background: rgba(255,255,255,0.03);
       border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      width: 100%;
-      max-width: 400px;
-      transform: translateY(12px);
-      transition: transform .2s;
+      border-radius: 24px;
+      padding: 2.5rem;
+      backdrop-filter: blur(8px);
     }
-    .modal-overlay.open .modal { transform: translateY(0); }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-    .modal-header h2 {
+
+    .form-title {
       font-family: 'Sora', sans-serif;
       font-size: 20px;
       font-weight: 700;
+      margin-bottom: .4rem;
     }
-    .modal-close {
-      background: none;
+    .form-sub { font-size: 14px; color: var(--muted); margin-bottom: 1.75rem; }
+
+    .form-group { margin-bottom: 1rem; position: relative; }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color .2s, background .2s;
+    }
+    .form-input::placeholder { color: var(--muted); }
+    .form-input:focus { border-color: rgba(26,86,232,0.5); background: rgba(26,86,232,0.04); }
+    .form-input.input-error { border-color: rgba(192,80,80,0.5); }
+
+    .field-error {
+      display: none;
+      font-size: 12px;
+      color: #E07070;
+      margin-top: 5px;
+      padding-left: 4px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      background: var(--blue);
       border: none;
-      color: var(--muted);
-      font-size: 22px;
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
-      line-height: 1;
-      padding: 4px;
+      transition: all .2s;
+      margin-top: .5rem;
+      box-shadow: 0 0 30px rgba(26,86,232,0.3);
     }
-    .modal-close:hover { color: var(--text); }
-    .modal-form { display: flex; flex-direction: column; gap: 10px; }
-    .modal-footer {
-      margin-top: 1rem;
-      text-align: center;
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .modal-footer a { color: var(--blue-light); cursor: pointer; text-decoration: none; }
-    .modal-footer a:hover { text-decoration: underline; }
-    .form-label { font-size: 13px; color: var(--muted); margin-bottom: 4px; display: block; }
-    .form-group { display: flex; flex-direction: column; }
-    .input-error { border-color: #C05050 !important; }
-    .field-error { font-size: 12px; color: #E07070; margin-top: 4px; display: none; }
+    .btn-submit:hover { background: var(--blue-light); transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
     .form-success {
       display: none;
       text-align: center;
-      padding: 1.5rem 1rem;
+      padding: 2rem 0;
     }
     .form-success-icon {
       width: 56px;
@@ -1013,1602 +1239,1332 @@
       align-items: center;
       justify-content: center;
       margin: 0 auto 1rem;
-      font-size: 24px;
+      font-size: 22px;
+      color: var(--success);
     }
-    .form-success h3 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; margin-bottom: .5rem; }
+    .form-success h3 { font-family: 'Sora', sans-serif; font-size: 22px; margin-bottom: .5rem; }
     .form-success p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* ═══════════════════════════════ FAQ ═══════════════════════════════ */
+    .faq-section { padding: 7rem 3rem; }
+    .faq-inner { max-width: 800px; margin: 0 auto; }
+
+    .faq-list { margin-top: 3.5rem; display: flex; flex-direction: column; gap: 2px; }
+
+    .faq-item {
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--surface);
+      transition: border-color .2s;
+    }
+    .faq-item.open { border-color: rgba(26,86,232,0.25); }
+
+    .faq-question {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 1.75rem;
+      cursor: pointer;
+      user-select: none;
+      gap: 1rem;
+    }
+    .faq-question h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .faq-chevron {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform .3s, background .2s;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .faq-item.open .faq-chevron { transform: rotate(45deg); background: var(--blue-dim); border-color: rgba(26,86,232,0.3); color: var(--blue-light); }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .35s ease;
+    }
+    .faq-answer-inner {
+      padding: 0 1.75rem 1.5rem;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    /* ═══════════════════════════════ FOOTER ════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border2);
+      padding: 2.5rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-logo {
+      font-family: 'Sora', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .footer-logo span { color: var(--blue); }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--text); }
+    footer small { font-size: 12px; color: rgba(255,255,255,0.25); }
+
+    /* ═══════════════════════════════ SPINNER ═══════════════════════════ */
     .spinner {
       display: inline-block;
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       border: 2px solid rgba(255,255,255,0.3);
       border-top-color: #fff;
       border-radius: 50%;
-      animation: spin .7s linear infinite;
+      animation: spin .6s linear infinite;
+      margin-right: 8px;
       vertical-align: middle;
-      margin-right: 6px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    @media (max-width: 640px) {
-      nav {
-        padding: 1rem;
-        grid-template-columns: 1fr auto;
-        gap: 10px;
-      }
-
-      .nav-links {
-        display: none;
-      }
-
-      .nav-actions {
-        gap: 6px;
-      }
-
-      .hero-content h1 {
-        font-size: clamp(28px, 8vw, 42px);
-      }
-
-      .hero-sub {
-        font-size: 16px;
-      }
-
-      .btn-hero {
-        width: 100%;
-      }
-
-      .dash-wrap {
-        padding: 90px 1rem 2rem;
-      }
-
-      .table-wrap {
-        overflow-x: auto;
-      }
-
-      footer {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      section {
-        padding: 4rem 1rem;
-      }
+    /* ═══════════════════════════════ TOAST ═════════════════════════════ */
+    .toast {
+      display: none;
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      padding: 12px 24px;
+      border-radius: 10px;
+      border: 1px solid;
+      font-size: 14px;
+      font-weight: 500;
+      backdrop-filter: blur(12px);
+      white-space: nowrap;
     }
-    /* ── Page Métiers ──────────────────────── */
-    .metiers-wrap {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 7rem 2rem 5rem;
+
+    /* ═══════════════════════════════ MODALS ════════════════════════════ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(6px);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
     }
-    .metiers-hero {
-      text-align: center;
-      margin-bottom: 4rem;
-    }
-    .metiers-hero h1 {
-      font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.2;
-      margin-bottom: 1.25rem;
-    }
-    .metiers-hero p {
-      font-size: 1.125rem;
-      color: var(--muted);
-      max-width: 560px;
-      margin: 0 auto;
-      line-height: 1.75;
-    }
-    .metiers-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1.25rem;
-      margin-bottom: 4rem;
-    }
-    .metier-card {
-      background: var(--surface2);
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: #111120;
       border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.75rem 1.5rem;
-      transition: border-color 0.2s, transform 0.2s;
+      border-radius: 20px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 440px;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
     }
-    .metier-card:hover {
-      border-color: rgba(26,86,232,0.5);
-      transform: translateY(-2px);
-    }
-    .metier-icon {
-      font-size: 2rem;
-      margin-bottom: 0.875rem;
-    }
-    .metier-card h3 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: var(--text);
-    }
-    .metier-card p {
-      font-size: 0.875rem;
-      color: var(--muted);
-      line-height: 1.65;
-    }
-    .metiers-cta {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 2.5rem;
-      text-align: center;
-    }
-    .metiers-cta h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-    }
-    .metiers-cta p {
-      color: var(--muted);
-      margin-bottom: 1.5rem;
-      font-size: 0.9375rem;
-    }
-    /* ── Page FAQ ───────────────────────── */
-    .faq-wrap {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 7rem 2rem 5rem;
-    }
-    .faq-hero {
-      text-align: center;
-      margin-bottom: 3.5rem;
-    }
-    .faq-hero h1 {
-      font-size: clamp(2rem, 5vw, 2.75rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: 1rem;
-    }
-    .faq-hero p {
-      color: var(--muted);
-      font-size: 1.05rem;
-      line-height: 1.75;
-    }
-    .faq-list {
+
+    .modal-header {
       display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 3.5rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
     }
-    .faq-item {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.75rem 1.75rem;
-      transition: border-color 0.2s;
-    }
-    .faq-item:hover { border-color: rgba(26,86,232,0.4); }
-    .faq-item h3 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin-bottom: 0.65rem;
-      color: var(--text);
-    }
-    .faq-item p {
+    .modal-header h2 { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 700; }
+    .modal-close {
+      background: none;
+      border: none;
       color: var(--muted);
-      font-size: 0.9375rem;
-      line-height: 1.7;
-      margin: 0;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background .2s, color .2s;
     }
-    .faq-cta {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 2.5rem;
+    .modal-close:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+
+    .modal-form { display: flex; flex-direction: column; gap: 12px; }
+    .form-label { display: block; font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 6px; }
+
+    .btn-primary {
+      padding: 8px 20px;
+      background: var(--blue);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s;
+    }
+    .btn-primary:hover { background: var(--blue-light); }
+
+    .modal-footer {
+      margin-top: 1.25rem;
       text-align: center;
+      font-size: 13px;
+      color: var(--muted);
     }
-    .faq-cta h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.75rem; }
-    .faq-cta p { color: var(--muted); margin-bottom: 1.5rem; font-size: 0.9375rem; }
+    .modal-footer a { color: var(--blue-light); cursor: pointer; text-decoration: none; }
+    .modal-footer a:hover { text-decoration: underline; }
+
+    /* ═══════════════════════════════ DASHBOARD ═════════════════════════ */
+    #page-dashboard, #page-how, #page-simulation {
+      display: none;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    .dash-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 6rem 2rem 3rem;
+    }
+    .dash-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      gap: 1rem;
+    }
+    .dash-top h1 { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 700; }
+    .dash-top p { font-size: 14px; color: var(--muted); margin-top: 4px; }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+    }
+    .kpi-label { font-size: 12px; color: var(--muted); margin-bottom: .5rem; }
+    .kpi-val { font-family: 'Sora', sans-serif; font-size: 30px; font-weight: 700; }
+    .kpi-delta { font-size: 12px; color: var(--success); margin-top: 4px; }
+
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .table-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border2);
+    }
+    .table-head h2 { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 600; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { padding: .75rem 1.25rem; text-align: left; font-size: 12px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--border2); }
+    td { padding: .9rem 1.25rem; font-size: 14px; border-bottom: 1px solid var(--border2); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.015); }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-new { background: rgba(26,86,232,0.15); color: var(--blue-light); border: 1px solid rgba(26,86,232,0.25); }
+    .badge-wait { background: rgba(251,191,36,0.1); color: #FBD24C; border: 1px solid rgba(251,191,36,0.2); }
+    .badge-done { background: rgba(61,191,128,0.1); color: var(--success); border: 1px solid rgba(61,191,128,0.2); }
+
+    .action-btn {
+      padding: 5px 14px;
+      background: var(--blue-dim);
+      border: 1px solid rgba(26,86,232,0.25);
+      border-radius: 7px;
+      color: var(--blue-light);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .action-btn:hover { background: rgba(26,86,232,0.2); }
+    .action-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* ═══════════════════════════════ RESPONSIVE ════════════════════════ */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .scenario-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .phone-wrap { display: none; }
+      .how-flow { grid-template-columns: 1fr; gap: 0; }
+      .how-arrow { transform: rotate(90deg); margin: 0.5rem 0; }
+      .mock-phone-call { width: 140px; }
+      .mock-sms-screen, .mock-dash { max-width: 320px; margin: 0 auto; }
+      .feat-list { grid-template-columns: 1fr; }
+      .sim-wrap { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+      .cta-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .section { padding: 5rem 1.5rem; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .hero-title { font-size: 58px; }
+      .btn-hero-main { padding: 15px 28px; font-size: 15px; }
+      .stat-number { font-size: 44px; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
   </style>
 </head>
 <body>
 
-  <nav>
-    <a href="#" class="logo nav-logo" onclick="showPage('landing')"><span class="logo-icon">R</span>Reli<span>on</span></a>
+<!-- ══════════════════════════ LANDING PAGE ════════════════════════════ -->
+<div id="page-landing">
 
-    <div class="nav-links">
-      <button type="button" class="btn-nav-link" onclick="showPage('landing')">Accueil</button>
-      <button type="button" class="btn-nav-link" onclick="showPage('how')">Comment ça marche</button>
-      <button type="button" class="btn-nav-link" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Tarifs</button>
-      <button class="btn-nav-link" onclick="openContactModal()">Contact</button>
-      <button class="btn-nav-link" onclick="showPage('metiers')">Métiers</button>
-      <button class="btn-nav-link" onclick="showPage('faq')">FAQ</button>
+  <!-- NAV -->
+  <nav id="main-nav">
+    <div class="nav-left">
+      <a class="logo" href="#">Reli<span>on</span></a>
+      <ul class="nav-links">
+        <li><a href="javascript:void(0)" onclick="scrollTo_('#how')">Comment ça marche</a></li>
+        <li><a href="javascript:void(0)" onclick="scrollTo_('#features')">Fonctionnalités</a></li>
+        <li><a href="javascript:void(0)" onclick="scrollTo_('#pricing')">Tarifs</a></li>
+        <li><a href="javascript:void(0)" onclick="scrollTo_('#faq')">FAQ</a></li>
+      </ul>
     </div>
-
     <div class="nav-actions">
-      <button type="button" class="btn-nav-login" id="btn-nav-login" onclick="openModal('modal-login')">Connexion</button>
-      <button type="button" class="btn-nav-cta"   id="btn-nav-signup" onclick="openModal('modal-signup')">Essai gratuit →</button>
-      <button type="button" class="btn-nav-login" id="btn-nav-compte" style="display:none;" onclick="showPage('dashboard')">Mon compte</button>
-      <button type="button" class="btn-nav-login" id="btn-nav-logout" style="display:none;" onclick="logout()">Déconnexion</button>
+      <button class="btn-ghost" type="button" onclick="openModal('modal-login')">Connexion</button>
+      <a class="btn-nav-cta" href="javascript:void(0)" onclick="scrollTo_('#contact')">Essai gratuit</a>
     </div>
   </nav>
 
-  <!-- FAQ -->
-  <div id="page-faq" style="display:none;">
-    <div class="faq-wrap">
-      <div class="faq-hero">
-        <h1>Questions fréquentes</h1>
-        <p>Tout ce que vous voulez savoir avant de vous lancer.</p>
-      </div>
-      <div class="faq-list">
-        <div class="faq-item">
-          <h3>Est-ce que je garde mon numéro&nbsp;?</h3>
-          <p>Oui. Relion fonctionne avec votre ligne actuelle. Vos clients continuent d'appeler votre numéro habituel — rien ne change de leur côté.</p>
-        </div>
-        <div class="faq-item">
-          <h3>Combien de temps pour l'installation&nbsp;?</h3>
-          <p>Configuration complète en moins de 48h après votre inscription. Vous n'avez rien à gérer techniquement — on s'occupe de tout.</p>
-        </div>
-        <div class="faq-item">
-          <h3>Est-ce que je peux personnaliser le SMS envoyé à mes clients&nbsp;?</h3>
-          <p>Oui. Vous choisissez le message envoyé à vos clients pour qu'il corresponde à votre activité et à votre ton. Un modèle vous est proposé, vous pouvez le modifier librement.</p>
-        </div>
-        <div class="faq-item">
-          <h3>Est-ce qu'il y a un engagement&nbsp;?</h3>
-          <p>Non. Vous testez 30 jours gratuitement, sans carte bancaire requise à l'inscription. Vous mesurez l'impact concret avant de décider.</p>
-        </div>
-        <div class="faq-item">
-          <h3>Que se passe-t-il si le client ne répond pas au rappel SMS&nbsp;?</h3>
-          <p>Relion peut envoyer un second message de suivi après un délai configurable. Vous voyez tout dans votre tableau de bord et vous pouvez relancer manuellement si besoin.</p>
-        </div>
-        <div class="faq-item">
-          <h3>Est-ce que ça marche si je travaille seul&nbsp;?</h3>
-          <p>Relion est pensé avant tout pour les artisans indépendants. Plus vous êtes seul sur le terrain, plus l'outil a de valeur — il remplace la secrétaire que vous n'avez pas.</p>
-        </div>
-        <div class="faq-item">
-          <h3>Est-ce que mes données sont sécurisées&nbsp;?</h3>
-          <p>Oui. Vos données et celles de vos clients sont hébergées en France et ne sont jamais revendues ni partagées avec des tiers.</p>
-        </div>
-      </div>
-      <div class="faq-cta">
-        <h2>Encore des questions&nbsp;?</h2>
-        <p>On vous répond directement — pas un chatbot, une vraie personne.</p>
-        <button class="btn-primary" onclick="openContactModal()">Nous contacter →</button>
-      </div>
+  <!-- HERO -->
+  <section class="hero">
+    <video class="hero-video" autoplay muted loop playsinline poster="">
+      <source src="./14649437_3840_2160_30fps.mp4" type="video/mp4" />
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">NE LAISSEZ PLUS<br>UN CLIENT <em>PARTIR</em></h1>
+      <p class="hero-sub">Un appel sans réponse est un client perdu.<br>Reprenez le contrôle de vos appels.</p>
+      <a class="btn-hero-main" href="javascript:void(0)" onclick="scrollTo_('#contact')">
+        Démarrer mon essai
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <p class="hero-note"><span>29.99€/mois</span> &nbsp;·&nbsp; 1 mois d'essai gratuit</p>
     </div>
-  </div>
-
-  <!-- MÉTIERS -->
-  <div id="page-metiers" style="display:none;">
-    <div class="metiers-wrap">
-      <div class="metiers-hero">
-        <h1>Relion est fait pour<br><em>les artisans qui bougent.</em></h1>
-        <p>Vous êtes sur le terrain toute la journée. Vous ne pouvez pas répondre à chaque appel. Relion rappelle automatiquement vos prospects — pour que vous ne perdiez plus un seul client.</p>
-      </div>
-
-      <div class="metiers-grid">
-        <div class="metier-card">
-          <div class="metier-icon">🔧</div>
-          <h3>Plombier</h3>
-          <p>Entre deux chantiers, les appels s'accumulent. Relion répond à votre place et rappelle le client dès que vous êtes libre.</p>
-        </div>
-        <div class="metier-card">
-          <div class="metier-icon">⚡</div>
-          <h3>Électricien</h3>
-          <p>Un client qui ne vous joint pas appelle le suivant. Avec Relion, il reçoit un SMS de rappel immédiat et reste dans votre pipeline.</p>
-        </div>
-        <div class="metier-card">
-          <div class="metier-icon">🏗️</div>
-          <h3>Maçon</h3>
-          <p>Sur le chantier, le téléphone est le cadet de vos soucis. Relion transforme chaque appel manqué en opportunité capturée.</p>
-        </div>
-        <div class="metier-card">
-          <div class="metier-icon">🪟</div>
-          <h3>Menuisier</h3>
-          <p>Vos devis se gagnent avant même le rendez-vous. Relion qualifie le prospect et vous prépare le terrain.</p>
-        </div>
-        <div class="metier-card">
-          <div class="metier-icon">🎨</div>
-          <h3>Peintre</h3>
-          <p>Chaque appel manqué est un devis de moins. Relion rappelle systématiquement — vous n'avez plus qu'à vous concentrer sur le travail.</p>
-        </div>
-        <div class="metier-card">
-          <div class="metier-icon">🔒</div>
-          <h3>Serrurier</h3>
-          <p>Les urgences n'attendent pas. Relion détecte le contexte de l'appel et priorise les rappels selon l'urgence.</p>
-        </div>
-        <div class="metier-card">
-          <div class="metier-icon">🌿</div>
-          <h3>Paysagiste</h3>
-          <p>Saison chargée ou pas, Relion maintient votre agenda plein sans que vous leviez le petit doigt.</p>
-        </div>
-        <div class="metier-card">
-          <div class="metier-icon">🏠</div>
-          <h3>Chauffagiste</h3>
-          <p>En période de froid, les appels explosent. Relion trie, rappelle et qualifie — vous gérez les urgences réelles.</p>
-        </div>
-        <div class="metier-card">
-          <div class="metier-icon">🪚</div>
-          <h3>Carreleur</h3>
-          <p>Un artisan qui répond vite inspire confiance. Relion vous donne cette image pro — même quand vous êtes les mains dans le mortier.</p>
-        </div>
-      </div>
-
-      <div class="metiers-cta">
-        <h2>Votre métier n'est pas dans la liste&nbsp;?</h2>
-        <p>Relion fonctionne pour tout artisan qui travaille seul ou en petite équipe et ne peut pas être joignable en permanence.</p>
-        <button class="btn-primary" onclick="handleStartClick('Essentiel')">Essayer gratuitement 30 jours →</button>
-      </div>
+    <div class="hero-scroll">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
     </div>
-  </div>
+  </section>
 
-  <!-- LANDING -->
-  <div id="page-landing">
-
-    <!-- HERO -->
-    <div class="hero-banner">
-      <div class="hero-content">
-        <div class="hero-badge">Pour les artisans partout en France</div>
-
-        <h1>
-          Ne laissez pas un client potentiel
-          <em>partir chez la concurrence.</em>
-        </h1>
-
-        <p class="hero-sub">
-          Quand vous ne décrochez pas, votre prospect appelle souvent le suivant.
-          Relion envoie automatiquement un SMS pour garder le contact, rassurer le client et vous permettre de rappeler au bon moment.
-        </p>
-
-        <div class="hero-cta">
-          <button type="button" class="btn-hero" style="font-size:20px;padding:19px 36px;" onclick="document.getElementById('section-contact').scrollIntoView({behavior:'smooth'})">
-            Arrêter de perdre des clients
-          </button>
-          <button type="button" class="btn-hero-outline" onclick="showPage('how')">
-            Voir comment ça marche
-          </button>
-        </div>
-
-        <div class="hero-points">
-          <div class="hero-point">
-            <span class="hero-point-icon">✦</span>
-            <span>SMS envoyé en 3 secondes dès l'appel manqué</span>
+  <!-- SCÉNARIO EN DIRECT -->
+  <div class="scenario-section">
+    <div class="scenario-inner">
+      <div>
+        <div class="scenario-eyebrow">Ce qui se passe</div>
+        <h2 class="scenario-title">Vous êtes sur un chantier.<br>Votre téléphone sonne.</h2>
+        <div class="scenario-story">
+          <div class="story-beat bad">
+            <span class="beat-icon">📵</span>
+            <span>Vous ne pouvez pas décrocher. Le prospect raccroche. En moins de 2 minutes, il passe au suivant dans Google Maps.</span>
           </div>
-          <div class="hero-point">
-            <span class="hero-point-icon">✦</span>
-            <span>Suivi de chaque prospect dans votre tableau de bord</span>
-          </div>
-          <div class="hero-point">
-            <span class="hero-point-icon">✦</span>
-            <span>1 mois gratuit — sans engagement</span>
-          </div>
-        </div>
-
-        <div class="hero-test">
-          <div class="hero-test-badge">Démo en direct</div>
-          <p>Appelez ce numéro et ne décrochez pas</p>
-          <a href="tel:0011223344">00 11 22 33 44</a>
-          <div class="hero-test-help">Vous verrez le SMS envoyé automatiquement</div>
-        </div>
-
-        <!-- APERÇU SMS -->
-        <div class="sms-preview">
-          <div class="sms-shell">
-            <div class="sms-label">SMS envoyé automatiquement</div>
-            <div class="sms-bubble">
-              Bonjour, j’ai bien reçu votre appel.<br><br>
-              Je suis actuellement en intervention.<br>
-              Vous pouvez remplir ce formulaire :<br>
-              relion.fr/rappel<br><br>
-              Je vous rappelle ensuite.
-            </div>
+          <div class="story-beat good">
+            <span class="beat-icon">⚡</span>
+            <span>Avec Relion, un SMS part en votre nom en 3 secondes. Le prospect sait que vous avez vu son appel. Il n'a plus de raison d'en appeler un autre.</span>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- SIMULATION -->
-    <div style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
-      <div style="max-width:1100px;margin:0 auto;padding:3rem 2rem;display:grid;grid-template-columns:1fr 1.2fr 0.9fr;gap:2.5rem;align-items:center;">
-
-        <div>
-          <div style="font-size:14px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:1rem;">
-            Simulation
-          </div>
-          <h2 style="font-family:'Sora',sans-serif;font-size:36px;font-weight:700;line-height:1.15;margin:0;">
-            Combien perdez-vous<br>chaque mois ?
-          </h2>
-        </div>
-
-        <div style="display:flex;flex-direction:column;gap:1.25rem;">
-          <div>
-            <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Appels manqués / semaine</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button type="button" class="sim-btn active" data-min="1" data-max="3" onclick="selectCalls(this)">1 – 3</button>
-              <button type="button" class="sim-btn" data-min="3" data-max="6" onclick="selectCalls(this)">3 – 6</button>
-              <button type="button" class="sim-btn" data-min="6" data-max="10" onclick="selectCalls(this)">6 – 10</button>
-              <button type="button" class="sim-btn" data-min="10" data-max="16" onclick="selectCalls(this)">10 +</button>
-            </div>
-          </div>
-
-          <div>
-            <div style="font-size:13px;color:var(--muted);margin-bottom:10px;">Valeur moyenne d'un chantier</div>
-            <div id="prev-value-wrap" style="display:flex;align-items:center;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--surface2);transition:border-color .2s;">
-              <input
-                type="number"
-                id="prev-value"
-                min="1"
-                placeholder="ex. 500"
-                style="flex:1;padding:11px 14px;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;"
-                oninput="runSim()"
-              />
-              <span style="padding:11px 14px;color:var(--muted);font-size:14px;border-left:1px solid var(--border);">€</span>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onclick="runSim()"
-            style="padding:12px;background:var(--blue);border:none;border-radius:var(--radius);color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:background .2s;"
-            onmouseover="this.style.background='var(--blue-light)'"
-            onmouseout="this.style.background='var(--blue)'"
-          >
-            Simuler
-          </button>
-        </div>
-
-        <div style="background:var(--surface2);border:1px solid rgba(61,191,128,0.3);border-radius:var(--radius-lg);padding:1.75rem;text-align:center;">
-          <div style="font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;">
-            CA récupérable / mois
-          </div>
-          <div style="font-family:'Sora',sans-serif;font-size:32px;font-weight:700;color:#3DBF80;min-height:42px;" id="prev-gain">—</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:12px;line-height:1.5;">
-            Estimation indicative<br>avec SMS automatique
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- AVANT / APRÈS -->
-    <section>
-      <div class="section-label">Comparaison</div>
-      <h2 class="section-title">Ce qui se passe sans vs avec Relion</h2>
-      <p class="section-sub">
-        Le problème n’est pas seulement l’appel manqué. C’est ce qui se passe juste après.
-      </p>
-
-      <div class="versus-wrap">
-        <div class="versus-col versus-bad">
-          <div class="versus-label">Sans Relion</div>
-          <div class="versus-rows">
-            <div class="versus-row">
-              <div class="versus-num bad">01</div>
-              <div class="versus-text">Appel manqué</div>
-            </div>
-            <div class="versus-row">
-              <div class="versus-num bad">02</div>
-              <div class="versus-text">Aucune réponse immédiate</div>
-            </div>
-            <div class="versus-row">
-              <div class="versus-num bad">03</div>
-              <div class="versus-text">Le client appelle un concurrent</div>
+      <div class="phone-wrap">
+        <div class="iph-wrap">
+          <div class="iph-btn-action"></div>
+          <div class="iph-btn-vol-up"></div>
+          <div class="iph-btn-vol-dn"></div>
+          <div class="iph-btn-power"></div>
+          <div class="iph-frame">
+            <div class="iph-screen">
+              <div class="iph-di"><div class="iph-di-pill"></div></div>
+              <div class="iph-statusbar">
+                <span>9:41</span>
+                <div class="iph-statusbar-icons">
+                  <svg width="13" height="10" viewBox="0 0 13 10" fill="rgba(255,255,255,0.9)"><rect x="0" y="3" width="2" height="7" rx="1"/><rect x="3.5" y="2" width="2" height="8" rx="1"/><rect x="7" y="1" width="2" height="9" rx="1"/><rect x="10.5" y="0" width="2" height="10" rx="1" opacity=".3"/></svg>
+                  <svg width="12" height="10" viewBox="0 0 12 10" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.2"><path d="M6 2.5C7.7 2.5 9.2 3.2 10.2 4.3"/><path d="M1.8 4.3C2.8 3.2 4.3 2.5 6 2.5"/><path d="M8.5 6.1C7.8 5.4 7 5 6 5s-1.8.4-2.5 1.1"/><circle cx="6" cy="8.5" r=".8" fill="rgba(255,255,255,0.9)"/></svg>
+                  <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x=".5" y=".5" width="19" height="10" rx="3" stroke="rgba(255,255,255,0.35)"/><rect x="1.5" y="1.5" width="15" height="8" rx="2" fill="rgba(255,255,255,0.9)"/><path d="M21 3.5v4a2 2 0 000-4z" fill="rgba(255,255,255,0.4)"/></svg>
+                </div>
+              </div>
+              <div class="iph-header">
+                <div class="iph-avatar">MR</div>
+                <div>
+                  <div class="iph-contact-name">06 12 XX XX XX</div>
+                  <div class="iph-contact-sub">Appel manqué · à l'instant</div>
+                </div>
+              </div>
+              <div class="iph-body">
+                <div class="iph-sms-missed"><span>📵 Appel manqué · 09:38</span></div>
+                <div style="align-self:flex-end">
+                  <div class="iph-bubble out">Bonjour, j'ai bien vu votre appel manqué. Remplissez ce formulaire et je vous rappelle au plus vite.</div>
+                  <div class="iph-meta">09:38 · Envoyé automatiquement</div>
+                </div>
+              </div>
+              <div class="iph-badge">
+                <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Prospect qualifié · Dashboard mis à jour
+              </div>
             </div>
           </div>
         </div>
-
-        <div class="versus-divider">
-          <div class="versus-vs">VS</div>
-        </div>
-
-        <div class="versus-col versus-good">
-          <div class="versus-label">Avec Relion</div>
-          <div class="versus-rows">
-            <div class="versus-row">
-              <div class="versus-num good">01</div>
-              <div class="versus-text">Appel manqué détecté</div>
-            </div>
-            <div class="versus-row">
-              <div class="versus-num good">02</div>
-              <div class="versus-text">SMS envoyé en 3 secondes</div>
-            </div>
-            <div class="versus-row">
-              <div class="versus-num good">03</div>
-              <div class="versus-text">Client rassuré, rappel facilité</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FONCTIONNALITÉS -->
-    <section>
-      <div class="section-label">Fonctionnalités</div>
-      <h2 class="section-title">Tout ce qu'il vous faut,<br>rien de superflu</h2>
-      <div class="feat-grid">
-        <div class="feat-card">
-          <div class="feat-icon">
-            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-          </div>
-          <h3>SMS immédiat</h3>
-          <p>Un message part dans les secondes qui suivent l'appel manqué — votre client sait que vous avez vu son appel.</p>
-        </div>
-
-        <div class="feat-card">
-          <div class="feat-icon">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </div>
-          <h3>Rappel facilité</h3>
-          <p>Le prospect indique sa disponibilité par SMS. Vous rappelez au bon moment, avec les infos déjà sous les yeux.</p>
-        </div>
-
-        <div class="feat-card">
-          <div class="feat-icon">
-            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-          </div>
-          <h3>Tableau de bord clair</h3>
-          <p>Tous vos appels, leur avancement et le chiffre d'affaires récupéré dans une interface simple.</p>
-        </div>
-
-        <div class="feat-card">
-          <div class="feat-icon">
-            <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-          </div>
-          <h3>Bilan mensuel</h3>
-          <p>Chaque mois, un récapitulatif : appels traités, prospects relancés, opportunités récupérées.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- PRICING -->
-    <section id="pricing">
-      <div class="section-label">Tarifs</div>
-      <h2 class="section-title">Payez seulement sur résultat</h2>
-      <p class="section-sub">
-        Pas d'abonnement, pas de frais cachés. Notre rémunération est liée à ce que Relion vous rapporte réellement.
-      </p>
-
-      <div class="pricing-grid">
-        <div class="pricing-card">
-          <h3>Essentiel</h3>
-          <div class="pricing-price"><sup>%</sup>5 <sub>par devis signé</sub></div>
-          <p class="pricing-desc">Idéal pour tester sans risque et mesurer l'impact réel sur vos appels manqués.</p>
-          <hr class="pricing-divider" />
-          <ul class="pricing-list">
-            <li>SMS de réponse automatique</li>
-            <li>Tableau de bord de base</li>
-            <li>Rapport mensuel</li>
-            <li>Support par email</li>
-          </ul>
-          <button type="button" class="btn-plan" onclick="handleStartClick('Essentiel')">Démarrer</button>
-        </div>
-
-        <div class="pricing-card featured">
-          <div class="pricing-tag">Recommandé</div>
-          <h3>Pro</h3>
-          <div class="pricing-price"><sup>%</sup>8 <sub>par devis signé</sub></div>
-          <p class="pricing-desc">Pour automatiser davantage le suivi et ne laisser passer aucune opportunité sérieuse.</p>
-          <hr class="pricing-divider" />
-          <ul class="pricing-list">
-            <li>Tout l'Essentiel</li>
-            <li>Rappel automatique intelligent</li>
-            <li>Relances multi-messages</li>
-            <li>Tableau de bord complet</li>
-            <li>Support prioritaire</li>
-          </ul>
-          <button type="button" class="btn-plan-blue" onclick="handleStartClick('Pro')">Démarrer</button>
-        </div>
-      </div>
-    </section>
-
-
-    <!-- FOOTER -->
-    <footer>
-      <span class="footer-logo">Reli<span>on</span></span>
-      <span>© 2026 Relion — France</span>
-      <span>contact@relion.fr</span>
-    </footer>
-  </div>
-
-  <!-- DASHBOARD -->
-  <div id="page-dashboard">
-    <div class="dash-wrap">
-      <div class="dash-top">
-        <div>
-          <h1>Tableau de bord</h1>
-          <p>Martin Plomberie &nbsp;·&nbsp; Avril 2026</p>
-        </div>
-        <button type="button" class="btn-ghost" onclick="showPage('landing')">← Retour au site</button>
-      </div>
-
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">Appels manqués ce mois</div>
-          <div class="kpi-val">14</div>
-          <div class="kpi-delta">↑ +3 vs mars</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Prospects relancés</div>
-          <div class="kpi-val">11</div>
-          <div class="kpi-delta">79% de taux de rappel</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Devis envoyés</div>
-          <div class="kpi-val">7</div>
-          <div class="kpi-delta">↑ +2 cette semaine</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">CA récupéré</div>
-          <div class="kpi-val">4 200€</div>
-          <div class="kpi-delta">↑ Meilleur mois</div>
-        </div>
-      </div>
-
-      <div class="table-wrap">
-        <div class="table-head">
-          <h2>Appels manqués récents</h2>
-          <span style="font-size:12px;color:var(--muted);">5 entrées &nbsp;·&nbsp; 2 nouveaux</span>
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Client</th>
-              <th>Date & heure</th>
-              <th>Motif probable</th>
-              <th>SMS envoyé</th>
-              <th>Statut</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="tbody">
-            <tr>
-              <td>06 12 34 56 78</td>
-              <td>Aujourd'hui, 09h14</td>
-              <td>Fuite détectée</td>
-              <td>✓ 09h14</td>
-              <td><span class="badge badge-new">Nouveau</span></td>
-              <td><button type="button" class="action-btn" onclick="markDone(this)">Rappeler</button></td>
-            </tr>
-            <tr>
-              <td>Sophie Riedinger</td>
-              <td>Aujourd'hui, 08h51</td>
-              <td>Installation robinet</td>
-              <td>✓ 08h51</td>
-              <td><span class="badge badge-wait">En attente</span></td>
-              <td><button type="button" class="action-btn" onclick="markDone(this)">Rappeler</button></td>
-            </tr>
-            <tr>
-              <td>Jean-Paul Muller</td>
-              <td>Hier, 17h30</td>
-              <td>Chauffe-eau HS</td>
-              <td>✓ 17h30</td>
-              <td><span class="badge badge-done">Rappelé</span></td>
-              <td><button type="button" class="action-btn" disabled>Fait</button></td>
-            </tr>
-            <tr>
-              <td>07 89 01 23 45</td>
-              <td>Hier, 14h12</td>
-              <td>Devis rénovation</td>
-              <td>✓ 14h13</td>
-              <td><span class="badge badge-done">Rappelé</span></td>
-              <td><button type="button" class="action-btn" disabled>Fait</button></td>
-            </tr>
-            <tr>
-              <td>Fatima Benali</td>
-              <td>11/04, 11h05</td>
-              <td>Dégât des eaux</td>
-              <td>✓ 11h05</td>
-              <td><span class="badge badge-new">Nouveau</span></td>
-              <td><button type="button" class="action-btn" onclick="markDone(this)">Rappeler</button></td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
   </div>
 
   <!-- COMMENT ÇA MARCHE -->
-  <div id="page-how" style="display:none;">
-    <div class="dash-wrap" style="max-width:700px;">
-      <div class="dash-top">
-        <div>
-          <h1>Comment ça marche</h1>
-          <p>Trois étapes, aucune action compliquée.</p>
-        </div>
-        <button type="button" class="btn-ghost" onclick="showPage('landing')">← Retour</button>
-      </div>
+  <div class="how-section" id="how">
+    <div class="how-inner">
+      <h2 class="section-title">Comment ça marche</h2>
+      <div class="how-flow">
 
-      <div style="display:flex;flex-direction:column;gap:16px;">
-        <div class="feat-card">
-          <div style="font-family:'Sora',sans-serif;font-size:48px;font-weight:700;color:rgba(46,107,255,0.12);line-height:1;margin-bottom:1rem;">01</div>
-          <h3>L'appel part sans réponse</h3>
-          <p>Relion détecte l'appel manqué instantanément, quelle que soit votre ligne configurée.</p>
-        </div>
-
-        <div class="feat-card">
-          <div style="font-family:'Sora',sans-serif;font-size:48px;font-weight:700;color:rgba(46,107,255,0.12);line-height:1;margin-bottom:1rem;">02</div>
-          <h3>Un SMS part en votre nom</h3>
-          <p>Le prospect reçoit un message personnalisé en 3 secondes — avant de chercher ailleurs. Vous choisissez le texte à l'avance, Relion l'envoie à votre place.</p>
-        </div>
-
-        <div class="feat-card">
-          <div style="font-family:'Sora',sans-serif;font-size:48px;font-weight:700;color:rgba(46,107,255,0.12);line-height:1;margin-bottom:1rem;">03</div>
-          <h3>Vous rappelez au bon moment</h3>
-          <p>Tout est dans votre tableau de bord : nom, numéro, heure, statut du prospect. Vous rappelez quand vous êtes disponible.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PAGE SIMULATION -->
-  <div id="page-simulation" style="display:none;">
-    <div class="dash-wrap" style="max-width:600px;">
-      <div class="dash-top">
-        <div>
-          <h1>Simulation</h1>
-          <p>Estimez ce que vous perdez chaque mois.</p>
-        </div>
-        <button type="button" class="btn-ghost" onclick="showPage('landing')">← Retour</button>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:16px;">
-        <div class="kpi-card">
-          <div class="kpi-label">Appels manqués par semaine</div>
-          <input type="range" min="1" max="30" value="5" id="sim-calls" oninput="calcSim()" style="width:100%;margin:10px 0 4px;">
-          <div style="font-family:'Sora',sans-serif;font-size:28px;font-weight:700;" id="sim-calls-out">5</div>
-        </div>
-
-        <div class="kpi-card">
-          <div class="kpi-label">Valeur moyenne d'un chantier (€)</div>
-          <input type="range" min="100" max="5000" step="100" value="500" id="sim-value" oninput="calcSim()" style="width:100%;margin:10px 0 4px;">
-          <div style="font-family:'Sora',sans-serif;font-size:28px;font-weight:700;" id="sim-value-out">500 €</div>
-        </div>
-
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div>
-            <div class="kpi-label">Perdu par mois sans Relion</div>
-            <div style="font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:#C05050;margin-top:4px;" id="sim-lost">—</div>
+        <!-- Step 1 — Appel manqué -->
+        <div class="how-card">
+          <div class="how-card-visual">
+            <div class="mock-phone-call">
+              <div class="mock-phone-notch"></div>
+              <div class="mock-call-avatar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              </div>
+              <div class="mock-call-label">Client potentiel</div>
+              <div class="mock-call-sub">Appel entrant…</div>
+              <div class="mock-call-num">06 12 XX XX XX</div>
+              <div class="mock-call-btns">
+                <div class="mock-btn decline">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M23 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                </div>
+                <div class="mock-btn accept">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M23 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <div class="kpi-label">Récupérable avec Relion</div>
-            <div style="font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:#3DBF80;margin-top:4px;" id="sim-gain">—</div>
+          <div class="how-card-label">
+            <span class="how-card-text">L'appel arrive</span>
           </div>
         </div>
 
-        <p style="font-size:12px;color:var(--muted);">
-          Estimation illustrative basée sur vos appels manqués et une récupération partielle via SMS automatique.
-        </p>
+        <!-- Arrow -->
+        <div class="how-arrow">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
 
-        <button type="button" class="btn-plan-blue" onclick="showPage('landing')">Je veux essayer gratuitement</button>
+        <!-- Step 2 — SMS envoyé -->
+        <div class="how-card">
+          <div class="how-card-visual">
+            <div class="mock-sms-screen">
+              <div class="mock-sms-top">
+                <div class="mock-sms-avatar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                </div>
+                <div class="mock-sms-contact">06 12 XX XX XX</div>
+              </div>
+              <div class="mock-sms-body">
+                <div class="mock-sms-missed-line">📵 Appel manqué · 09:38</div>
+                <div class="mock-sms-bubble-out">Bonjour, j'ai bien vu votre appel. Je vous rappelle dès que possible — remplissez ce formulaire.</div>
+                <div class="mock-sms-check">09:38 · Envoyé automatiquement ✓✓</div>
+              </div>
+            </div>
+          </div>
+          <div class="how-card-label">
+            <span class="how-card-text">Un SMS est envoyé automatiquement au client</span>
+          </div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="how-arrow">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+
+        <!-- Step 3 — Dashboard -->
+        <div class="how-card">
+          <div class="how-card-visual">
+            <div class="mock-dash">
+              <div class="mock-dash-titlebar">
+                <div class="mock-dash-dot r"></div><div class="mock-dash-dot y"></div><div class="mock-dash-dot g"></div>
+                <span class="mock-dash-title">Dashboard · Prospects</span>
+                <div class="mock-dash-badge-new">+1 Nouveau</div>
+              </div>
+              <div class="mock-dash-cols">
+                <span>Client</span><span>Tél.</span><span>Statut</span>
+              </div>
+              <div class="mock-dash-row active">
+                <div class="mock-dash-avatar">MR</div>
+                <div>
+                  <div class="mock-dash-name">Marc Renard</div>
+                  <div class="mock-dash-info">06 12 XX XX XX</div>
+                </div>
+                <div class="mock-status new">Nouveau</div>
+              </div>
+              <div class="mock-dash-row">
+                <div class="mock-dash-avatar muted">KH</div>
+                <div>
+                  <div class="mock-dash-name muted">Karim Hamidi</div>
+                  <div class="mock-dash-info">07 98 XX XX XX</div>
+                </div>
+                <div class="mock-status rappel">Rappeler</div>
+              </div>
+            </div>
+          </div>
+          <div class="how-card-label">
+            <span class="how-card-text">Tout centralisé, clair et accessible en un coup d'œil</span>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 
-  <div class="toast" id="toast">Statut mis à jour ✓</div>
-
-  <!-- MODAL CONNEXION -->
-  <div class="modal-overlay" id="modal-login" onclick="handleOverlayClick(event,'modal-login')">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Connexion</h2>
-        <button class="modal-close" onclick="closeModal('modal-login')">✕</button>
-      </div>
-      <div class="modal-form" id="login-form">
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input class="form-input" id="login-email" type="email" placeholder="vous@exemple.fr" autocomplete="email" />
-          <span class="field-error" id="err-login-email">Email invalide.</span>
+  <!-- FONCTIONNALITÉS -->
+  <div class="features-section" id="features">
+    <div class="features-inner">
+      <div class="section-label">Fonctionnalités</div>
+      <h2 class="section-title">Tout ce qu'il faut pour<br>ne plus perdre un client.</h2>
+      <div class="feat-list">
+        <div class="feat-item">
+          <div class="feat-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          </div>
+          <div>
+            <div class="feat-item-title">Votre numéro reste le même</div>
+            <div class="feat-item-desc">Aucun changement visible pour vos clients. Relion agit en coulisses — vos appels entrants ne sont pas affectés.</div>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Mot de passe</label>
-          <input class="form-input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password" />
-          <span class="field-error" id="err-login-password">Mot de passe requis.</span>
+        <div class="feat-item">
+          <div class="feat-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <div>
+            <div class="feat-item-title">Message 100% personnalisé</div>
+            <div class="feat-item-desc">Le SMS porte votre prénom, votre métier. Le prospect a l'impression que vous lui écrivez vous-même.</div>
+          </div>
         </div>
-        <div style="text-align:right;margin-top:-4px;margin-bottom:4px;">
-          <a style="font-size:13px;color:var(--blue-light);cursor:pointer;text-decoration:none;" onclick="showForgotPassword()">ÂMot de passe oublié ?</a>
+        <div class="feat-item">
+          <div class="feat-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <div class="feat-item-title">Alerte email en temps réel</div>
+            <div class="feat-item-desc">Chaque appel manqué et chaque réponse SMS vous envoie une notification. Vous ne ratez aucune opportunité.</div>
+          </div>
         </div>
-        <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" id="btn-login" onclick="submitLogin()">Se connecter</button>
-      </div>
-      <div id="forgot-form" style="display:none;flex-direction:column;gap:10px;">
-        <p style="font-size:14px;color:var(--muted);margin-bottom:4px;">Entrez votre email, on vous envoie un lien pour réinitialiser votre mot de passe.</p>
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input class="form-input" id="forgot-email" type="email" placeholder="vous@exemple.fr" autocomplete="email" />
+        <div class="feat-item">
+          <div class="feat-item-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <div>
+            <div class="feat-item-title">Dashboard lisible en 5 secondes</div>
+            <div class="feat-item-desc">Tous vos prospects, leur statut, leurs disponibilités. Depuis votre téléphone, sans formation.</div>
+          </div>
         </div>
-        <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;" id="btn-forgot" onclick="submitForgotPassword()">Envoyer le lien</button>
-        <div style="text-align:center;margin-top:4px;">
-          <a style="font-size:13px;color:var(--blue-light);cursor:pointer;" onclick="showLoginForm()">← Retour à la connexion</a>
+        <div class="feat-item">
+          <div class="feat-item-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div class="feat-item-title">Données sécurisées</div>
+            <div class="feat-item-desc">Vos contacts et conversations sont stockés de façon sécurisée. Aucune revente, aucun accès tiers.</div>
+          </div>
         </div>
-      </div>
-      <div class="form-success" id="forgot-success" style="display:none;">
-        <div class="form-success-icon">✉</div>
-        <h3>Email envoyé !</h3>
-        <p>Vérifiez votre boîte mail et cliquez sur le lien pour créer un nouveau mot de passe.</p>
-        <button type="button" class="btn-primary" style="margin-top:1rem;padding:10px 24px;" onclick="closeModal('modal-login');showLoginForm()">Fermer</button>
-      </div>
-      <div class="modal-footer" id="login-footer">
-        Pas encore de compte ? <a onclick="switchModal('modal-login','modal-signup')">Créer un compte</a>
+        <div class="feat-item">
+          <div class="feat-item-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <div class="feat-item-title">Support humain 7j/7</div>
+            <div class="feat-item-desc">Un problème, une question ? Une vraie personne vous répond — pas un chatbot. Nous sommes là pour que ça marche.</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL INSCRIPTION -->
-  <div class="modal-overlay" id="modal-signup" onclick="handleOverlayClick(event,'modal-signup')">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Créer un compte</h2>
-        <button class="modal-close" onclick="closeModal('modal-signup')">✕</button>
-      </div>
-      <div id="signup-plan-badge" style="display:none;margin-bottom:1rem;">
-        <span style="display:inline-block;padding:4px 12px;background:var(--blue-dim);border:1px solid rgba(46,107,255,0.3);border-radius:20px;font-size:12px;color:var(--blue-light);">Plan <strong id="signup-plan-name"></strong> sélectionné</span>
-      </div>
-      <div class="modal-form" id="signup-form">
-        <div class="form-group">
-          <label class="form-label">Prénom</label>
-          <input class="form-input" id="signup-prenom" type="text" placeholder="Jean" autocomplete="given-name" />
-          <span class="field-error" id="err-signup-prenom">Prénom requis.</span>
+  <!-- PRICING + SIMULATEUR -->
+  <div class="pricing-section" id="pricing">
+    <div class="pricing-inner">
+      <h2 class="section-title" style="line-height:1.05;margin-bottom:0.5rem;">Ne laissez plus passer les opportunités.<br><span style="color:var(--muted);font-size:0.55em;font-weight:400;letter-spacing:0.01em;">30 jours gratuit, résiliable à tout moment</span></h2>
+
+      <div class="pricing-sim-layout">
+
+        <!-- CARTE UNIQUE -->
+        <div class="pricing-card featured">
+          <div class="pricing-tag">Recommandé</div>
+          <h3>Pro</h3>
+          <div class="pricing-price">29.99€ <sub style="font-size:0.85em;vertical-align:baseline;color:var(--muted);font-family:'Bebas Neue',sans-serif;font-weight:400;">/ mois</sub></div>
+          <p class="pricing-desc" style="font-family:'Sora',sans-serif;font-style:italic;font-size:15px;">Passez au niveau supérieur dans votre activité.</p>
+          <hr class="pricing-divider" />
+          <ul class="pricing-list">
+            <li>SMS de réponse automatique instantané</li>
+            <li>Numéro de téléphone inchangé</li>
+            <li>Dashboard simple pour suivre vos clients</li>
+            <li>Notifications email en temps réel</li>
+            <li>Formulaire personnalisé pour chaque demande</li>
+            <li>Installation en 10 minutes</li>
+            <li>1 mois d'essai gratuit</li>
+            <li>Résiliable à tout moment</li>
+            <li>Support humain 7j/7</li>
+            <li>Aucune commission sur vos clients</li>
+            <li>Données sécurisées et confidentielles</li>
+          </ul>
+          <button type="button" class="btn-plan-blue" onclick="handleStartClick('Pro')">Démarrer mon essai gratuit</button>
+          <p style="text-align:center;font-size:13px;color:var(--muted);margin-top:0.75rem;">
+            Déjà inscrit ? <a href="#" onclick="openModal('modal-login');return false;" style="color:var(--blue-light);text-decoration:none;font-weight:500;">Connexion</a>
+          </p>
+          <p style="text-align:center;font-size:12px;color:rgba(255,255,255,0.3);margin-top:0.5rem;display:flex;align-items:center;justify-content:center;gap:6px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Paiement sécurisé par Stripe
+          </p>
         </div>
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input class="form-input" id="signup-email" type="email" placeholder="vous@exemple.fr" autocomplete="email" />
-          <span class="field-error" id="err-signup-email">Email invalide.</span>
+
+        <!-- SIMULATEUR COMPACT -->
+        <div class="sim-panel">
+          <div class="sim-panel-head">
+            <div class="sim-panel-title">Estimez votre gain mensuel</div>
+            <div class="sim-panel-sub">Entrez vos chiffres, on calcule en temps réel.</div>
+          </div>
+
+          <div class="sim-control-block">
+            <div class="sim-control-label">Appels manqués par semaine</div>
+            <div class="sim-btns">
+              <button class="sim-btn active" data-min="1" data-max="3" onclick="selectCalls(this)">1–3</button>
+              <button class="sim-btn" data-min="4" data-max="7" onclick="selectCalls(this)">4–7</button>
+              <button class="sim-btn" data-min="8" data-max="15" onclick="selectCalls(this)">8–15</button>
+              <button class="sim-btn" data-min="16" data-max="30" onclick="selectCalls(this)">15+</button>
+            </div>
+          </div>
+
+          <div class="sim-control-block">
+            <div class="sim-control-label">Valeur moyenne d'un chantier</div>
+            <div class="sim-input-row" id="prev-value-wrap">
+              <span class="sim-currency">€</span>
+              <input type="number" id="prev-value" placeholder="500" min="0" oninput="runSim()" />
+            </div>
+          </div>
+
+          <div class="sim-result">
+            <div>
+              <div class="sim-result-label">CA récupérable avec Relion / mois</div>
+              <div class="sim-result-val" id="prev-gain">—</div>
+              <div class="sim-result-desc">Estimation basée sur 65% de taux de conversion moyen après relance SMS.</div>
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Numéro de téléphone professionnel</label>
-          <input class="form-input" id="signup-tel" type="tel" placeholder="+33 6 12 34 56 78" autocomplete="tel" />
-          <span class="field-error" id="err-signup-tel">Numéro invalide.</span>
-        </div>
-<button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" id="btn-signup" onclick="submitSignup()">Continuer vers le paiement →</button>
-        <p style="font-size:11px;color:var(--muted);text-align:center;line-height:1.5;">1 mois gratuit · Sans engagement · Résiliation en 1 clic</p>
-      </div>
-      <div cform-success" id="signup-success">
-        <div class="form-success-icon">&#x27F3;</div>
-        <h3>Redirection en cours…</h3>
-        <p>Vous allez être redirigé vers le paiement sécurisé.</p>
-      </div>
-      <div class="modal-footer">
-        Déjà un compte ? <a onclick="switchModal('modal-signup','modal-login')">Se connecter</a>
+
       </div>
     </div>
   </div>
 
-  <!-- Supabase JS client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script>
-    /* ─── SUPABASE ───────────────────────────────────── */
-    var SUPABASE_URL  = 'https://fgxbufcnvibasknwilxh.supabase.co';
-    var SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZneGJ1ZmNudmliYXNrbndpbHhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNTY2MTUsImV4cCI6MjA5MTczMjYxNX0.-ZIU_-DNSvvxPEl-LCiCyZKl2lSVJYHb_YlIxUy3q8M';
-    var _supabase     = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  <!-- CTA + FORM -->
+  <div class="cta-section" id="contact">
+    <div class="cta-inner">
+      <div class="cta-left">
+        <div class="section-label">Commencer</div>
+        <h2>PRÊT À RÉCUPÉRER VOS CLIENTS ?</h2>
+        <p>On vous rappelle dans la journée. On configure tout pour vous. Vous n'avez rien d'autre à faire.</p>
+        <div class="cta-trust">
+          <div class="cta-trust-item"><div class="cta-trust-dot"></div>Sans engagement ni abonnement</div>
+          <div class="cta-trust-item"><div class="cta-trust-dot"></div>Configuration complète, à votre place</div>
+          <div class="cta-trust-item"><div class="cta-trust-dot"></div>Vous gardez votre numéro de téléphone actuel</div>
+          <div class="cta-trust-item"><div class="cta-trust-dot"></div>Tarification simple et transparente</div>
+        </div>
+      </div>
 
-    /* ─── AUTH UI ────────────────────────────────────── */
-    function updateAuthUI(user) {
-      var loggedIn = !!user;
-      document.getElementById('btn-nav-login').style.display    = loggedIn ? 'none' : '';
-      document.getElementById('btn-nav-signup').style.display   = loggedIn ? 'none' : '';
-      document.getElementById('btn-nav-compte').style.display   = loggedIn ? '' : 'none';
-      document.getElementById('btn-nav-logout').style.display   = loggedIn ? '' : 'none';
-      if (loggedIn) {
-        var prenom = (user.user_metadata && user.user_metadata.prenom) ? user.user_metadata.prenom : user.email;
-        document.getElementById('btn-nav-compte').textContent = 'Bonjour ' + prenom;
-      }
-    }
+      <div class="cta-form-box">
+        <div id="form-contact-wrap">
+          <p class="form-title">Être rappelé gratuitement</p>
+          <p class="form-sub">Complétez en 30 secondes — on s'occupe du reste.</p>
+          <div class="form-group">
+            <input class="form-input" id="contact-prenom" type="text" placeholder="Votre prénom" autocomplete="given-name" />
+            <span class="field-error" id="err-prenom">Merci d'indiquer votre prénom.</span>
+          </div>
+          <div class="form-group">
+            <input class="form-input" id="contact-tel" type="tel" placeholder="Votre numéro (+33...)" autocomplete="tel" />
+            <span class="field-error" id="err-tel">Numéro invalide (ex. 06 12 34 56 78).</span>
+          </div>
+          <div class="form-group">
+            <input class="form-input" id="contact-activite" type="text" placeholder="Votre activité (plombier, électricien...)" />
+            <span class="field-error" id="err-activite">Merci d'indiquer votre activité.</span>
+          </div>
+          <button type="button" class="btn-submit" id="btn-contact" onclick="submitContact()">Être rappelé aujourd'hui →</button>
+        </div>
 
-    _supabase.auth.onAuthStateChange(function(event, session) {
-      updateAuthUI(session ? session.user : null);
-      if (event === 'SIGNED_IN') {
-        closeModal('modal-login');
-        closeModal('modal-signup');
-      }
-      if (event === 'SIGNED_OUT') {
-        showPage('landing');
-      }
-      if (event === 'PASSWORD_RECOVERY') {
-        openModal('modal-new-password');
-      }
-    });
+        <div class="form-success" id="contact-success">
+          <div class="form-success-icon">✓</div>
+          <h3>C'est noté !</h3>
+          <p>On vous rappelle sous 24h pour configurer Relion sur votre ligne.<br>Vous n'avez rien d'autre à faire.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    function logout() {
-      _supabase.auth.signOut();
-    }
+  <!-- FAQ -->
+  <div class="faq-section" id="faq">
+    <div class="faq-inner">
+      <div class="section-label">FAQ</div>
+      <h2 class="section-title">Questions fréquentes</h2>
 
-    /* ─── NAVIGATION ─────────────────────────────────── */
-    function showPage(name) {
-      ['landing', 'dashboard', 'how', 'simulation', 'metiers', 'faq'].forEach(function(p) {
-        var el = document.getElementById('page-' + p);
-        if (el) el.style.display = (p === name) ? 'block' : 'none';
-      });
-      window.scrollTo(0, 0);
-    }
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>Est-ce que je garde mon numéro de téléphone ?</h3>
+            <div class="faq-chevron">+</div>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">Oui, absolument. Relion fonctionne avec votre ligne actuelle. Vos clients continuent d'appeler votre numéro habituel — vous ne changez rien de votre côté.</div>
+          </div>
+        </div>
 
-    /* ─── MODALS ─────────────────────────────────────── */
-    function openModal(id, plan) {
-      var overlay = document.getElementById(id);
-      if (!overlay) return;
-      overlay.classList.add('open');
-      document.body.style.overflow = 'hidden';
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>Combien de temps pour l'installation ?</h3>
+            <div class="faq-chevron">+</div>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">Un membre de notre équipe vous rappelle, fait la mise en place à votre place, et vérifie que tout fonctionne. Vous n'avez rien à gérer techniquement.</div>
+          </div>
+        </div>
 
-      if (id === 'modal-signup' && plan) {
-        var badge = document.getElementById('signup-plan-badge');
-        var name  = document.getElementById('signup-plan-name');
-        if (badge && name) { badge.style.display = 'block'; name.textContent = plan; }
-      }
-    }
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>Est-ce que je peux personnaliser le SMS envoyé ?</h3>
+            <div class="faq-chevron">+</div>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">Oui. Vous choisissez exactement le message envoyé à vos clients. On vous propose une base, vous l'adaptez à votre activité et votre ton. Le résultat : un SMS qui ressemble à vous, pas à un robot.</div>
+          </div>
+        </div>
 
-    function closeModal(id) {
-      var overlay = document.getElementById(id);
-      if (overlay) overlay.classList.remove('open');
-      document.body.style.overflow = '';
-    }
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>Y a-t-il un engagement ou un abonnement ?</h3>
+            <div class="faq-chevron">+</div>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">Aucun. Relion fonctionne à la performance — vous payez uniquement sur les devis signés grâce à Relion. Pas d'abonnement, pas de frais fixes, pas d'engagement à durée minimale.</div>
+          </div>
+        </div>
 
-    function handleOverlayClick(e, id) {
-      if (e.target === e.currentTarget) closeModal(id);
-    }
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            <h3>Relion fonctionne-t-il avec tous les opérateurs ?</h3>
+            <div class="faq-chevron">+</div>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">Oui. Relion est compatible avec tous les opérateurs français (Orange, SFR, Bouygues, Free, etc.) ainsi que les lignes VOIP professionnelles. Notre équipe vérifie la compatibilité lors de l'installation.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    function switchModal(from, to) {
-      closeModal(from);
-      setTimeout(function() { openModal(to); }, 180);
-    }
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-logo">Reli<span>on</span></span>
+    <div class="footer-links">
+      <a href="javascript:void(0)" onclick="scrollTo_('#how')">Comment ça marche</a>
+      <a href="javascript:void(0)" onclick="scrollTo_('#pricing')">Tarifs</a>
+      <a href="javascript:void(0)" onclick="scrollTo_('#faq')">FAQ</a>
+      <a href="mailto:contact@relion.fr">Contact</a>
+    </div>
+    <small>© 2026 Relion · France · contact@relion.fr</small>
+  </footer>
 
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        ['modal-login', 'modal-signup', 'modal-new-password'].forEach(closeModal);
-      }
-    });
+</div><!-- /page-landing -->
 
-    /* ─── HELPERS VALIDATION ─────────────────────────── */
-    function isValidPhone(v) {
-      return /^[\d\s\+\-\.]{8,15}$/.test(v.trim());
-    }
-    function isValidEmail(v) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
-    }
-    function setError(inputId, errId, show) {
-      var inp = document.getElementById(inputId);
-      var err = document.getElementById(errId);
-      if (!inp || !err) return;
-      if (show) {
-        inp.classList.add('input-error');
-        err.style.display = 'block';
-      } else {
-        inp.classList.remove('input-error');
-        err.style.display = 'none';
-      }
-    }
 
-    /* ─── FORMULAIRE CONTACT (landing) ───────────────── */
-    function submitContact() {
-      var prenom   = document.getElementById('contact-prenom').value.trim();
-      var tel      = document.getElementById('contact-tel').value.trim();
-      var activite = document.getElementById('contact-activite').value.trim();
+<!-- ══════════════════════════ DASHBOARD ═══════════════════════════════ -->
+<div id="page-dashboard">
+  <div class="dash-wrap">
+    <div class="dash-top">
+      <div>
+        <h1>Tableau de bord</h1>
+        <p id="dash-subtitle">Chargement…</p>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button type="button" class="btn-ghost" onclick="openSmsEditor()">✏️ Mon SMS</button>
+        <button type="button" class="btn-ghost" onclick="logoutUser()" style="color:var(--muted);">Déconnexion</button>
+      </div>
+    </div>
 
-      var ok = true;
-      setError('contact-prenom',   'err-prenom',   !prenom);       if (!prenom)   ok = false;
-      setError('contact-tel',      'err-tel',      !isValidPhone(tel)); if (!isValidPhone(tel)) ok = false;
-      setError('contact-activite', 'err-activite', !activite);     if (!activite) ok = false;
-      if (!ok) return;
+    <!-- SMS EDITOR -->
+    <div id="sms-editor" style="display:none;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:20px;">
+      <h3 style="margin-bottom:12px;font-size:15px;">Message SMS automatique</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Ce message est envoyé à vos clients quand vous manquez un appel.</p>
+      <textarea id="sms-textarea" rows="3" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-family:inherit;font-size:14px;resize:vertical;"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end;">
+        <button type="button" class="btn-ghost" onclick="closeSmsEditor()">Annuler</button>
+        <button type="button" class="btn-primary" style="padding:8px 20px;" onclick="saveSmsMessage()">Enregistrer</button>
+      </div>
+    </div>
 
-      var btn = document.getElementById('btn-contact');
-      btn.innerHTML = '<span class="spinner"></span>Envoi…';
-      btn.disabled  = true;
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Appels manqués ce mois</div>
+        <div class="kpi-val">14</div>
+        <div class="kpi-delta">↑ +3 vs mars</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Prospects relancés</div>
+        <div class="kpi-val">11</div>
+        <div class="kpi-delta">79% de taux de rappel</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Devis envoyés</div>
+        <div class="kpi-val">7</div>
+        <div class="kpi-delta">↑ +2 cette semaine</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">CA récupéré</div>
+        <div class="kpi-val">4 200€</div>
+        <div class="kpi-delta">↑ Meilleur mois</div>
+      </div>
+    </div>
 
-      fetch('/api/contact', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prenom: prenom, telephone: tel, activite: activite })
-      })
-      .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
-      .then(function() {
-        document.getElementById('form-contact-wrap').style.display = 'none';
-        document.getElementById('contact-success').style.display    = 'block';
-      })
-      .catch(function() {
-        btn.innerHTML = 'Être rappelé';
-        btn.disabled  = false;
-        showToast('Une erreur est survenue — réessayez.', true);
-      });
-    }
+    <div class="table-wrap">
+      <div class="table-head">
+        <h2>Appels manqués récents</h2>
+        <span style="font-size:12px;color:var(--muted);">5 entrées &nbsp;·&nbsp; 2 nouveaux</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Client</th><th>Date & heure</th><th>Motif probable</th><th>SMS envoyé</th><th>Statut</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr>
+            <td>06 12 34 56 78</td><td>Aujourd'hui, 09h14</td><td>Fuite détectée</td><td>✓ 09h14</td>
+            <td><span class="badge badge-new">Nouveau</span></td>
+            <td><button type="button" class="action-btn" onclick="markDone(this)">Rappeler</button></td>
+          </tr>
+          <tr>
+            <td>Sophie Riedinger</td><td>Aujourd'hui, 08h51</td><td>Installation robinet</td><td>✓ 08h51</td>
+            <td><span class="badge badge-wait">En attente</span></td>
+            <td><button type="button" class="action-btn" onclick="markDone(this)">Rappeler</button></td>
+          </tr>
+          <tr>
+            <td>Jean-Paul Muller</td><td>Hier, 17h30</td><td>Chauffe-eau HS</td><td>✓ 17h30</td>
+            <td><span class="badge badge-done">Rappelé</span></td>
+            <td><button type="button" class="action-btn" disabled>Fait</button></td>
+          </tr>
+          <tr>
+            <td>07 89 01 23 45</td><td>Hier, 14h12</td><td>Devis rénovation</td><td>✓ 14h13</td>
+            <td><span class="badge badge-done">Rappelé</span></td>
+            <td><button type="button" class="action-btn" disabled>Fait</button></td>
+          </tr>
+          <tr>
+            <td>Fatima Benali</td><td>11/04, 11h05</td><td>Dégât des eaux</td><td>✓ 11h05</td>
+            <td><span class="badge badge-new">Nouveau</span></td>
+            <td><button type="button" class="action-btn" onclick="markDone(this)">Rappeler</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
-    /* ─── MOT DE PASSE OUBLIÉ ────────────────── */
-    function showForgotPassword() {
-      document.getElementById('login-form').style.display   = 'none';
-      document.getElementById('forgot-form').style.display  = 'flex';
-      document.getElementById('login-footer').style.display = 'none';
-      document.querySelector('#modal-login .modal-header h2').textContent = 'Réinitialiser le mot de passe';
-    }
-    function showLoginForm() {
-      document.getElementById('forgot-form').style.display   = 'none';
-      document.getElementById('forgot-success').style.display = 'none';
-      document.getElementById('login-form').style.display    = 'flex';
-      document.getElementById('login-footer').style.display  = '';
-      document.querySelector('#modal-login .modal-header h2').textContent = 'Connexion';
-    }
-    function submitForgotPassword() {
-      var email = document.getElementById('forgot-email').value.trim();
-      if (!isValidEmail(email)) { showToast('Email invalide.', true); return; }
-      var btn = document.getElementById('btn-forgot');
-      btn.innerHTML = '<span class="spinner"></span>Envoi…';
-      btn.disabled  = true;
-      _supabase.auth.resetPasswordForEmail(email, { redirectTo: 'https://relion-five.vercel.app' })
-        .then(function(res) {
-          btn.innerHTML = 'Envoyer le lien';
-          btn.disabled  = false;
-          if (res.error) { showToast(res.error.message || 'Erreur.', true); return; }
-          document.getElementById('forgot-form').style.display    = 'none';
-          document.getElementById('forgot-success').style.display = 'block';
+<!-- COMMENT ÇA MARCHE (page dédiée) -->
+<div id="page-how">
+  <div class="dash-wrap" style="max-width:700px;">
+    <div class="dash-top">
+      <div><h1>Comment ça marche</h1><p>Trois étapes, aucune action compliquée.</p></div>
+      <button type="button" class="btn-ghost" onclick="showPage('landing')">← Retour</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="feat-card">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:56px;color:rgba(26,86,232,0.12);line-height:1;margin-bottom:1rem;">01</div>
+        <h3>L'appel part sans réponse</h3>
+        <p>Relion détecte l'appel manqué instantanément, quelle que soit votre ligne configurée.</p>
+      </div>
+      <div class="feat-card">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:56px;color:rgba(26,86,232,0.12);line-height:1;margin-bottom:1rem;">02</div>
+        <h3>Un SMS part en votre nom</h3>
+        <p>Le prospect reçoit un message personnalisé en 3 secondes — avant de chercher ailleurs.</p>
+      </div>
+      <div class="feat-card">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:56px;color:rgba(26,86,232,0.12);line-height:1;margin-bottom:1rem;">03</div>
+        <h3>Vous rappelez au bon moment</h3>
+        <p>Tout est dans votre tableau de bord : nom, numéro, heure, statut. Vous rappelez quand vous êtes disponible.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SIMULATION (page dédiée) -->
+<div id="page-simulation">
+  <div class="dash-wrap" style="max-width:600px;">
+    <div class="dash-top">
+      <div><h1>Simulation</h1><p>Estimez ce que vous perdez chaque mois.</p></div>
+      <button type="button" class="btn-ghost" onclick="showPage('landing')">← Retour</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="kpi-card">
+        <div class="kpi-label">Appels manqués par semaine</div>
+        <input type="range" min="1" max="30" value="5" id="sim-calls" oninput="calcSim()" style="width:100%;margin:10px 0 4px;">
+        <div style="font-family:'Sora',sans-serif;font-size:28px;font-weight:700;" id="sim-calls-out">5</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Valeur moyenne d'un chantier (€)</div>
+        <input type="range" min="100" max="5000" step="100" value="500" id="sim-value" oninput="calcSim()" style="width:100%;margin:10px 0 4px;">
+        <div style="font-family:'Sora',sans-serif;font-size:28px;font-weight:700;" id="sim-value-out">500 €</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div class="kpi-label">Perdu par mois sans Relion</div>
+          <div style="font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:#C05050;margin-top:4px;" id="sim-lost">—</div>
+        </div>
+        <div>
+          <div class="kpi-label">Récupérable avec Relion</div>
+          <div style="font-family:'Sora',sans-serif;font-size:26px;font-weight:700;color:#3DBF80;margin-top:4px;" id="sim-gain">—</div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);">Estimation illustrative basée sur une récupération partielle via SMS automatique.</p>
+      <button type="button" class="btn-plan-blue" onclick="showPage('landing')">Je veux essayer gratuitement</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">Statut mis à jour ✓</div>
+
+<!-- MODAL CONNEXION -->
+<div class="modal-overlay" id="modal-login" onclick="handleOverlayClick(event,'modal-login')">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Connexion</h2>
+      <button class="modal-close" onclick="closeModal('modal-login')">✕</button>
+    </div>
+    <div class="modal-form" id="login-form">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="login-email" type="email" placeholder="vous@exemple.fr" autocomplete="email" />
+        <span class="field-error" id="err-login-email">Email invalide.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <input class="form-input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password" />
+        <span class="field-error" id="err-login-password">Mot de passe requis.</span>
+      </div>
+      <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" id="btn-login" onclick="submitLogin()">Se connecter</button>
+    </div>
+    <div class="modal-footer">Pas encore de compte ? <a onclick="switchModal('modal-login','modal-signup')">Créer un compte</a></div>
+  </div>
+</div>
+
+<!-- MODAL INSCRIPTION -->
+<div class="modal-overlay" id="modal-signup" onclick="handleOverlayClick(event,'modal-signup')">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Créer un compte</h2>
+      <button class="modal-close" onclick="closeModal('modal-signup')">✕</button>
+    </div>
+    <div id="signup-plan-badge" style="display:none;margin-bottom:1rem;">
+      <span style="display:inline-block;padding:4px 12px;background:var(--blue-dim);border:1px solid rgba(46,107,255,0.3);border-radius:20px;font-size:12px;color:var(--blue-light);">Plan <strong id="signup-plan-name"></strong> sélectionné</span>
+    </div>
+    <div class="modal-form" id="signup-form">
+      <div class="form-group">
+        <label class="form-label">Prénom</label>
+        <input class="form-input" id="signup-prenom" type="text" placeholder="Jean" autocomplete="given-name" />
+        <span class="field-error" id="err-signup-prenom">Prénom requis.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="signup-email" type="email" placeholder="vous@exemple.fr" autocomplete="email" />
+        <span class="field-error" id="err-signup-email">Email invalide.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Numéro de téléphone professionnel</label>
+        <input class="form-input" id="signup-tel" type="tel" placeholder="+33 6 12 34 56 78" autocomplete="tel" />
+        <span class="field-error" id="err-signup-tel">Numéro invalide.</span>
+      </div>
+      <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" id="btn-signup" onclick="submitSignup()">Continuer vers le paiement →</button>
+      <p style="font-size:11px;color:var(--muted);text-align:center;line-height:1.5;margin-top:8px;">1 mois gratuit · Sans engagement · Résiliation en 1 clic</p>
+    </div>
+    <div class="form-success" id="signup-success">
+      <div class="form-success-icon">⟳</div>
+      <h3>Redirection en cours…</h3>
+      <p>Vous allez être redirigé vers le paiement sécurisé.</p>
+    </div>
+    <div class="modal-footer">Déjà un compte ? <a onclick="switchModal('modal-signup','modal-login')">Se connecter</a></div>
+  </div>
+</div>
+
+<script>
+  /* ─── POSITION SCROLL ───────────────────────────── */
+  /* ─── SCROLL RESTORATION ─────────────────────────── */
+  (function() {
+    var y = sessionStorage.getItem('sy');
+    if (y !== null) {
+      window.scrollTo(0, +y);
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          document.documentElement.style.visibility = '';
         });
-    }
-    function submitNewPassword() {
-      var pass = document.getElementById('new-password').value;
-      var errEl = document.getElementById('err-new-password');
-      if (pass.length < 6) { errEl.style.display = 'block'; return; }
-      errEl.style.display = 'none';
-      var btn = document.getElementById('btn-new-password');
-      btn.innerHTML = '<span class="spinner"></span>Enregistrement…';
-      btn.disabled  = true;
-      _supabase.auth.updateUser({ password: pass }).then(function(res) {
-        btn.innerHTML = 'Enregistrer le mot de passe';
-        btn.disabled  = false;
-        if (res.error) { showToast(res.error.message || 'Erreur.', true); return; }
-        closeModal('modal-new-password');
-        showToast('Mot de passe mis à jour ✓', false);
-        showPage('dashboard');
       });
     }
+  })();
+  var _sst;
+  window.addEventListener('scroll', function() {
+    clearTimeout(_sst);
+    _sst = setTimeout(function() { sessionStorage.setItem('sy', window.scrollY); }, 100);
+  }, { passive: true });
 
-        /* ─── MODAL LOGIN ──────────────────── */
-    function submitLogin() {
-      var email = document.getElementById('login-email').value.trim();
-      var pass  = document.getElementById('login-password').value;
+  /* ─── SMOOTH SCROLL SANS HASH ────────────────────── */
+  function scrollTo_(selector) {
+    var target = document.querySelector(selector);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
-      var ok = true;
-      setError('login-email',    'err-login-email',    !isValidEmail(email)); if (!isValidEmail(email)) ok = false;
-      setError('login-password', 'err-login-password', !pass);                if (!pass) ok = false;
-      if (!ok) return;
-
-      var btn = document.getElementById('btn-login');
-      if (btn) { btn.innerHTML = '<span class="spinner"></span>Connexion…'; btn.disabled = true; }
-
-      // Vérifie si cet email est connu en localStorage
-      var stored = null;
-      try { stored = JSON.parse(localStorage.getItem('relion_user') || 'null'); } catch(e) {}
-
-      if (stored && stored.email === email) {
-        closeModal('modal-login');
-        showPage('dashboard');
-        return;
-      }
-
-      // Email inconnu → proposer de s'inscrire
-      if (btn) { btn.innerHTML = 'Se connecter'; btn.disabled = false; }
-      var errEl = document.getElementById('err-login-email');
-      if (errEl) { errEl.textContent = "Compte introuvable — inscrivez-vous d'abord."; }
-      setError('login-email', 'err-login-email', true);
-    }
-
-    /* ─── MODAL SIGNUP ─────────────────── */
-    function submitSignup() {
-      var prenom = document.getElementById('signup-prenom').value.trim();
-      var email  = document.getElementById('signup-email').value.trim();
-      var tel    = document.getElementById('signup-tel').value.trim();
-      var plan   = (document.getElementById('signup-plan-name') || {}).textContent || 'Essentiel';
-
-      var ok = true;
-      setError('signup-prenom', 'err-signup-prenom', !prenom);             if (!prenom) ok = false;
-      setError('signup-email',  'err-signup-email',  !isValidEmail(email)); if (!isValidEmail(email)) ok = false;
-      setError('signup-tel',    'err-signup-tel',    !isValidPhone(tel));   if (!isValidPhone(tel))   ok = false;
-      if (!ok) return;
-
-      var btn = document.getElementById('btn-signup');
-      btn.innerHTML = '<span class="spinner"></span>Redirection vers le paiement…';
-      btn.disabled  = true;
-
-      // Mémoriser l'utilisateur pour le login ultérieur
-      try { localStorage.setItem('relion_user', JSON.stringify({ prenom: prenom, email: email, telephone: tel })); } catch(e) {}
-
-      // Appeler Stripe directement
-      fetch('/api/subscribe', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prenom: prenom, email: email, telephone: tel, plan: plan })
-      })
-      .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
-      .then(function(data) {
-        if (data.url) {
-          document.getElementById('signup-form').style.display    = 'none';
-          document.getElementById('signup-success').style.display = 'block';
-          var footer = document.querySelector('#modal-signup .modal-footer');
-          if (footer) footer.style.display = 'none';
-          setTimeout(function() { window.location.href = data.url; }, 600);
-        } else {
-          throw new Error('no url');
-        }
-      })
-      .catch(function() {
-        btn.innerHTML = 'Continuer vers le paiement →';
-        btn.disabled  = false;
-        showToast('Erreur lors de la redirection — réessayez.', true);
-      });
-    }
-
-    /* ─── BOUTON DÉMARRER (vérifie session) ─────── */
-    function handleStartClick(plan) {
-      var stored = null;
-      try { stored = JSON.parse(localStorage.getItem('relion_user') || 'null'); } catch(e) {}
-
-      if (stored && stored.email) {
-        showToast('Redirection vers le paiement…', false);
-        fetch('/api/subscribe', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prenom: stored.prenom, email: stored.email, telephone: stored.telephone, plan: plan })
-        })
-        .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
-        .then(function(data) { if (data.url) window.location.href = data.url; })
-        .catch(function() { openModal('modal-signup', plan); });
-      } else {
-        openModal('modal-signup', plan);
-      }
-    }
-
-/* ─── SIMULATION (hero inline) ───────────────────── */
-    var simCallsMin = 1;
-    var simCallsMax = 3;
-
-    function selectCalls(btn) {
-      document.querySelectorAll('.sim-btn').forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      simCallsMin = parseInt(btn.dataset.min, 10);
-      simCallsMax = parseInt(btn.dataset.max, 10);
-      runSim();
-    }
-
-    function runSim() {
-      var input  = document.getElementById('prev-value');
-      var wrap   = document.getElementById('prev-value-wrap');
-      var val    = parseFloat(input.value);
-      var result = document.getElementById('prev-gain');
-      if (!val || val <= 0) { wrap.style.borderColor = '#E05555'; result.textContent = '—'; return; }
-      wrap.style.borderColor = '';
-      var gainMin = Math.round(simCallsMin * 4 * 0.65 * val);
-      var gainMax = Math.round(simCallsMax * 4 * 0.65 * val);
-      result.textContent = gainMin.toLocaleString('fr-FR') + ' – ' + gainMax.toLocaleString('fr-FR') + ' €';
-    }
-
-    /* ─── SIMULATION (page dédiée) ───────────────────── */
-    function calcSim() {
-      var calls = parseInt(document.getElementById('sim-calls').value, 10);
-      var value = parseInt(document.getElementById('sim-value').value, 10);
-      document.getElementById('sim-calls-out').textContent = calls;
-      document.getElementById('sim-value-out').textContent = value.toLocaleString('fr-FR') + ' €';
-      var perMonth = calls * 4;
-      document.getElementById('sim-lost').textContent = Math.round(perMonth * 0.85 * value).toLocaleString('fr-FR') + ' €';
-      document.getElementById('sim-gain').textContent = Math.round(perMonth * 0.65 * value).toLocaleString('fr-FR') + ' €';
-    }
-
-    /* ─── DASHBOARD : marquer rappelé ───────────────── */
-    function markDone(btn) {
-      var row   = btn.closest('tr');
-      var badge = row.querySelector('.badge');
-      badge.className   = 'badge badge-done';
-      badge.textContent = 'Rappelé';
-      btn.disabled      = true;
-      btn.textContent   = 'Fait';
-      showToast('Statut mis à jour ✓', false);
-    }
-
-    /* ─── TOAST ─────────────────────────────────────── */
-    function showToast(msg, isError) {
-      var t = document.getElementById('toast');
-      t.textContent  = msg;
-      t.style.background   = isError ? '#2B1A1A' : '#1A2B1A';
-      t.style.borderColor  = isError ? 'rgba(192,80,80,.3)' : 'rgba(74,222,128,.3)';
-      t.style.color        = isError ? '#E07070' : '#4ADE80';
-      t.style.display = 'block';
-      setTimeout(function() { t.style.display = 'none'; }, 2500);
-    }
-
-    calcSim();
-
-  // ─── Détection paramètres Stripe après redirection ──────────────────────
-  document.addEventListener('DOMContentLoaded', function() {
-  showPage('landing');
-    var params = new URLSearchParams(window.location.search);
-    var sp = params.get('stripe');
-    if (sp) {
-      window.history.replaceState({}, document.title, window.location.pathname);
-      if (sp === 'success') {
-        openModal('modal-stripe-success');
-      } else if (sp === 'cancel') {
-        var b = document.getElementById('stripe-cancel-banner');
-        if (b) { b.style.display = 'flex'; setTimeout(function(){ b.style.display = 'none'; }, 7000); }
-      }
-    }
+  /* ─── NAV SCROLL ─────────────────────────────────── */
+  window.addEventListener('scroll', function() {
+    var nav = document.getElementById('main-nav');
+    if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
   });
 
-  // ─── Résiliation abonnement ───────────────────────────────────────────────
-  function openCancelModal() {
-    var ta = document.getElementById('cancel-reason-text');
-    if (ta) ta.value = '';
-    var s = document.getElementById('cancel-success-state');
-    var f = document.getElementById('cancel-form-state');
-    if (s) s.style.display = 'none';
-    if (f) f.style.display = 'block';
-    var btn = document.getElementById('btn-confirm-cancel');
-    if (btn) { btn.disabled = false; btn.textContent = 'Confirmer la résiliation'; }
-    openModal('modal-cancel-sub');
-  }
+  /* ─── FAQ ACCORDION ──────────────────────────────── */
+  function toggleFaq(questionEl) {
+    var item = questionEl.parentElement;
+    var answer = item.querySelector('.faq-answer');
+    var isOpen = item.classList.contains('open');
 
-  async function submitCancellation() {
-    var reason = (document.getElementById('cancel-reason-text')?.value || '').trim();
-    if (!reason) { alert('Merci de nous indiquer votre raison (aide-nous à nous améliorer).'); return; }
-    var btn = document.getElementById('btn-confirm-cancel');
-    if (btn) { btn.disabled = true; btn.textContent = 'Résiliation en cours…'; }
-    try {
-      var sess = await _supabase.auth.getSession();
-      var token = sess.data.session?.access_token || '';
-      var resp = await fetch('/api/cancel', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ reason: reason })
-      });
-      var data = await resp.json();
-      if (resp.ok && data.success) {
-        var f = document.getElementById('cancel-form-state');
-        var s = document.getElementById('cancel-success-state');
-        if (f) f.style.display = 'none';
-        if (s) s.style.display = 'block';
-      } else {
-        alert('Erreur : ' + (data.error || 'Réessayez dans quelques instants.'));
-        if (btn) { btn.disabled = false; btn.textContent = 'Confirmer la résiliation'; }
-      }
-    } catch(err) {
-      alert('Erreur réseau. Réessayez dans quelques instants.');
-      if (btn) { btn.disabled = false; btn.textContent = 'Confirmer la résiliation'; }
-    }
-  }
-
-
-  // ─── Dashboard : chargement des vraies données ───────────────────────────
-
-  async function loadDashboard() {
-    const { data: { session } } = await _supabase.auth.getSession();
-    if (!session) return;
-    const userId = session.user.id;
-    const userEmail = session.user.email;
-    const isAdmin = userEmail === 'alix.sarikabadayi@gmail.com';
-
-    // Charger profil et appels en parallèle
-    const [{ data: profile }, { data: calls }] = await Promise.all([
-      _supabase.from('profiles').select('*').eq('id', userId).single(),
-      _supabase.from('missed_calls').select('*').eq('user_id', userId).order('called_at', { ascending: false }).limit(100)
-    ]);
-
-    const allCalls = calls || [];
-    const prenom = profile?.prenom || userEmail.split('@')[0] || 'Artisan';
-
-    // Mise à jour du sous-titre et du bouton nav
-    const dash = document.getElementById('page-dashboard');
-    const subtitle = dash?.querySelector('.dash-top p');
-    if (subtitle) {
-      const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-      const now = new Date();
-      subtitle.textContent = prenom + ' · ' + months[now.getMonth()] + ' ' + now.getFullYear();
-    }
-    const btnCompte = document.getElementById('btn-nav-compte');
-    if (btnCompte) btnCompte.textContent = 'Bonjour ' + prenom;
-
-    // Calcul des stats du mois courant
-    const now = new Date();
-    const callsMonth = allCalls.filter(function(c) {
-      var d = new Date(c.called_at);
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    // Close all
+    document.querySelectorAll('.faq-item').forEach(function(i) {
+      i.classList.remove('open');
+      var a = i.querySelector('.faq-answer');
+      if (a) a.style.maxHeight = '0';
     });
-    const smsSent = callsMonth.filter(function(c){ return c.sms_sent; }).length;
-    const rappeles = allCalls.filter(function(c){ return c.status === 'rappelé'; }).length;
 
-    // Mise à jour des KPI cards
-    var kpiCards = document.querySelectorAll('.kpi-card');
-    if (kpiCards[0]) {
-      kpiCards[0].querySelector('.kpi-val').textContent = callsMonth.length;
-      kpiCards[0].querySelector('.kpi-delta').textContent = callsMonth.length > 0 ? smsSent + ' SMS envoyé' + (smsSent > 1 ? 's' : '') + ' automatiquement' : 'Aucun appel ce mois';
+    // Open clicked if it was closed
+    if (!isOpen) {
+      item.classList.add('open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
     }
-    if (kpiCards[1]) {
-      kpiCards[1].querySelector('.kpi-val').textContent = smsSent;
-      var rate = callsMonth.length > 0 ? Math.round(smsSent / callsMonth.length * 100) : 0;
-      kpiCards[1].querySelector('.kpi-delta').textContent = rate + '% de taux de réponse SMS';
-    }
-    if (kpiCards[2]) {
-      kpiCards[2].querySelector('.kpi-val').textContent = rappeles;
-      kpiCards[2].querySelector('.kpi-delta').textContent = rappeles + ' rappel' + (rappeles > 1 ? 's' : '') + ' effectué' + (rappeles > 1 ? 's' : '');
-    }
-    if (kpiCards[3]) {
-      kpiCards[3].querySelector('.kpi-val').textContent = allCalls.length;
-      kpiCards[3].querySelector('.kpi-delta').textContent = 'Total depuis le début';
-    }
+  }
 
-    // Mise à jour du tableau
-    var tbody = document.getElementById('tbody');
-    if (tbody) {
-      if (allCalls.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--muted);">Aucun appel enregistré pour l\'instant. Configurez votre numéro Relion pour commencer.</td></tr>';
-      } else {
-        tbody.innerHTML = allCalls.slice(0, 20).map(function(call) {
-          var d = new Date(call.called_at);
-          var timeStr = d.getHours().toString().padStart(2,'0') + 'h' + d.getMinutes().toString().padStart(2,'0');
-          var dateStr = _formatCallDate(d);
-          var smsStr = call.sms_sent ? ('✓ ' + timeStr) : '—';
-          var statusBg = call.status === 'rappelé' ? '#3DBF80' : call.status === 'en_attente' ? '#F5A623' : '#1A56E8';
-          var statusLabel = call.status === 'rappelé' ? 'Rappelé' : call.status === 'en_attente' ? 'En attente' : 'Nouveau';
-          var action = call.status !== 'rappelé'
-            ? '<button onclick="markRappeled(\'' + call.id + '\',this)" style="padding:0.25rem 0.75rem;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:var(--text);cursor:pointer;font-size:0.8rem;">Rappeler</button>'
-            : '<span style="color:var(--muted);font-size:0.85rem">Fait</span>';
-          return '<tr style="border-bottom:1px solid rgba(255,255,255,0.05)">' +
-            '<td style="padding:0.75rem 0.5rem">' + (call.caller_number || '—') + '</td>' +
-            '<td style="padding:0.75rem 0.5rem">' + dateStr + '</td>' +
-            '<td style="padding:0.75rem 0.5rem">' + (call.motif || '—') + '</td>' +
-            '<td style="padding:0.75rem 0.5rem">' + smsStr + '</td>' +
-            '<td style="padding:0.75rem 0.5rem"><span style="font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:20px;background:' + statusBg + ';color:#fff;white-space:nowrap">' + statusLabel + '</span></td>' +
-            '<td style="padding:0.75rem 0.5rem">' + action + '</td>' +
-            '</tr>';
-        }).join('');
+  /* ─── NAVIGATION ─────────────────────────────────── */
+  function showPage(name) {
+    ['landing', 'dashboard', 'how', 'simulation'].forEach(function(p) {
+      var el = document.getElementById('page-' + p);
+      if (el) el.style.display = (p === name) ? 'block' : 'none';
+    });
+    window.scrollTo(0, 0);
+  }
+
+  /* ─── MODALS ─────────────────────────────────────── */
+  function openModal(id, plan) {
+    var overlay = document.getElementById(id);
+    if (!overlay) return;
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (id === 'modal-signup' && plan) {
+      var badge = document.getElementById('signup-plan-badge');
+      var name  = document.getElementById('signup-plan-name');
+      if (badge && name) { badge.style.display = 'block'; name.textContent = plan; }
+    }
+  }
+  function closeModal(id) {
+    var overlay = document.getElementById(id);
+    if (overlay) overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function handleOverlayClick(e, id) {
+    if (e.target === e.currentTarget) closeModal(id);
+  }
+  function switchModal(from, to) {
+    closeModal(from);
+    setTimeout(function() { openModal(to); }, 180);
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') ['modal-login', 'modal-signup'].forEach(closeModal);
+  });
+
+  /* ─── VALIDATION ─────────────────────────────────── */
+  function isValidPhone(v) { return /^[\d\s\+\-\.]{8,15}$/.test(v.trim()); }
+  function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }
+  function setError(inputId, errId, show) {
+    var inp = document.getElementById(inputId);
+    var err = document.getElementById(errId);
+    if (!inp || !err) return;
+    if (show) { inp.classList.add('input-error'); err.style.display = 'block'; }
+    else { inp.classList.remove('input-error'); err.style.display = 'none'; }
+  }
+
+  /* ─── FORMULAIRE CONTACT ─────────────────────────── */
+  function submitContact() {
+    var prenom   = document.getElementById('contact-prenom').value.trim();
+    var tel      = document.getElementById('contact-tel').value.trim();
+    var activite = document.getElementById('contact-activite').value.trim();
+    var ok = true;
+    setError('contact-prenom',   'err-prenom',   !prenom);            if (!prenom)            ok = false;
+    setError('contact-tel',      'err-tel',      !isValidPhone(tel)); if (!isValidPhone(tel)) ok = false;
+    setError('contact-activite', 'err-activite', !activite);          if (!activite)          ok = false;
+    if (!ok) return;
+    var btn = document.getElementById('btn-contact');
+    btn.innerHTML = '<span class="spinner"></span>Envoi…';
+    btn.disabled  = true;
+    fetch('https://relion-five.vercel.app/api/contact', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prenom: prenom, telephone: tel, activite: activite })
+    })
+    .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function() {
+      document.getElementById('form-contact-wrap').style.display = 'none';
+      document.getElementById('contact-success').style.display   = 'block';
+    })
+    .catch(function() {
+      btn.innerHTML = 'Être rappelé aujourd\'hui →';
+      btn.disabled  = false;
+      showToast('Une erreur est survenue — réessayez.', true);
+    });
+  }
+
+  /* ─── AUTH CONSTANTS ────────────────────────────── */
+  var API = 'https://relion-five.vercel.app';
+
+  /* ─── INIT AUTH (au chargement de la page) ──────── */
+  function initAuth() {
+    var token = localStorage.getItem('relion_token');
+    if (!token) return;
+    fetch(API + '/api/auth/me', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function(data) {
+      loadDashboard(data.user);
+      showPage('dashboard');
+    })
+    .catch(function() {
+      localStorage.removeItem('relion_token');
+    });
+  }
+
+  /* ─── CHARGER LE DASHBOARD ──────────────────────── */
+  function loadDashboard(user) {
+    var mois = new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    mois = mois.charAt(0).toUpperCase() + mois.slice(1);
+    var subtitle = document.getElementById('dash-subtitle');
+    if (subtitle) {
+      subtitle.textContent = (user.prenom || user.email) + (user.activite ? ' · ' + user.activite : '') + ' · ' + mois;
+    }
+    var textarea = document.getElementById('sms-textarea');
+    if (textarea && user.sms_message) {
+      textarea.value = user.sms_message;
+    }
+  }
+
+  /* ─── LOGOUT ────────────────────────────────────── */
+  function logoutUser() {
+    localStorage.removeItem('relion_token');
+    showPage('landing');
+    showToast('Vous êtes déconnecté.');
+  }
+
+  /* ─── EDITEUR SMS ───────────────────────────────── */
+  function openSmsEditor() {
+    var editor = document.getElementById('sms-editor');
+    if (editor) editor.style.display = 'block';
+  }
+  function closeSmsEditor() {
+    var editor = document.getElementById('sms-editor');
+    if (editor) editor.style.display = 'none';
+  }
+  function saveSmsMessage() {
+    var token = localStorage.getItem('relion_token');
+    if (!token) return;
+    var msg = (document.getElementById('sms-textarea') || {}).value || '';
+    fetch(API + '/api/auth/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ sms_message: msg })
+    })
+    .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function() {
+      closeSmsEditor();
+      showToast('Message SMS enregistré ✓');
+    })
+    .catch(function() {
+      showToast('Erreur lors de la sauvegarde.', true);
+    });
+  }
+
+  /* ─── MODAL LOGIN ────────────────────────────────── */
+  function submitLogin() {
+    var email = document.getElementById('login-email').value.trim();
+    var pass  = document.getElementById('login-password').value;
+    var ok = true;
+    setError('login-email',    'err-login-email',    !isValidEmail(email)); if (!isValidEmail(email)) ok = false;
+    setError('login-password', 'err-login-password', !pass);                if (!pass) ok = false;
+    if (!ok) return;
+    var btn = document.getElementById('btn-login');
+    if (btn) { btn.innerHTML = '<span class="spinner"></span>Connexion…'; btn.disabled = true; }
+
+    fetch(API + '/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: pass })
+    })
+    .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+    .then(function(res) {
+      if (!res.ok) {
+        if (btn) { btn.innerHTML = 'Se connecter'; btn.disabled = false; }
+        var errEl = document.getElementById('err-login-email');
+        if (errEl) { errEl.textContent = res.data.error || 'Email ou mot de passe incorrect.'; }
+        setError('login-email', 'err-login-email', true);
+        return;
       }
-    }
-
-    // Mise à jour en-tête tableau
-    var tableHead = document.querySelector('.table-head');
-    if (tableHead) {
-      var newCount = allCalls.filter(function(c){ return c.status === 'nouveau'; }).length;
-      tableHead.innerHTML =
-        '<span style="font-weight:700">Appels manqués récents</span>' +
-        '<div style="font-size:0.85rem;color:var(--muted)">' + allCalls.length + ' enregistré' + (allCalls.length !== 1 ? 's' : '') +
-        (newCount > 0 ? '&nbsp;·&nbsp;<span style="color:var(--blue);font-weight:600">' + newCount + ' nouveau' + (newCount > 1 ? 'x' : '') + '</span>' : '') +
-        '</div>';
-    }
-
-    // Alerte paiement échoué
-    if (profile?.subscription_status === 'past_due' && !document.getElementById('pay-fail-banner')) {
-      var banner = document.createElement('div');
-      banner.id = 'pay-fail-banner';
-      banner.style.cssText = 'background:rgba(192,80,80,0.15);border:1px solid rgba(192,80,80,0.4);border-radius:10px;padding:0.75rem 1.25rem;margin-bottom:1rem;font-size:0.9rem;display:flex;align-items:center;gap:0.75rem;';
-      banner.innerHTML = '<span>⚠️</span><span>Votre dernier paiement a échoué. <a href="https://billing.stripe.com" style="color:var(--blue)">Mettre à jour ma carte →</a></span>';
-      var dashWrap = document.querySelector('#page-dashboard .dash-wrap');
-      if (dashWrap) dashWrap.insertBefore(banner, dashWrap.firstChild);
-    }
-
-    // Bouton Résilier
-    if (!document.getElementById('btn-resilier')) {
-      var dashTop = document.querySelector('.dash-top');
-      if (dashTop) {
-        var btn = document.createElement('button');
-        btn.id = 'btn-resilier';
-        btn.textContent = 'Résilier l\'abonnement';
-        btn.onclick = openCancelModal;
-        btn.style.cssText = 'background:transparent;border:1px solid rgba(192,80,80,0.35);color:#E07070;padding:0.35rem 0.85rem;border-radius:8px;cursor:pointer;font-size:0.8rem;margin-top:0.5rem;display:block;';
-        dashTop.appendChild(btn);
-      }
-    }
-
-    // Vue admin
-    if (isAdmin) _loadAdminPanel();
+      localStorage.setItem('relion_token', res.data.token);
+      loadDashboard(res.data.user);
+      closeModal('modal-login');
+      showPage('dashboard');
+      if (btn) { btn.innerHTML = 'Se connecter'; btn.disabled = false; }
+    })
+    .catch(function() {
+      if (btn) { btn.innerHTML = 'Se connecter'; btn.disabled = false; }
+      showToast('Erreur de connexion — réessayez.', true);
+    });
   }
 
-  function _formatCallDate(d) {
-    var now = new Date();
-    var yesterday = new Date(now); yesterday.setDate(yesterday.getDate()-1);
-    var t = d.getHours().toString().padStart(2,'0') + 'h' + d.getMinutes().toString().padStart(2,'0');
-    if (d.toDateString() === now.toDateString()) return 'Aujourd\'hui, ' + t;
-    if (d.toDateString() === yesterday.toDateString()) return 'Hier, ' + t;
-    return d.getDate().toString().padStart(2,'0') + '/' + (d.getMonth()+1).toString().padStart(2,'0') + ' ' + t;
+  /* ─── MODAL SIGNUP ───────────────────────────────── */
+  function submitSignup() {
+    var prenom = document.getElementById('signup-prenom').value.trim();
+    var email  = document.getElementById('signup-email').value.trim();
+    var tel    = document.getElementById('signup-tel').value.trim();
+    var plan   = (document.getElementById('signup-plan-name') || {}).textContent || 'Essentiel';
+    var ok = true;
+    setError('signup-prenom', 'err-signup-prenom', !prenom);              if (!prenom) ok = false;
+    setError('signup-email',  'err-signup-email',  !isValidEmail(email)); if (!isValidEmail(email)) ok = false;
+    setError('signup-tel',    'err-signup-tel',    !isValidPhone(tel));   if (!isValidPhone(tel))   ok = false;
+    if (!ok) return;
+    var btn = document.getElementById('btn-signup');
+    btn.innerHTML = '<span class="spinner"></span>Redirection vers le paiement…';
+    btn.disabled  = true;
+    try { localStorage.setItem('relion_user', JSON.stringify({ prenom: prenom, email: email, telephone: tel })); } catch(e) {}
+    fetch('https://relion-five.vercel.app/api/subscribe', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prenom: prenom, email: email, telephone: tel, plan: plan })
+    })
+    .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function(data) {
+      if (data.url) {
+        document.getElementById('signup-form').style.display    = 'none';
+        document.getElementById('signup-success').style.display = 'block';
+        var footer = document.querySelector('#modal-signup .modal-footer');
+        if (footer) footer.style.display = 'none';
+        setTimeout(function() { window.location.href = data.url; }, 600);
+      } else { throw new Error('no url'); }
+    })
+    .catch(function() {
+      btn.innerHTML = 'Continuer vers le paiement →';
+      btn.disabled  = false;
+      showToast('Erreur lors de la redirection — réessayez.', true);
+    });
   }
 
-  async function markRappeled(callId, btn) {
-    btn.disabled = true; btn.textContent = '…';
-    var { error } = await _supabase.from('missed_calls').update({ status: 'rappelé' }).eq('id', callId);
-    if (!error) {
-      var row = btn.closest('tr');
-      row.cells[4].innerHTML = '<span style="font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:20px;background:#3DBF80;color:#fff">Rappelé</span>';
-      btn.closest('td').innerHTML = '<span style="color:var(--muted);font-size:0.85rem">Fait</span>';
-    } else { btn.disabled = false; btn.textContent = 'Rappeler'; }
-  }
-
-  async function _loadAdminPanel() {
-    if (document.getElementById('admin-panel')) return;
-    var { data: profiles } = await _supabase.from('profiles').select('*').order('created_at', { ascending: false });
-    if (!profiles || profiles.length === 0) return;
-    var panel = document.createElement('div');
-    panel.id = 'admin-panel';
-    panel.style.cssText = 'margin-top:2rem;padding:1.5rem;background:var(--surface2);border-radius:16px;border:1px solid rgba(74,144,232,0.3)';
-    var rows = profiles.map(function(p) {
-      var statusColor = p.subscription_status === 'active' ? '#3DBF80' : p.subscription_status === 'trial' ? '#1A56E8' : '#C05050';
-      return '<tr style="border-bottom:1px solid rgba(255,255,255,0.05)">' +
-        '<td style="padding:0.5rem 0.75rem">' + (p.prenom||'—') + '</td>' +
-        '<td style="padding:0.5rem 0.75rem">' + (p.telephone||'—') + '</td>' +
-        '<td style="padding:0.5rem 0.75rem">' + (p.activite||'—') + '</td>' +
-        '<td style="padding:0.5rem 0.75rem"><span style="font-size:0.75rem;padding:0.2rem 0.5rem;border-radius:4px;background:' + statusColor + ';color:#fff">' + (p.subscription_status||'—') + '</span></td>' +
-        '<td style="padding:0.5rem 0.75rem;color:var(--muted);font-size:0.8rem">' + (p.relion_number||'—') + '</td>' +
-        '<td style="padding:0.5rem 0.75rem;color:var(--muted);font-size:0.8rem">' + (p.created_at ? new Date(p.created_at).toLocaleDateString('fr-FR') : '—') + '</td>' +
-        '<td style="padding:0.5rem 0.75rem;color:var(--muted);font-size:0.8rem">' + (p.cancel_reason ? p.cancel_reason.substring(0,40) : '—') + '</td>' +
-        '</tr>';
-    }).join('');
-    panel.innerHTML = '<h2 style="margin:0 0 1rem;font-size:1rem;color:var(--blue)">👑 Admin — ' + profiles.length + ' compte' + (profiles.length>1?'s':'') + '</h2>' +
-      '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:0.85rem">' +
-      '<thead><tr style="color:var(--muted);text-align:left">' +
-      '<th style="padding:0.5rem 0.75rem">Prénom</th><th style="padding:0.5rem 0.75rem">Téléphone</th><th style="padding:0.5rem 0.75rem">Activité</th><th style="padding:0.5rem 0.75rem">Statut</th><th style="padding:0.5rem 0.75rem">N° Relion</th><th style="padding:0.5rem 0.75rem">Inscrit le</th><th style="padding:0.5rem 0.75rem">Raison résil.</th>' +
-      '</tr></thead><tbody>' + rows + '</tbody></table></div>';
-    var dashWrap = document.querySelector('#page-dashboard .dash-wrap');
-    if (dashWrap) dashWrap.appendChild(panel);
-  }
-
-  // Patch showPage pour appeler loadDashboard automatiquement
-  var _origShowPage = showPage;
-  showPage = function(page) {
-    _origShowPage(page);
-    if (page === 'dashboard') loadDashboard();
-  };
-
-  </script>
-  <!-- MODAL NOUVEAU MOT DE PASSE (reset depuis email) -->
-  <div class="modal-overlay" id="modal-new-password">
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Nouveau mot de passe</h2>
-      </div>
-      <div class="modal-form" id="new-password-form">
-        <p style="font-size:14px;color:var(--muted);">Choisissez un nouveau mot de passe pour votre compte Relion.</p>
-        <div class="form-group">
-          <label class="form-label">Nouveau mot de passe</label>
-          <input class="form-input" id="new-password" type="password" placeholder="8 caractères minimum" autocomplete="new-password" />
-          <span class="field-error" id="err-new-password">6 caractères minimum.</span>
-        </div>
-        <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;" id="btn-new-password" onclick="submitNewPassword()">Enregistrer le mot de passe</button>
-      </div>
-    </div>
-  </div>
-
-
-<!-- ── Bandeau annulation Stripe (paiement annulé / CB refusée) ─────────── -->
-<div id="stripe-cancel-banner" style="display:none;position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:9999;background:#1C2030;border:1px solid rgba(255,100,100,0.4);border-radius:12px;padding:0.85rem 1.5rem;gap:1rem;align-items:center;box-shadow:0 4px 24px rgba(0,0,0,0.4);max-width:480px;width:90%;">
-  <span style="font-size:1.3rem;">&#9888;&#65039;</span>
-  <div>
-    <p style="margin:0;font-weight:600;font-size:0.95rem;">Paiement non finalisé</p>
-    <p style="margin:0;color:var(--muted);font-size:0.85rem;">Votre CB a été refusée ou vous avez annulé. <a href="#pricing" style="color:var(--blue);">Réessayer</a></p>
-  </div>
-  <button onclick="this.closest('#stripe-cancel-banner').style.display='none'" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;padding:0;line-height:1;">&#10005;</button>
-</div>
-
-<!-- ── Modal Confirmation Paiement Stripe ───────────────────────────────── -->
-<div id="modal-stripe-success" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" onclick="if(event.target===this)closeModal('modal-stripe-success')">
-  <div class="modal" style="max-width:460px;text-align:center;">
-    <div style="font-size:3rem;margin-bottom:0.75rem;">&#127881;</div>
-    <h2 style="margin-bottom:0.5rem;">Bienvenue sur Relion&#160;!</h2>
-    <p style="color:var(--muted);margin-bottom:1.5rem;line-height:1.7;">
-      Votre essai gratuit de&#160;<strong>30&#160;jours</strong> démarre maintenant.<br>
-      Aucun prélèvement avant la fin de la période d'essai.
-    </p>
-    <div style="background:var(--surface2);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.5rem;text-align:left;">
-      <p style="margin:0 0 0.5rem;font-weight:600;font-size:0.9rem;color:var(--text);">&#10003;&#160;Prochaines étapes</p>
-      <p style="margin:0;color:var(--muted);font-size:0.875rem;line-height:1.9;">
-        Votre numéro Relion est actif<br>
-        Testez votre premier appel manqué<br>
-        Suivez vos prospects dans le tableau de bord
-      </p>
-    </div>
-    <button class="btn-primary" style="width:100%;" onclick="closeModal('modal-stripe-success');showPage('dashboard');">
-      Accéder à mon tableau de bord &#8594;
-    </button>
-  </div>
-</div>
-
-<!-- ── Modal Résiliation abonnement ─────────────────────────────────────── -->
-<div id="modal-cancel-sub" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" onclick="if(event.target===this)closeModal('modal-cancel-sub')">
-  <div class="modal" style="max-width:460px;">
-    <button onclick="closeModal('modal-cancel-sub')" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.3rem;">&#10005;</button>
-
-    <!-- Formulaire de résiliation -->
-    <div id="cancel-form-state">
-      <h2 style="margin-bottom:0.5rem;">Résilier l'abonnement</h2>
-      <p style="color:var(--muted);margin-bottom:1.25rem;font-size:0.9rem;line-height:1.6;">
-        Votre abonnement sera annulé immédiatement. Aucun remboursement ne sera émis pour la période en cours.
-      </p>
-      <label style="display:block;font-weight:600;font-size:0.9rem;margin-bottom:0.5rem;">
-        Pourquoi souhaitez-vous résilier&#160;? <span style="color:var(--danger);">*</span>
-      </label>
-      <textarea id="cancel-reason-text" oninput="document.getElementById('cancel-char-count').textContent=this.value.length" placeholder="Ex : Je n'ai pas eu assez d'appels manqués, le service ne correspond pas à mes besoins…" style="width:100%;min-height:100px;padding:0.75rem;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.1);background:var(--surface2);color:var(--text);font-family:inherit;font-size:0.9rem;resize:vertical;box-sizing:border-box;" maxlength="500"></textarea>
-      <p style="color:var(--muted);font-size:0.8rem;margin:0.25rem 0 1.25rem;text-align:right;">
-        <span id="cancel-char-count">0</span>/500 caractères
-      </p>
-      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
-        <button onclick="closeModal('modal-cancel-sub')" style="flex:1;padding:0.75rem;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.15);background:transparent;color:var(--text);cursor:pointer;font-size:0.95rem;">
-          Annuler
-        </button>
-        <button id="btn-confirm-cancel" onclick="submitCancellation()" style="flex:1;padding:0.75rem;border-radius:var(--radius);border:none;background:var(--danger);color:#fff;cursor:pointer;font-size:0.95rem;font-weight:600;">
-          Confirmer la résiliation
-        </button>
-      </div>
-    </div>
-
-    <!-- État succès résiliation -->
-    <div id="cancel-success-state" style="display:none;text-align:center;">
-      <div style="font-size:2.5rem;margin-bottom:0.75rem;">&#10003;</div>
-      <h2 style="margin-bottom:0.5rem;">Abonnement résilié</h2>
-      <p style="color:var(--muted);margin-bottom:1.5rem;line-height:1.7;">
-        Votre abonnement a bien été annulé. Vous conservez l'accès jusqu'à la fin de la période en cours.<br>
-        Merci d'avoir essayé Relion.
-      </p>
-      <button class="btn-primary" style="width:100%;" onclick="closeModal('modal-cancel-sub');_supabase.auth.signOut();">
-        Fermer
-      </button>
-    </div>
-  </div>
-</div>
-
-
-  <!-- Modal Nous contacter -->
-  <div id="modal-contact" class="modal-overlay">
-    <div class="modal-box" style="max-width:480px;">
-      <button class="modal-close" onclick="closeModal('modal-contact')">×</button>
-      <h2 style="margin-bottom:1.5rem;">Nous contacter</h2>
-      <div id="contact-form-content">
-        <div class="form-group">
-          <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem;">Votre email</label>
-          <input type="email" id="contact-email" placeholder="vous@exemple.fr" style="width:100%;padding:.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:1rem;box-sizing:border-box;">
-        </div>
-        <div class="form-group" style="margin-top:1rem;">
-          <label style="display:block;margin-bottom:.4rem;color:var(--muted);font-size:.9rem;">Votre message</label>
-          <textarea id="contact-message" placeholder="Écrivez votre message ici..." rows="5" style="width:100%;padding:.75rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:1rem;resize:vertical;font-family:inherit;box-sizing:border-box;"></textarea>
-        </div>
-        <p id="contact-error" style="color:var(--danger);margin-top:.5rem;display:none;font-size:.9rem;"></p>
-        <button onclick="submitContact(this)" style="width:100%;margin-top:1.5rem;" class="btn-primary">Envoyer le message</button>
-      </div>
-      <div id="contact-success" style="display:none;text-align:center;padding:2rem 0;">
-        <div style="font-size:3rem;margin-bottom:1rem;">✉️</div>
-        <h3 style="margin-bottom:.5rem;">Message envoyé !</h3>
-        <p style="color:var(--muted);">On vous répond dès que possible.</p>
-      </div>
-    </div>
-  </div>
-
-  <script>
-  function openContactModal() {
-    document.getElementById('contact-form-content').style.display = '';
-    document.getElementById('contact-success').style.display = 'none';
-    document.getElementById('contact-email').value = '';
-    document.getElementById('contact-message').value = '';
-    var e = document.getElementById('contact-error');
-    e.style.display = 'none';
-    openModal('modal-contact');
-  }
-
-  async function submitContact(btn) {
-    var email = document.getElementById('contact-email').value.trim();
-    var message = document.getElementById('contact-message').value.trim();
-    var errEl = document.getElementById('contact-error');
-    errEl.style.display = 'none';
-    if (!email || !message) {
-      errEl.textContent = 'Merci de remplir tous les champs.';
-      errEl.style.display = 'block';
-      return;
-    }
-    btn.textContent = 'Envoi en cours…';
-    btn.disabled = true;
-    try {
-      var r = await fetch('/api/send-contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email, message: message })
-      });
-      if (r.ok) {
-        document.getElementById('contact-form-content').style.display = 'none';
-        document.getElementById('contact-success').style.display = '';
-      } else {
-        var d = await r.json().catch(() => ({}));
-        errEl.textContent = d.error || 'Erreur lors de l\'envoi. Réessayez.';
-        errEl.style.display = 'block';
-        btn.textContent = 'Envoyer le message';
-        btn.disabled = false;
-      }
-    } catch(e) {
-      errEl.textContent = 'Erreur réseau. Réessayez.';
-      errEl.style.display = 'block';
-      btn.textContent = 'Envoyer le message';
-      btn.disabled = false;
+  /* ─── BOUTON DÉMARRER ────────────────────────────── */
+  function handleStartClick(plan) {
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem('relion_user') || 'null'); } catch(e) {}
+    if (stored && stored.email) {
+      showToast('Redirection vers le paiement…', false);
+      fetch('https://relion-five.vercel.app/api/subscribe', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prenom: stored.prenom, email: stored.email, telephone: stored.telephone, plan: plan })
+      })
+      .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function(data) { if (data.url) window.location.href = data.url; })
+      .catch(function() { openModal('modal-signup', plan); });
+    } else {
+      openModal('modal-signup', plan);
     }
   }
-  </script>
+
+  /* ─── SIMULATEUR (hero) ──────────────────────────── */
+  var simCallsMin = 1, simCallsMax = 3;
+  function selectCalls(btn) {
+    document.querySelectorAll('.sim-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    simCallsMin = parseInt(btn.dataset.min, 10);
+    simCallsMax = parseInt(btn.dataset.max, 10);
+    runSim();
+  }
+  function runSim() {
+    var input  = document.getElementById('prev-value');
+    var wrap   = document.getElementById('prev-value-wrap');
+    var val    = parseFloat(input ? input.value : 0);
+    var result = document.getElementById('prev-gain');
+    if (!result) return;
+    if (!val || val <= 0) { result.textContent = '—'; return; }
+    var gainMin = Math.round(simCallsMin * 4 * 0.65 * val);
+    var gainMax = Math.round(simCallsMax * 4 * 0.65 * val);
+    result.textContent = gainMin.toLocaleString('fr-FR') + ' – ' + gainMax.toLocaleString('fr-FR') + ' €';
+  }
+
+  /* ─── SIMULATEUR (page dédiée) ───────────────────── */
+  function calcSim() {
+    var calls = parseInt(document.getElementById('sim-calls').value, 10);
+    var value = parseInt(document.getElementById('sim-value').value, 10);
+    document.getElementById('sim-calls-out').textContent = calls;
+    document.getElementById('sim-value-out').textContent = value.toLocaleString('fr-FR') + ' €';
+    var perMonth = calls * 4;
+    document.getElementById('sim-lost').textContent = Math.round(perMonth * 0.85 * value).toLocaleString('fr-FR') + ' €';
+    document.getElementById('sim-gain').textContent = Math.round(perMonth * 0.65 * value).toLocaleString('fr-FR') + ' €';
+  }
+
+  /* ─── DASHBOARD ──────────────────────────────────── */
+  function markDone(btn) {
+    var row = btn.closest('tr');
+    var badge = row.querySelector('.badge');
+    badge.className   = 'badge badge-done';
+    badge.textContent = 'Rappelé';
+    btn.disabled      = true;
+    btn.textContent   = 'Fait';
+    showToast('Statut mis à jour ✓', false);
+  }
+
+  /* ─── TOAST ──────────────────────────────────────── */
+  function showToast(msg, isError) {
+    var t = document.getElementById('toast');
+    t.textContent        = msg;
+    t.style.background   = isError ? '#2B1A1A' : '#1A2B1A';
+    t.style.borderColor  = isError ? 'rgba(192,80,80,.3)' : 'rgba(74,222,128,.3)';
+    t.style.color        = isError ? '#E07070' : '#4ADE80';
+    t.style.display = 'block';
+    setTimeout(function() { t.style.display = 'none'; }, 2500);
+  }
+
+  calcSim();
+
+  // Vérifier si déjà connecté au chargement
+  initAuth();
+
+  // Stripe success → montrer message de bienvenue
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('stripe') === 'success') {
+      history.replaceState({}, '', '/');
+      showToast('Paiement confirmé 🎉 Vous allez recevoir un email avec vos identifiants de connexion.');
+    }
+  })();
+</script>
 </body>
 </html>
+
+    
