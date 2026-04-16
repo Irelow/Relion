@@ -1722,9 +1722,14 @@
         <li><a href="javascript:void(0)" onclick="scrollTo_('#faq')">FAQ</a></li>
       </ul>
     </div>
-    <div class="nav-actions">
+    <div class="nav-actions" id="nav-guest">
       <button class="btn-ghost" type="button" onclick="openModal('modal-login')">Connexion</button>
       <button class="btn-nav-cta" type="button" onclick="openModal('modal-signup')">Inscription</button>
+    </div>
+    <div class="nav-actions" id="nav-user" style="display:none;">
+      <span id="nav-user-name" style="font-size:14px;font-weight:500;color:var(--text);padding:0 6px;"></span>
+      <button class="btn-ghost" type="button" onclick="openSmsEditor()">✏️ Mon SMS</button>
+      <button class="btn-ghost" type="button" onclick="logoutUser()" style="color:var(--muted);">Déconnexion</button>
     </div>
   </nav>
 
@@ -2437,10 +2442,23 @@
       <button type="button" class="btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:4px;" id="btn-register" onclick="submitRegister()">Créer mon compte →</button>
       <p style="font-size:11px;color:var(--muted);text-align:center;line-height:1.5;margin-top:8px;">30 jours d'essai gratuit · Sans engagement · Résiliation en 1 clic</p>
     </div>
-    <div class="form-success" id="register-success" style="display:none;">
-      <div class="form-success-icon">✓</div>
-      <h3>Compte créé !</h3>
-      <p>Bienvenue sur Relion. Vous allez recevoir un email de confirmation.</p>
+    <div id="register-pending" style="display:none;text-align:center;padding:1rem 0;">
+      <div style="font-size:48px;margin-bottom:16px;">📬</div>
+      <h3 style="margin-bottom:8px;">Vérifiez votre boîte mail</h3>
+      <p id="register-pending-email" style="color:var(--muted);font-size:14px;margin-bottom:20px;"></p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5;">
+        Un lien de confirmation vous a été envoyé.<br/>
+        <strong style="color:var(--text);">Pensez à vérifier vos spams.</strong>
+      </p>
+      <div id="resend-zone">
+        <button type="button" class="btn-ghost" style="font-size:13px;" id="btn-resend" onclick="resendVerification()">
+          Renvoyer l'email
+        </button>
+        <p id="resend-msg" style="font-size:12px;color:var(--muted);margin-top:8px;display:none;"></p>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:20px;">
+        Mauvaise adresse ? <a href="javascript:void(0)" onclick="resetRegisterForm()" style="color:var(--blue-light);">Recommencer</a>
+      </p>
     </div>
     <div class="modal-footer">Déjà un compte ? <a href="javascript:void(0)" onclick="switchModal('modal-signup','modal-login')">Se connecter</a></div>
   </div>
@@ -2589,30 +2607,35 @@
     .then(function(r) { return r.ok ? r.json() : Promise.reject(r.status); })
     .then(function(data) {
       loadDashboard(data.user);
-      showPage('dashboard');
     })
     .catch(function() {
       localStorage.removeItem('relion_token');
     });
   }
 
-  /* ─── CHARGER LE DASHBOARD ──────────────────────── */
+  /* ─── ÉTAT CONNECTÉ ─────────────────────────────── */
   function loadDashboard(user) {
-    var mois = new Date().toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-    mois = mois.charAt(0).toUpperCase() + mois.slice(1);
-    var subtitle = document.getElementById('dash-subtitle');
-    if (subtitle) {
-      subtitle.textContent = (user.prenom || user.email) + (user.activite ? ' · ' + user.activite : '') + ' · ' + mois;
-    }
+    // Mettre à jour la nav
+    var guestNav = document.getElementById('nav-guest');
+    var userNav  = document.getElementById('nav-user');
+    var userName = document.getElementById('nav-user-name');
+    if (guestNav) guestNav.style.display = 'none';
+    if (userNav)  userNav.style.display  = 'flex';
+    if (userName) userName.textContent = user.prenom || user.email;
+    // Stocker le message SMS si présent
     var textarea = document.getElementById('sms-textarea');
-    if (textarea && user.sms_message) {
-      textarea.value = user.sms_message;
-    }
+    if (textarea && user.sms_message) textarea.value = user.sms_message;
+    // Rester sur la landing page
+    showPage('landing');
   }
 
   /* ─── LOGOUT ────────────────────────────────────── */
   function logoutUser() {
     localStorage.removeItem('relion_token');
+    var guestNav = document.getElementById('nav-guest');
+    var userNav  = document.getElementById('nav-user');
+    if (guestNav) guestNav.style.display = 'flex';
+    if (userNav)  userNav.style.display  = 'none';
     showPage('landing');
     showToast('Vous êtes déconnecté.');
   }
@@ -2678,8 +2701,6 @@
       if (rdv.pendingAfterLogin) {
         rdv.pendingAfterLogin = false;
         setTimeout(openRdvDrawer, 200);
-      } else {
-        showPage('dashboard');
       }
     })
     .catch(function() {
@@ -2689,24 +2710,26 @@
   }
 
   /* ─── MODAL INSCRIPTION ─────────────────────────── */
+  var _registerEmail = ''; // stocke l'email en attente pour le renvoi
+
   function submitRegister() {
     var prenom   = document.getElementById('reg-prenom').value.trim();
     var nom      = document.getElementById('reg-nom').value.trim();
-    var email    = document.getElementById('reg-email').value.trim();
+    var email    = document.getElementById('reg-email').value.trim().toLowerCase();
     var tel      = document.getElementById('reg-tel').value.trim();
     var password = document.getElementById('reg-password').value;
     var password2= document.getElementById('reg-password2').value;
     var ok = true;
 
-    setError('reg-prenom',    'err-reg-prenom',    !prenom);                              if (!prenom) ok = false;
-    setError('reg-email',     'err-reg-email',     !isValidEmail(email));                 if (!isValidEmail(email)) ok = false;
-    setError('reg-tel',       'err-reg-tel',       !isValidPhone(tel));                   if (!isValidPhone(tel)) ok = false;
-    setError('reg-password',  'err-reg-password',  password.length < 8);                  if (password.length < 8) ok = false;
-    setError('reg-password2', 'err-reg-password2', password !== password2);               if (password !== password2) ok = false;
+    setError('reg-prenom',    'err-reg-prenom',    !prenom);                         if (!prenom) ok = false;
+    setError('reg-email',     'err-reg-email',     !isValidEmail(email));            if (!isValidEmail(email)) ok = false;
+    setError('reg-tel',       'err-reg-tel',       !isValidPhone(tel));              if (!isValidPhone(tel)) ok = false;
+    setError('reg-password',  'err-reg-password',  password.length < 8);             if (password.length < 8) ok = false;
+    setError('reg-password2', 'err-reg-password2', password !== password2);          if (password !== password2) ok = false;
     if (!ok) return;
 
     var btn = document.getElementById('btn-register');
-    btn.innerHTML = '<span class="spinner"></span>Création en cours…';
+    btn.innerHTML = '<span class="spinner"></span>Envoi en cours…';
     btn.disabled  = true;
 
     fetch(API + '/api/auth/register', {
@@ -2716,43 +2739,111 @@
     })
     .then(function(r) { return r.json().then(function(d) { return { status: r.status, data: d }; }); })
     .then(function(res) {
-      if (res.status === 200 && res.data.token) {
-        // Succès → stocker le token et connecter directement
-        localStorage.setItem('relion_token', res.data.token);
-        document.getElementById('register-form').style.display = 'none';
-        document.getElementById('register-success').style.display = 'block';
-        var footer = document.querySelector('#modal-signup .modal-footer');
-        if (footer) footer.style.display = 'none';
-        setTimeout(function() {
-          closeModal('modal-signup');
-          loadDashboard(res.data.user);
-          showToast('Bienvenue sur Relion ! 🎉 Votre essai de 30 jours commence maintenant.');
-          // Réinitialiser le form pour une prochaine ouverture
-          setTimeout(function() {
-            document.getElementById('register-form').style.display = '';
-            document.getElementById('register-success').style.display = 'none';
-            if (footer) footer.style.display = '';
-            btn.innerHTML = 'Créer mon compte →';
-            btn.disabled = false;
-            ['reg-prenom','reg-nom','reg-email','reg-tel','reg-password','reg-password2'].forEach(function(id) {
-              var el = document.getElementById(id);
-              if (el) el.value = '';
-            });
-          }, 500);
-        }, 1200);
-      } else if (res.status === 409) {
-        btn.innerHTML = 'Créer mon compte →';
-        btn.disabled  = false;
-        showToast('Un compte existe déjà avec cet email. Connectez-vous !', true);
-        setTimeout(function() { switchModal('modal-signup', 'modal-login'); }, 1500);
-      } else {
-        throw new Error(res.data.error || 'Erreur');
-      }
-    })
-    .catch(function(err) {
       btn.innerHTML = 'Créer mon compte →';
       btn.disabled  = false;
-      showToast((err && err.message) || 'Erreur lors de la création — réessayez.', true);
+
+      if (res.status === 200) {
+        // Email envoyé → afficher l'état "vérifiez votre boîte"
+        _registerEmail = email;
+        showRegisterPending(email);
+      } else if (res.status === 429) {
+        // Déjà envoyé récemment
+        _registerEmail = email;
+        if (res.data.waitMinutes > 0) {
+          showToast('Email déjà envoyé. Attendez ' + res.data.waitMinutes + ' min avant de renvoyer.', true);
+        } else {
+          showToast('Email déjà envoyé. Vérifiez vos spams ou renvoyez.', true);
+        }
+        showRegisterPending(email);
+      } else if (res.status === 409) {
+        var field = res.data.field;
+        if (field === 'email') {
+          showToast('Un compte existe déjà avec cet email.', true);
+          setTimeout(function() { switchModal('modal-signup', 'modal-login'); }, 1500);
+        } else {
+          showToast(res.data.error || 'Ce numéro est déjà utilisé.', true);
+        }
+      } else {
+        showToast(res.data.error || 'Erreur — réessayez.', true);
+      }
+    })
+    .catch(function() {
+      btn.innerHTML = 'Créer mon compte →';
+      btn.disabled  = false;
+      showToast('Erreur de connexion — vérifiez votre réseau.', true);
+    });
+  }
+
+  function showRegisterPending(email) {
+    document.getElementById('register-form').style.display    = 'none';
+    document.getElementById('register-pending').style.display = 'block';
+    var emailEl = document.getElementById('register-pending-email');
+    if (emailEl) emailEl.textContent = 'Email envoyé à : ' + email;
+    // Réinitialiser le bouton renvoi
+    var btn = document.getElementById('btn-resend');
+    if (btn) { btn.disabled = false; btn.textContent = 'Renvoyer l\'email'; }
+    var msg = document.getElementById('resend-msg');
+    if (msg) { msg.style.display = 'none'; msg.textContent = ''; }
+  }
+
+  function resetRegisterForm() {
+    document.getElementById('register-form').style.display    = '';
+    document.getElementById('register-pending').style.display = 'none';
+    _registerEmail = '';
+    ['reg-prenom','reg-nom','reg-email','reg-tel','reg-password','reg-password2'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    var btn = document.getElementById('btn-register');
+    if (btn) { btn.innerHTML = 'Créer mon compte →'; btn.disabled = false; }
+  }
+
+  function resendVerification() {
+    if (!_registerEmail) return;
+    var btn = document.getElementById('btn-resend');
+    var msg = document.getElementById('resend-msg');
+    if (btn) { btn.disabled = true; btn.textContent = 'Envoi…'; }
+
+    fetch(API + '/api/auth/resend', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: _registerEmail })
+    })
+    .then(function(r) { return r.json().then(function(d) { return { status: r.status, data: d }; }); })
+    .then(function(res) {
+      if (res.status === 200) {
+        if (btn) btn.textContent = '✓ Email renvoyé';
+        if (msg) {
+          msg.style.display = 'block';
+          msg.textContent   = res.data.resendsLeft > 0
+            ? 'Envoyé ! Il vous reste ' + res.data.resendsLeft + ' renvoi(s).'
+            : 'Dernier renvoi utilisé. Vérifiez vos spams ou contactez-nous.';
+        }
+        // Remettre le bouton après 60s
+        setTimeout(function() {
+          if (btn) { btn.disabled = false; btn.textContent = 'Renvoyer l\'email'; }
+        }, 60000);
+      } else if (res.status === 429) {
+        if (btn) { btn.disabled = false; btn.textContent = 'Renvoyer l\'email'; }
+        if (msg) {
+          msg.style.display = 'block';
+          msg.textContent   = res.data.error || 'Attendez avant de renvoyer.';
+        }
+      } else if (res.status === 410) {
+        // Lien expiré → inviter à se réinscrire
+        if (msg) {
+          msg.style.display = 'block';
+          msg.textContent   = 'Votre lien a expiré. Recommencez l\'inscription.';
+        }
+        setTimeout(resetRegisterForm, 2500);
+      } else {
+        if (btn) { btn.disabled = false; btn.textContent = 'Renvoyer l\'email'; }
+        showToast('Erreur — réessayez.', true);
+      }
+    })
+    .catch(function() {
+      if (btn) { btn.disabled = false; btn.textContent = 'Renvoyer l\'email'; }
+      showToast('Erreur réseau — réessayez.', true);
     });
   }
 
@@ -3053,11 +3144,51 @@
   // Vérifier si déjà connecté au chargement
   initAuth();
 
-  // Stripe success → montrer message de bienvenue
+  // Gestion des redirections d'authentification (?verified=)
   (function() {
     var params = new URLSearchParams(window.location.search);
+    var verified = params.get('verified');
+    var token    = params.get('token');
+
+    if (!verified) return;
+
+    // Nettoyer l'URL immédiatement
+    history.replaceState({}, '', '/');
+
+    if (verified === 'success' && token) {
+      // Connexion automatique après vérification email
+      localStorage.setItem('relion_token', token);
+      fetch(API + '/api/auth/me', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+      .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function(data) {
+        loadDashboard(data.user);
+        showToast('Email confirmé 🎉 Bienvenue sur Relion ! Votre essai de 30 jours commence.');
+      })
+      .catch(function() {
+        localStorage.removeItem('relion_token');
+        showToast('Lien expiré ou invalide. Reconnectez-vous.', true);
+        openModal('modal-login');
+      });
+
+    } else if (verified === 'already') {
+      showToast('Votre email est déjà confirmé. Connectez-vous !');
+      openModal('modal-login');
+
+    } else if (verified === 'error') {
+      var msg = params.get('msg') || 'erreur';
+      var messages = {
+        lien_expire:    'Votre lien de vérification a expiré. Réinscrivez-vous.',
+        lien_invalide:  'Lien invalide. Réinscrivez-vous.',
+        telephone_pris: 'Ce numéro est déjà utilisé par un autre compte.',
+        erreur_serveur: 'Erreur serveur — réessayez ou contactez-nous.'
+      };
+      showToast(messages[msg] || 'Une erreur est survenue.', true);
+    }
+
+    // Stripe success (ancien flux, gardé pour compatibilité)
     if (params.get('stripe') === 'success') {
-      history.replaceState({}, '', '/');
       showToast('Paiement confirmé 🎉 Vous allez recevoir un email avec vos identifiants de connexion.');
     }
   })();
