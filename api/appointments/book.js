@@ -1,6 +1,14 @@
 const { sql } = require('@vercel/postgres');
 const { Resend } = require('resend');
 
+// Normalise un numéro : retire espaces/points/tirets, convertit +33/0033 en 0
+function normalizePhone(raw) {
+  let p = (raw || '').trim().replace(/[\s\-\.]/g, '');
+  if (p.startsWith('+33')) p = '0' + p.slice(3);
+  if (p.startsWith('0033')) p = '0' + p.slice(4);
+  return p;
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -13,15 +21,20 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Champs manquants' });
   }
 
-  // Vérifier format date
+  // Valider format date
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return res.status(400).json({ error: 'Date invalide' });
   }
 
+  // Normaliser + valider le numéro
+  const phoneNorm = normalizePhone(phone);
+  if (!/^(0|\+33)[0-9]{9}$/.test(phoneNorm) && !/^[0-9]{8,15}$/.test(phoneNorm)) {
+    return res.status(400).json({ error: 'Numero de telephone invalide' });
+  }
+
   // Vérifier que c'est un jour ouvrable (lundi-vendredi)
   const d = new Date(date + 'T12:00:00');
-  const dow = d.getDay();
-  if (dow === 0 || dow === 6) {
+  if (d.getDay() === 0 || d.getDay() === 6) {
     return res.status(400).json({ error: 'Jour non disponible' });
   }
 
@@ -35,34 +48,50 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    // Insérer le rendez-vous (échoue si déjà pris grâce à UNIQUE)
+    // ── Un seul RDV actif par numéro (normalisé) ──────────────────────
+    const today = new Date().toISOString().split('T')[0];
+    const existing = await sql`
+      SELECT date, time_slot FROM appointments
+      WHERE phone_norm = ${phoneNorm}
+        AND status = 'booked'
+        AND date >= ${today}
+      ORDER BY date ASC LIMIT 1
+    `;
+    if (existing.rows.length > 0) {
+      return res.status(409).json({
+        error: 'Vous avez deja un rendez-vous.',
+        existing: existing.rows[0]
+      });
+    }
+
+    // ── Insérer (UNIQUE(date, time_slot) protège le créneau) ──────────
     await sql`
-      INSERT INTO appointments (date, time_slot, name, phone, email, status)
-      VALUES (${date}, ${time}, ${name}, ${phone}, ${email || ''}, 'booked')
+      INSERT INTO appointments (date, time_slot, name, phone, phone_norm, email, status)
+      VALUES (${date}, ${time}, ${name.trim()}, ${phone.trim()}, ${phoneNorm}, ${email || ''}, 'booked')
     `;
 
-    // Email de confirmation à l'artisan
+    // ── Emails de confirmation ─────────────────────────────────────────
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
       const dateLabel = new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', {
         weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
       });
 
-      // Email à l'artisan
+      // Email à l'artisan (si email fourni)
       if (email) {
         resend.emails.send({
-          from: 'Relion <onboarding@resend.dev>',
+          from: 'Relion <noreply@relionapp.fr>',
           to: email,
           subject: `Rendez-vous confirmé — ${dateLabel} à ${time}`,
           html: `
-            <div style="font-family:sans-serif;max-width:480px;margin:0 auto;">
-              <h2>Votre rendez-vous est confirmé ✓</h2>
-              <p>Bonjour ${name},</p>
-              <p>Votre appel téléphonique avec l'équipe Relion est planifié :</p>
-              <div style="background:#f5f5f5;padding:16px;border-radius:8px;margin:20px 0;">
-                <p><strong>📅 Date :</strong> ${dateLabel}</p>
-                <p><strong>⏰ Heure :</strong> ${time}</p>
-                <p><strong>📞 Numéro :</strong> ${phone}</p>
+            <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;padding:40px 20px;">
+              <h2 style="font-size:22px;margin-bottom:8px;">Votre rendez-vous est confirmé ✓</h2>
+              <p>Bonjour ${name.trim()},</p>
+              <p>Votre appel avec l'équipe Relion est planifié :</p>
+              <div style="background:#f5f7ff;padding:16px;border-radius:10px;margin:20px 0;">
+                <p style="margin:4px 0;"><strong>📅 Date :</strong> ${dateLabel}</p>
+                <p style="margin:4px 0;"><strong>⏰ Heure :</strong> ${time}</p>
+                <p style="margin:4px 0;"><strong>📞 Numéro :</strong> ${phone.trim()}</p>
               </div>
               <p>Nous vous appellerons à l'heure prévue. À bientôt !</p>
               <p>— L'équipe Relion</p>
@@ -71,16 +100,16 @@ module.exports = async function handler(req, res) {
         }).catch(() => {});
       }
 
-      // Email à Alix (notification interne)
+      // Notification interne
       resend.emails.send({
-        from: 'Relion <onboarding@resend.dev>',
+        from: 'Relion <noreply@relionapp.fr>',
         to: 'alix.sarikabadayi@gmail.com',
-        subject: `📅 Nouveau RDV — ${name} le ${dateLabel} à ${time}`,
+        subject: `📅 Nouveau RDV — ${name.trim()} le ${dateLabel} à ${time}`,
         html: `
-          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;">
+          <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;padding:40px 20px;">
             <h2>Nouveau rendez-vous 📞</h2>
-            <p><strong>Nom :</strong> ${name}</p>
-            <p><strong>Téléphone :</strong> ${phone}</p>
+            <p><strong>Nom :</strong> ${name.trim()}</p>
+            <p><strong>Téléphone :</strong> ${phone.trim()}</p>
             <p><strong>Email :</strong> ${email || 'non renseigné'}</p>
             <p><strong>Date :</strong> ${dateLabel} à ${time}</p>
           </div>
@@ -89,10 +118,15 @@ module.exports = async function handler(req, res) {
     }
 
     return res.status(200).json({ success: true });
+
   } catch (err) {
-    // Erreur de contrainte unique = créneau déjà pris
-    if (err.message && err.message.includes('unique')) {
-      return res.status(409).json({ error: 'Ce creneau est deja pris' });
+    // Contrainte unique = créneau déjà pris par quelqu'un d'autre
+    if (err.message && err.message.toLowerCase().includes('unique')) {
+      return res.status(409).json({ error: 'Ce creneau est deja pris, choisissez-en un autre.' });
+    }
+    // Colonne phone_norm manquante → migration nécessaire
+    if (err.message && err.message.includes('phone_norm')) {
+      return res.status(500).json({ error: 'Migration DB requise — relancez /api/setup-db' });
     }
     console.error('[book] Erreur:', err.message);
     return res.status(500).json({ error: 'Erreur serveur' });

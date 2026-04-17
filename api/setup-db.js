@@ -33,7 +33,8 @@ module.exports = async function handler(req, res) {
         date       DATE NOT NULL,
         time_slot  VARCHAR(5) NOT NULL,
         name       VARCHAR(100),
-        phone      VARCHAR(20),
+        phone      VARCHAR(30),
+        phone_norm VARCHAR(20),
         email      VARCHAR(255),
         status     VARCHAR(20) DEFAULT 'booked',
         notes      TEXT,
@@ -41,6 +42,16 @@ module.exports = async function handler(req, res) {
         UNIQUE(date, time_slot)
       )
     `;
+
+    // Migration : ajouter phone_norm si la table existe déjà sans cette colonne
+    await sql`
+      ALTER TABLE appointments ADD COLUMN IF NOT EXISTS phone_norm VARCHAR(20)
+    `.catch(() => {});
+
+    // Index sur phone_norm pour les lookups rapides
+    await sql`
+      CREATE INDEX IF NOT EXISTS idx_appointments_phone_norm ON appointments(phone_norm)
+    `.catch(() => {});
 
     await sql`
       CREATE TABLE IF NOT EXISTS pending_registrations (

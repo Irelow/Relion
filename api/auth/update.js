@@ -20,10 +20,14 @@ module.exports = async function handler(req, res) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { sms_message, new_password, current_password } = req.body || {};
 
+    // Mise a jour du message SMS
     if (sms_message !== undefined) {
-      await sql`UPDATE users SET sms_message = ${sms_message} WHERE id = ${decoded.userId}`;
+      await sql`
+        UPDATE users SET sms_message = ${sms_message} WHERE id = ${decoded.userId}
+      `;
     }
 
+    // Changement de mot de passe
     if (new_password && current_password) {
       const { rows } = await sql`SELECT password_hash FROM users WHERE id = ${decoded.userId}`;
       const user = rows[0];

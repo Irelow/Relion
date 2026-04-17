@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<title>Choisis ta vidéo de fond — Relion</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #080810; color: #F5F7FF; font-family: 'Inter', sans-serif; padding: 40px 24px; }
+  h1 { font-size: 28px; margin-bottom: 8px; }
+  p { color: #8A92B2; margin-bottom: 40px; font-size: 15px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; }
+  .card {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color .2s, transform .2s;
+  }
+  .card:hover { border-color: #1A56E8; transform: translateY(-4px); }
+  .card.selected { border-color: #4D7FFF; box-shadow: 0 0 0 4px rgba(26,86,232,0.2); }
+  .card video { width: 100%; height: 220px; object-fit: cover; display: block; }
+  .card-info { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .card-title { font-size: 14px; font-weight: 500; }
+  .card-badge { font-size: 11px; color: #8A92B2; background: rgba(255,255,255,0.07); padding: 4px 10px; border-radius: 20px; }
+  .btn {
+    display: block;
+    margin: 48px auto 0;
+    padding: 16px 48px;
+    background: #1A56E8;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+    text-align: center;
+  }
+  .btn:hover { background: #1544c0; }
+  #result {
+    display: none;
+    margin-top: 32px;
+    padding: 20px 24px;
+    background: rgba(26,86,232,0.1);
+    border: 1px solid rgba(26,86,232,0.3);
+    border-radius: 12px;
+    color: #7aa3ff;
+    font-size: 14px;
+    text-align: center;
+  }
+  #result strong { color: #fff; display: block; margin-bottom: 8px; font-size: 16px; }
+</style>
+</head>
+<body>
+
+<h1>🎬 Choisis ta vidéo de fond</h1>
+<p>Passe la souris sur chaque vidéo pour la voir jouer, puis clique sur celle qui te correspond le mieux.</p>
+
+<div class="grid">
+
+  <div class="card" onclick="select(1)" onmouseenter="this.querySelector('video').play()" onmouseleave="this.querySelector('video').pause()">
+    <video muted loop playsinline poster="">
+      <source src="https://videos.pexels.com/video-files/35323777/14966670_1920_1080_50fps.mp4" type="video/mp4"/>
+    </video>
+    <div class="card-info">
+      <span class="card-title">🪵 Artisan bois en atelier</span>
+      <span class="card-badge">Authentique</span>
+    </div>
+  </div>
+
+  <div class="card" onclick="select(2)" onmouseenter="this.querySelector('video').play()" onmouseleave="this.querySelector('video').pause()">
+    <video muted loop playsinline poster="">
+      <source src="https://videos.pexels.com/video-files/34740430/14727112_1920_1080_30fps.mp4" type="video/mp4"/>
+    </video>
+    <div class="card-info">
+      <span class="card-title">🔨 Artisan en atelier</span>
+      <span class="card-badge">Chaleureux</span>
+    </div>
+  </div>
+
+  <div class="card" onclick="select(3)" onmouseenter="this.querySelector('video').play()" onmouseleave="this.querySelector('video').pause()">
+    <video muted loop playsinline poster="">
+      <source src="https://videos.pexels.com/video-files/34740407/14727160_1920_1080_30fps.mp4" type="video/mp4"/>
+    </video>
+    <div class="card-info">
+      <span class="card-title">⚒️ Artisan craftsman</span>
+      <span class="card-badge">Dynamique</span>
+    </div>
+  </div>
+
+  <div class="card" onclick="select(4)" onmouseenter="this.querySelector('video').play()" onmouseleave="this.querySelector('video').pause()">
+    <video muted loop playsinline poster="">
+      <source src="https://videos.pexels.com/video-files/6975994/6975994-uhd_1920_1440_25fps.mp4" type="video/mp4"/>
+    </video>
+    <div class="card-info">
+      <span class="card-title">📞 Homme qui répond au téléphone</span>
+      <span class="card-badge">Direct</span>
+    </div>
+  </div>
+
+</div>
+
+<button class="btn" onclick="confirm()">✅ Confirmer mon choix</button>
+
+<div id="result">
+  <strong id="result-title"></strong>
+  <span id="result-url"></span>
+</div>
+
+<script>
+const videos = {
+  1: { title: "🪵 Artisan bois en atelier", url: "https://videos.pexels.com/video-files/35323777/14966670_1920_1080_50fps.mp4" },
+  2: { title: "🔨 Artisan en atelier", url: "https://videos.pexels.com/video-files/34740430/14727112_1920_1080_30fps.mp4" },
+  3: { title: "⚒️ Artisan craftsman", url: "https://videos.pexels.com/video-files/34740407/14727160_1920_1080_30fps.mp4" },
+  4: { title: "📞 Homme au téléphone", url: "https://videos.pexels.com/video-files/6975994/6975994-uhd_1920_1440_25fps.mp4" }
+};
+let chosen = null;
+
+function select(n) {
+  chosen = n;
+  document.querySelectorAll('.card').forEach((c,i) => c.classList.toggle('selected', i === n-1));
+}
+
+function confirm() {
+  if (!chosen) { alert("Clique d'abord sur une vidéo !"); return; }
+  const v = videos[chosen];
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result-title').textContent = 'Tu as choisi : ' + v.title;
+  document.getElementById('result-url').textContent = 'Dis à Claude le numéro ' + chosen + ' pour que je mette à jour ton site !';
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

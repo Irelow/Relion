@@ -133,13 +133,13 @@
     }
 
     .hero-video {
-      position: absolute;
-      inset: 0;
+      position: fixed;
+      top: 0; left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
       object-position: center;
-      z-index: 0;
+      z-index: -1;
       filter: brightness(0.6) saturate(0.7);
     }
 
@@ -154,6 +154,7 @@
       );
       z-index: 1;
     }
+
 
     .hero-content {
       position: relative;
@@ -314,7 +315,7 @@
     /* ═══════════════════════════════ SCENARIO ══════════════════════════ */
     .scenario-section {
       padding: 7rem 3rem;
-      background: linear-gradient(155deg, rgba(26,86,232,0.06) 0%, transparent 55%);
+      background: var(--bg);
     }
     .scenario-inner {
       max-width: 1180px;
@@ -647,18 +648,24 @@
     /* ═══════════════════════════ HOW IT WORKS ══════════════════════════ */
     .how-section {
       padding: 9rem 3rem;
-      border-top: 1px solid var(--border2);
+      background: #2d3250;
+      border-top: none;
     }
-    .how-inner { max-width: 1180px; margin: 0 auto; text-align: center; }
+    .how-section .section-title { color: #f5f7ff; }
+    .how-section .section-sub { color: #a0a8c8; }
+    .how-section .how-card-text { color: #f5f7ff; }
+    .how-section .how-card-desc { color: #a0a8c8; }
+    .how-section .how-arrow { color: rgba(255,255,255,0.15); }
+    .how-inner { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 1fr 220px; gap: 3.5rem; align-items: center; }
     .how-flow {
-      margin-top: 5rem;
+      margin-top: 3rem;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 0;
     }
     .how-arrow {
-      width: 60px;
+      width: 40px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
@@ -666,9 +673,66 @@
       color: rgba(255,255,255,0.12);
     }
     .how-arrow svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.5; fill: none; }
-    .how-flow > div:nth-child(2) { margin-left: -60px; }
+    /* .how-flow > div:nth-child(2) { margin-left: -60px; } */
+
+    /* RDV card inside how-section */
+    .how-rdv-card {
+      width: 100%;
+      background: linear-gradient(160deg, rgba(26,86,232,0.08) 0%, rgba(26,86,232,0.03) 100%);
+      border: 1px solid rgba(26,86,232,0.2);
+      border-radius: 20px;
+      padding: 2rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+    .how-rdv-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--blue-light);
+    }
+    .how-rdv-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0;
+      line-height: 1.2;
+    }
+    .how-rdv-desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.65;
+      margin: 0;
+    }
+    .how-rdv-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 12px 20px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      width: 100%;
+    }
+    .how-rdv-btn:hover { background: var(--blue-light); transform: translateY(-1px); }
+    .how-rdv-note {
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      margin: 0;
+    }
     .how-card {
-      width: 300px;
+      width: 200px;
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
@@ -826,7 +890,7 @@
     .mock-status.rappel { color: #f59e0b; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); }
 
     /* ═══════════════════════════════ FEATURES ══════════════════════════ */
-    .features-section { padding: 7rem 3rem; }
+    .features-section { padding: 7rem 3rem; background: #181b2e; }
     .features-inner { max-width: 1180px; margin: 0 auto; }
     .feat-list {
       margin-top: 3.5rem;
@@ -871,7 +935,7 @@
     /* ═══════════════════════════════ SIMULATEUR ════════════════════════ */
     .sim-section {
       padding: 7rem 3rem;
-      background: linear-gradient(180deg, transparent 0%, rgba(26,86,232,0.04) 50%, transparent 100%);
+      background: #181b2e;
     }
     .sim-inner { max-width: 1180px; margin: 0 auto; }
     .sim-wrap {
@@ -976,7 +1040,7 @@
     .sim-cta:hover { background: var(--blue-light); transform: translateY(-1px); }
 
     /* ═══════════════════════════════ PRICING ═══════════════════════════ */
-    .pricing-section { padding: 11rem 3rem 7rem; background: rgba(255,255,255,0.025); }
+    .pricing-section { padding: 11rem 3rem 7rem; background: #0f1221; }
     .pricing-inner { max-width: 1180px; margin: 0 auto; }
     .pricing-sim-layout {
       display: grid;
@@ -1246,7 +1310,7 @@
     .form-success p { font-size: 14px; color: var(--muted); line-height: 1.6; }
 
     /* ═══════════════════════════════ FAQ ═══════════════════════════════ */
-    .faq-section { padding: 7rem 3rem; }
+    .faq-section { padding: 7rem 3rem; background: #181b2e; }
     .faq-inner { max-width: 800px; margin: 0 auto; }
 
     .faq-list { margin-top: 3.5rem; display: flex; flex-direction: column; gap: 2px; }
@@ -1303,7 +1367,8 @@
 
     /* ═══════════════════════════════ FOOTER ════════════════════════════ */
     footer {
-      border-top: 1px solid var(--border2);
+      background: #0a0c14;
+      border-top: 1px solid rgba(255,255,255,0.06);
       padding: 2.5rem 3rem;
       display: flex;
       align-items: center;
@@ -1505,6 +1570,10 @@
     .action-btn:disabled { opacity: .4; cursor: not-allowed; }
 
     /* ═══════════════════════════════ RESPONSIVE ════════════════════════ */
+    @media (max-width: 1060px) {
+      .how-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .how-rdv-card { width: 100%; max-width: 480px; margin: 0 auto; }
+    }
     @media (max-width: 900px) {
       nav { padding: 1rem 1.5rem; }
       .nav-links { display: none; }
@@ -1512,6 +1581,7 @@
       .phone-wrap { display: none; }
       .how-flow { grid-template-columns: 1fr; gap: 0; }
       .how-arrow { transform: rotate(90deg); margin: 0.5rem 0; }
+      .how-rdv-card { max-width: 100%; }
       .mock-phone-call { width: 140px; }
       .mock-sms-screen, .mock-dash { max-width: 320px; margin: 0 auto; }
       .feat-list { grid-template-columns: 1fr; }
@@ -1546,6 +1616,17 @@
       font-size: 17px;
       margin-bottom: 32px;
       line-height: 1.7;
+    }
+    /* Success icon for rdv */
+    .rdv-success-wrap { text-align: center; padding: 40px 20px; }
+    .rdv-success-icon {
+      width: 64px; height: 64px;
+      background: rgba(61,191,128,0.15);
+      border: 1px solid rgba(61,191,128,0.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 20px;
     }
 
     /* ═══════════════════ DRAWER RDV ════════════════════ */
@@ -1735,9 +1816,22 @@
 
   <!-- HERO -->
   <section class="hero">
-    <video class="hero-video" autoplay muted loop playsinline poster="">
+    <!-- TODO PROD : remettre le vrai nom de fichier vidéo (14649437_3840_2160_30fps.mp4) et supprimer le script de fallback ci-dessous -->
+    <video class="hero-video" id="hero-video" autoplay muted loop playsinline poster="">
       <source src="./14649437_3840_2160_30fps.mp4" type="video/mp4" />
     </video>
+    <script>
+      (function() {
+        var v = document.getElementById('hero-video');
+        var s = v && v.querySelector('source');
+        if (!s) return;
+        var test = new XMLHttpRequest();
+        test.open('HEAD', s.src, true);
+        test.onload = function() {};
+        test.onerror = function() { s.src = './hero.mp4'; v.load(); };
+        test.send();
+      })();
+    </script>
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <h1 class="hero-title">NE LAISSEZ PLUS<br>UN CLIENT <em>PARTIR</em></h1>
@@ -1753,70 +1847,12 @@
     </div>
   </section>
 
-  <!-- SCÉNARIO EN DIRECT -->
-  <div class="scenario-section">
-    <div class="scenario-inner">
-      <div>
-        <div class="scenario-eyebrow">Ce qui se passe</div>
-        <h2 class="scenario-title">Vous êtes sur un chantier.<br>Votre téléphone sonne.</h2>
-        <div class="scenario-story">
-          <div class="story-beat bad">
-            <span class="beat-icon">📵</span>
-            <span>Vous ne pouvez pas décrocher. Le prospect raccroche. En moins de 2 minutes, il passe au suivant dans Google Maps.</span>
-          </div>
-          <div class="story-beat good">
-            <span class="beat-icon">⚡</span>
-            <span>Avec Relion, un SMS part en votre nom en 3 secondes. Le prospect sait que vous avez vu son appel. Il n'a plus de raison d'en appeler un autre.</span>
-          </div>
-        </div>
-      </div>
-      <div class="phone-wrap">
-        <div class="iph-wrap">
-          <div class="iph-btn-action"></div>
-          <div class="iph-btn-vol-up"></div>
-          <div class="iph-btn-vol-dn"></div>
-          <div class="iph-btn-power"></div>
-          <div class="iph-frame">
-            <div class="iph-screen">
-              <div class="iph-di"><div class="iph-di-pill"></div></div>
-              <div class="iph-statusbar">
-                <span>9:41</span>
-                <div class="iph-statusbar-icons">
-                  <svg width="13" height="10" viewBox="0 0 13 10" fill="rgba(255,255,255,0.9)"><rect x="0" y="3" width="2" height="7" rx="1"/><rect x="3.5" y="2" width="2" height="8" rx="1"/><rect x="7" y="1" width="2" height="9" rx="1"/><rect x="10.5" y="0" width="2" height="10" rx="1" opacity=".3"/></svg>
-                  <svg width="12" height="10" viewBox="0 0 12 10" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.2"><path d="M6 2.5C7.7 2.5 9.2 3.2 10.2 4.3"/><path d="M1.8 4.3C2.8 3.2 4.3 2.5 6 2.5"/><path d="M8.5 6.1C7.8 5.4 7 5 6 5s-1.8.4-2.5 1.1"/><circle cx="6" cy="8.5" r=".8" fill="rgba(255,255,255,0.9)"/></svg>
-                  <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x=".5" y=".5" width="19" height="10" rx="3" stroke="rgba(255,255,255,0.35)"/><rect x="1.5" y="1.5" width="15" height="8" rx="2" fill="rgba(255,255,255,0.9)"/><path d="M21 3.5v4a2 2 0 000-4z" fill="rgba(255,255,255,0.4)"/></svg>
-                </div>
-              </div>
-              <div class="iph-header">
-                <div class="iph-avatar">MR</div>
-                <div>
-                  <div class="iph-contact-name">06 12 XX XX XX</div>
-                  <div class="iph-contact-sub">Appel manqué · à l'instant</div>
-                </div>
-              </div>
-              <div class="iph-body">
-                <div class="iph-sms-missed"><span>📵 Appel manqué · 09:38</span></div>
-                <div style="align-self:flex-end">
-                  <div class="iph-bubble out">Bonjour, j'ai bien vu votre appel manqué. Remplissez ce formulaire et je vous rappelle au plus vite.</div>
-                  <div class="iph-meta">09:38 · Envoyé automatiquement</div>
-                </div>
-              </div>
-              <div class="iph-badge">
-                <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                Prospect qualifié · Dashboard mis à jour
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- COMMENT ÇA MARCHE -->
   <div class="how-section" id="how">
     <div class="how-inner">
-      <h2 class="section-title">Comment ça marche</h2>
-      <div class="how-flow">
+      <div style="text-align:left;">
+        <h2 class="section-title">Comment ça marche</h2>
+        <div class="how-flow">
 
         <!-- Step 1 — Appel manqué -->
         <div class="how-card">
@@ -1913,66 +1949,72 @@
 
       </div>
     </div>
-  </div>
 
-  <!-- FONCTIONNALITÉS -->
-  <div class="features-section" id="features">
-    <div class="features-inner">
-      <div class="section-label">Fonctionnalités</div>
-      <h2 class="section-title">Tout ce qu'il faut pour<br>ne plus perdre un client.</h2>
-      <div class="feat-list">
-        <div class="feat-item">
-          <div class="feat-item-icon">
-            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+    <!-- Colonne droite — carte RDV -->
+    <div class="how-rdv-card">
+      <div class="how-rdv-label">Support</div>
+      <h3 class="how-rdv-title">Vous avez une question ?</h3>
+      <p class="how-rdv-desc">Nous prenons le temps pour nos artisans. Réservez un appel de 30 min avec notre équipe.</p>
+      <button type="button" class="how-rdv-btn" onclick="openRdvDrawer()">Prendre rendez-vous →</button>
+      <p class="how-rdv-note">Gratuit · Sans engagement</p>
+    </div>
+
+  </div>
+</div>
+
+  <!-- SCÉNARIO EN DIRECT -->
+  <div class="scenario-section">
+    <div class="scenario-inner">
+      <div>
+        <div class="scenario-eyebrow">Ce qui se passe</div>
+        <h2 class="scenario-title">Vous êtes sur un chantier.<br>Votre téléphone sonne.</h2>
+        <div class="scenario-story">
+          <div class="story-beat bad">
+            <span class="beat-icon">📵</span>
+            <span>Vous ne pouvez pas décrocher. Le prospect raccroche. En moins de 2 minutes, il passe au suivant dans Google Maps.</span>
           </div>
-          <div>
-            <div class="feat-item-title">Votre numéro reste le même</div>
-            <div class="feat-item-desc">Aucun changement visible pour vos clients. Relion agit en coulisses — vos appels entrants ne sont pas affectés.</div>
-          </div>
-        </div>
-        <div class="feat-item">
-          <div class="feat-item-icon">
-            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-          </div>
-          <div>
-            <div class="feat-item-title">Message 100% personnalisé</div>
-            <div class="feat-item-desc">Le SMS porte votre prénom, votre métier. Le prospect a l'impression que vous lui écrivez vous-même.</div>
-          </div>
-        </div>
-        <div class="feat-item">
-          <div class="feat-item-icon">
-            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          </div>
-          <div>
-            <div class="feat-item-title">Alerte email en temps réel</div>
-            <div class="feat-item-desc">Chaque appel manqué et chaque réponse SMS vous envoie une notification. Vous ne ratez aucune opportunité.</div>
+          <div class="story-beat good">
+            <span class="beat-icon">⚡</span>
+            <span>Avec Relion, un SMS part en votre nom en 3 secondes. Le prospect sait que vous avez vu son appel. Il n'a plus de raison d'en appeler un autre.</span>
           </div>
         </div>
-        <div class="feat-item">
-          <div class="feat-item-icon">
-            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-          </div>
-          <div>
-            <div class="feat-item-title">Dashboard lisible en 5 secondes</div>
-            <div class="feat-item-desc">Tous vos prospects, leur statut, leurs disponibilités. Depuis votre téléphone, sans formation.</div>
-          </div>
-        </div>
-        <div class="feat-item">
-          <div class="feat-item-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <div>
-            <div class="feat-item-title">Données sécurisées</div>
-            <div class="feat-item-desc">Vos contacts et conversations sont stockés de façon sécurisée. Aucune revente, aucun accès tiers.</div>
-          </div>
-        </div>
-        <div class="feat-item">
-          <div class="feat-item-icon">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </div>
-          <div>
-            <div class="feat-item-title">Support humain 7j/7</div>
-            <div class="feat-item-desc">Un problème, une question ? Une vraie personne vous répond — pas un chatbot. Nous sommes là pour que ça marche.</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="iph-wrap">
+          <div class="iph-btn-action"></div>
+          <div class="iph-btn-vol-up"></div>
+          <div class="iph-btn-vol-dn"></div>
+          <div class="iph-btn-power"></div>
+          <div class="iph-frame">
+            <div class="iph-screen">
+              <div class="iph-di"><div class="iph-di-pill"></div></div>
+              <div class="iph-statusbar">
+                <span>9:41</span>
+                <div class="iph-statusbar-icons">
+                  <svg width="13" height="10" viewBox="0 0 13 10" fill="rgba(255,255,255,0.9)"><rect x="0" y="3" width="2" height="7" rx="1"/><rect x="3.5" y="2" width="2" height="8" rx="1"/><rect x="7" y="1" width="2" height="9" rx="1"/><rect x="10.5" y="0" width="2" height="10" rx="1" opacity=".3"/></svg>
+                  <svg width="12" height="10" viewBox="0 0 12 10" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="1.2"><path d="M6 2.5C7.7 2.5 9.2 3.2 10.2 4.3"/><path d="M1.8 4.3C2.8 3.2 4.3 2.5 6 2.5"/><path d="M8.5 6.1C7.8 5.4 7 5 6 5s-1.8.4-2.5 1.1"/><circle cx="6" cy="8.5" r=".8" fill="rgba(255,255,255,0.9)"/></svg>
+                  <svg width="24" height="11" viewBox="0 0 24 11" fill="none"><rect x=".5" y=".5" width="19" height="10" rx="3" stroke="rgba(255,255,255,0.35)"/><rect x="1.5" y="1.5" width="15" height="8" rx="2" fill="rgba(255,255,255,0.9)"/><path d="M21 3.5v4a2 2 0 000-4z" fill="rgba(255,255,255,0.4)"/></svg>
+                </div>
+              </div>
+              <div class="iph-header">
+                <div class="iph-avatar">MR</div>
+                <div>
+                  <div class="iph-contact-name">06 12 XX XX XX</div>
+                  <div class="iph-contact-sub">Appel manqué · à l'instant</div>
+                </div>
+              </div>
+              <div class="iph-body">
+                <div class="iph-sms-missed"><span>📵 Appel manqué · 09:38</span></div>
+                <div style="align-self:flex-end">
+                  <div class="iph-bubble out">Bonjour, j'ai bien vu votre appel manqué. Remplissez ce formulaire et je vous rappelle au plus vite.</div>
+                  <div class="iph-meta">09:38 · Envoyé automatiquement</div>
+                </div>
+              </div>
+              <div class="iph-badge">
+                <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Prospect qualifié · Dashboard mis à jour
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -2054,98 +2096,6 @@
     </div>
   </div>
 
-  <!-- CTA + FORM -->
-  <!-- SECTION RDV -->
-  <div class="rdv-section" id="contact">
-    <div class="section-label">Support</div>
-    <h2>Vous avez une question ?</h2>
-    <p>Nous prenons le temps pour nos artisans.<br>Réservez un appel de 30 min avec notre équipe.</p>
-    <button type="button" class="btn-primary" style="font-size:16px;padding:14px 32px;" onclick="openRdvDrawer()">Prendre rendez-vous →</button>
-  </div>
-
-  <!-- DRAWER RDV -->
-  <div class="rdv-overlay" id="rdv-overlay" onclick="if(event.target===this)closeRdvDrawer()">
-    <div class="rdv-panel">
-      <div class="rdv-panel-header">
-        <h3>Prendre rendez-vous</h3>
-        <button onclick="closeRdvDrawer()">✕</button>
-      </div>
-
-      <!-- Vue : Invite à se connecter -->
-      <div id="rdv-view-login">
-        <div style="text-align:center;padding:16px 0 24px;">
-          <div style="font-size:40px;margin-bottom:16px;">📅</div>
-          <h3 style="margin-bottom:10px;font-family:'Sora',sans-serif;">Réserver un appel</h3>
-          <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:28px;">Connectez-vous pour pré-remplir vos informations et retrouver votre rendez-vous facilement.</p>
-          <button type="button" class="btn-primary" style="width:100%;margin-bottom:10px;" onclick="rdvDoLogin()">Se connecter</button>
-          <button type="button" class="btn-ghost" style="width:100%;" onclick="rdvContinueGuest()">Continuer sans compte →</button>
-        </div>
-      </div>
-
-      <!-- Vue principale : calendrier + créneaux -->
-      <div id="rdv-view-main">
-        <div class="rdv-body">
-          <!-- Calendrier -->
-          <div>
-            <div class="rdv-cal-nav">
-              <button onclick="rdvPrevMonth()">‹</button>
-              <span id="rdv-month-label"></span>
-              <button onclick="rdvNextMonth()">›</button>
-            </div>
-            <div class="rdv-cal-weekdays">
-              <span>Lu</span><span>Ma</span><span>Me</span><span>Je</span><span>Ve</span><span>Sa</span><span>Di</span>
-            </div>
-            <div class="rdv-cal-grid" id="rdv-cal-grid"></div>
-          </div>
-          <!-- Créneaux + formulaire -->
-          <div>
-            <div class="rdv-placeholder" id="rdv-placeholder">← Sélectionnez une date</div>
-            <div id="rdv-slots-content" style="display:none;">
-              <p class="rdv-slots-title" id="rdv-slots-title"></p>
-              <div class="rdv-slots-grid" id="rdv-slots-grid"></div>
-              <div id="rdv-booking-form" style="display:none;">
-                <div class="form-group" style="margin-top:12px;">
-                  <input class="form-input" id="rdv-name" type="text" placeholder="Votre prénom" autocomplete="given-name" />
-                </div>
-                <div class="form-group">
-                  <input class="form-input" id="rdv-phone" type="tel" placeholder="Votre numéro de téléphone" autocomplete="tel" />
-                </div>
-                <button type="button" class="btn-primary" style="width:100%;margin-top:4px;" id="btn-rdv-confirm" onclick="submitRdv()">Confirmer →</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Vue : RDV déjà existant (affiché si doublon détecté) -->
-      <div id="rdv-view-existing" style="display:none;">
-        <div style="background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:20px;margin-bottom:20px;">
-          <p style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Votre rendez-vous existant</p>
-          <p id="rdv-existing-info" style="font-size:16px;font-weight:600;line-height:1.8;white-space:pre-line;"></p>
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button type="button" class="btn-primary" style="flex:1;" onclick="modifierRdv()">Modifier la date</button>
-          <button type="button" class="btn-ghost" style="flex:1;color:#E07070;" onclick="annulerRdv()">Annuler ce RDV</button>
-        </div>
-        <button type="button" class="btn-ghost" style="width:100%;margin-top:8px;" onclick="closeRdvDrawer()">Fermer</button>
-      </div>
-
-      <!-- Vue : Succès -->
-      <div id="rdv-view-success" style="display:none;">
-        <div class="rdv-success-wrap">
-          <div class="rdv-success-icon">✓</div>
-          <h3 style="margin-bottom:12px;">Rendez-vous confirmé !</h3>
-          <p id="rdv-success-msg" style="color:var(--muted);line-height:1.7;white-space:pre-line;"></p>
-          <div style="display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap;">
-            <button type="button" class="btn-primary" onclick="modifierRdv()">Modifier la date</button>
-            <button type="button" class="btn-ghost" onclick="closeRdvDrawer()">Fermer</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
   <!-- FAQ -->
   <div class="faq-section" id="faq">
     <div class="faq-inner">
@@ -2217,6 +2167,84 @@
     </div>
     <small>© 2026 Relion · France · contact@relion.fr</small>
   </footer>
+
+  <!-- DRAWER RDV -->
+  <div class="rdv-overlay" id="rdv-overlay" onclick="if(event.target===this)closeRdvDrawer()">
+    <div class="rdv-panel">
+      <div class="rdv-panel-header">
+        <h3>Prendre rendez-vous</h3>
+        <button onclick="closeRdvDrawer()">✕</button>
+      </div>
+      <!-- Vue : Invite à se connecter -->
+      <div id="rdv-view-login">
+        <div style="text-align:center;padding:16px 0 24px;">
+          <div style="font-size:40px;margin-bottom:16px;">📅</div>
+          <h3 style="margin-bottom:10px;font-family:'Sora',sans-serif;">Réserver un appel</h3>
+          <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:28px;">Connectez-vous pour pré-remplir vos informations et retrouver votre rendez-vous facilement.</p>
+          <button type="button" class="btn-primary" style="width:100%;margin-bottom:10px;" onclick="rdvDoLogin()">Se connecter</button>
+          <button type="button" class="btn-ghost" style="width:100%;" onclick="rdvContinueGuest()">Continuer sans compte →</button>
+        </div>
+      </div>
+      <!-- Vue principale : calendrier + créneaux -->
+      <div id="rdv-view-main" style="display:none;">
+        <div class="rdv-body">
+          <!-- Calendrier -->
+          <div>
+            <div class="rdv-cal-nav">
+              <button onclick="rdvPrevMonth()">‹</button>
+              <span id="rdv-month-label"></span>
+              <button onclick="rdvNextMonth()">›</button>
+            </div>
+            <div class="rdv-cal-weekdays">
+              <span>Lu</span><span>Ma</span><span>Me</span><span>Je</span><span>Ve</span><span>Sa</span><span>Di</span>
+            </div>
+            <div class="rdv-cal-grid" id="rdv-cal-grid"></div>
+          </div>
+          <!-- Créneaux + formulaire -->
+          <div>
+            <div class="rdv-placeholder" id="rdv-placeholder">← Sélectionnez une date</div>
+            <div id="rdv-slots-content" style="display:none;">
+              <p class="rdv-slots-title" id="rdv-slots-title"></p>
+              <div class="rdv-slots-grid" id="rdv-slots-grid"></div>
+              <div id="rdv-booking-form" style="display:none;">
+                <div class="form-group" style="margin-top:12px;">
+                  <input class="form-input" id="rdv-name" type="text" placeholder="Votre prénom" autocomplete="given-name" />
+                </div>
+                <div class="form-group">
+                  <input class="form-input" id="rdv-phone" type="tel" placeholder="Votre numéro de téléphone" autocomplete="tel" />
+                </div>
+                <button type="button" class="btn-primary" style="width:100%;margin-top:4px;" id="btn-rdv-confirm" onclick="submitRdv()">Confirmer →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Vue : RDV déjà existant -->
+      <div id="rdv-view-existing" style="display:none;">
+        <div style="background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:20px;margin-bottom:20px;">
+          <p style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Votre rendez-vous existant</p>
+          <p id="rdv-existing-info" style="font-size:16px;font-weight:600;line-height:1.8;white-space:pre-line;"></p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button type="button" class="btn-primary" style="flex:1;" onclick="modifierRdv()">Modifier la date</button>
+          <button type="button" class="btn-ghost" style="flex:1;color:#E07070;" onclick="annulerRdv()">Annuler ce RDV</button>
+        </div>
+        <button type="button" class="btn-ghost" style="width:100%;margin-top:8px;" onclick="closeRdvDrawer()">Fermer</button>
+      </div>
+      <!-- Vue : Succès -->
+      <div id="rdv-view-success" style="display:none;">
+        <div class="rdv-success-wrap">
+          <div class="rdv-success-icon">✓</div>
+          <h3 style="margin-bottom:12px;">Rendez-vous confirmé !</h3>
+          <p id="rdv-success-msg" style="color:var(--muted);line-height:1.7;white-space:pre-line;"></p>
+          <div style="display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap;">
+            <button type="button" class="btn-primary" onclick="modifierRdv()">Modifier la date</button>
+            <button type="button" class="btn-ghost" onclick="closeRdvDrawer()">Fermer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div><!-- /page-landing -->
 
