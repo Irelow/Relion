@@ -109,24 +109,31 @@ module.exports = async function handler(req, res) {
         const dateLabel = new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', {
           weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
         });
-        resend.emails.send({
-          from: 'Relion <noreply@relionapp.fr>',
-          to: email.trim(),
-          subject: `Votre code de confirmation Relion : ${verificationCode}`,
-          html: `
-            <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;padding:40px 20px;">
-              <h2 style="font-size:22px;margin-bottom:8px;">Confirmez votre rendez-vous</h2>
-              <p>Bonjour ${name.trim()},</p>
-              <p>Vous avez demandé un rendez-vous le <strong>${dateLabel} à ${time}</strong>.</p>
-              <p>Votre code de confirmation :</p>
-              <div style="background:#f5f7ff;padding:24px;border-radius:10px;margin:20px 0;text-align:center;">
-                <span style="font-size:36px;font-weight:700;letter-spacing:10px;color:#1a56e8;">${verificationCode}</span>
+        try {
+          const emailResult = await resend.emails.send({
+            from: 'Relion <noreply@relionapp.fr>',
+            to: email.trim(),
+            subject: `Votre code de confirmation Relion : ${verificationCode}`,
+            html: `
+              <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;padding:40px 20px;">
+                <h2 style="font-size:22px;margin-bottom:8px;">Confirmez votre rendez-vous</h2>
+                <p>Bonjour ${name.trim()},</p>
+                <p>Vous avez demandé un rendez-vous le <strong>${dateLabel} à ${time}</strong>.</p>
+                <p>Votre code de confirmation :</p>
+                <div style="background:#f5f7ff;padding:24px;border-radius:10px;margin:20px 0;text-align:center;">
+                  <span style="font-size:36px;font-weight:700;letter-spacing:10px;color:#1a56e8;">${verificationCode}</span>
+                </div>
+                <p style="color:#888;font-size:13px;">Ce code expire dans 10 minutes.</p>
+                <p>— L'équipe Relion</p>
               </div>
-              <p style="color:#888;font-size:13px;">Ce code expire dans 10 minutes.</p>
-              <p>— L'équipe Relion</p>
-            </div>
-          `
-        }).catch(() => {});
+            `
+          });
+          console.log('[book/request] Email envoyé:', JSON.stringify(emailResult));
+        } catch (emailErr) {
+          console.error('[book/request] Erreur Resend:', emailErr.message);
+        }
+      } else {
+        console.warn('[book/request] RESEND_API_KEY manquant');
       }
 
       return res.status(200).json({ success: true });
