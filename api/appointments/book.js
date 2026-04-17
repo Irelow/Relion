@@ -79,6 +79,17 @@ module.exports = async function handler(req, res) {
         return res.status(409).json({ error: 'Vous avez deja un rendez-vous.', existing: existing.rows[0] });
       }
 
+      // Anti-spam : bloquer si un code a déjà été envoyé il y a moins de 60s
+      const recentPending = await sql`
+        SELECT 1 FROM appointments
+        WHERE phone_norm = ${phoneNorm} AND status = 'pending'
+          AND code_expires_at > NOW() + INTERVAL '9 minutes'
+        LIMIT 1
+      `.catch(() => ({ rows: [] }));
+      if (recentPending.rows.length > 0) {
+        return res.status(429).json({ error: 'Veuillez patienter 60 secondes avant de renvoyer un code.' });
+      }
+
       // Nettoyer les anciens pending pour ce slot ou ce numéro
       await sql`DELETE FROM appointments WHERE status = 'pending' AND (date = ${date} AND time_slot = ${time})`.catch(() => {});
       await sql`DELETE FROM appointments WHERE status = 'pending' AND phone_norm = ${phoneNorm}`.catch(() => {});

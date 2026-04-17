@@ -1751,6 +1751,18 @@
       gap: 8px;
       margin-bottom: 20px;
     }
+    /* OTP inputs */
+    .rdv-otp-wrap { display:flex; gap:8px; justify-content:center; margin:16px 0; }
+    .rdv-otp-input {
+      width: 44px; height: 52px;
+      text-align: center; font-size: 22px; font-weight: 700;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      background: rgba(255,255,255,0.05); color: var(--text);
+      outline: none; transition: border-color .2s;
+      caret-color: var(--accent);
+    }
+    .rdv-otp-input:focus { border-color: var(--accent); }
+
     .rdv-slot {
       padding: 9px 6px;
       text-align: center;
@@ -2227,12 +2239,18 @@
         <div style="text-align:center;padding:8px 0 24px;">
           <div style="font-size:40px;margin-bottom:16px;">📧</div>
           <h3 style="margin-bottom:10px;font-family:'Sora',sans-serif;">Vérifiez votre email</h3>
-          <p id="rdv-verify-desc" style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:24px;"></p>
-          <div class="form-group" style="text-align:left;">
-            <input class="form-input" id="rdv-code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="Code à 6 chiffres" style="text-align:center;font-size:22px;letter-spacing:8px;font-weight:700;" />
+          <p id="rdv-verify-desc" style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:8px;"></p>
+          <div class="rdv-otp-wrap">
+            <input class="rdv-otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" />
+            <input class="rdv-otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" />
+            <input class="rdv-otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" />
+            <input class="rdv-otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" />
+            <input class="rdv-otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" />
+            <input class="rdv-otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" />
           </div>
           <button type="button" class="btn-primary" style="width:100%;margin-top:8px;" id="btn-rdv-verify" onclick="submitRdvCode()">Confirmer le rendez-vous →</button>
-          <button type="button" class="btn-ghost" style="width:100%;margin-top:8px;font-size:13px;" onclick="rdvShowView('main')">← Modifier mes infos</button>
+          <button type="button" id="btn-rdv-resend" class="btn-ghost" style="width:100%;margin-top:8px;font-size:13px;" onclick="resendRdvCode()">Renvoyer le code</button>
+          <button type="button" class="btn-ghost" style="width:100%;margin-top:4px;font-size:13px;color:var(--muted);" onclick="rdvShowView('main')">← Modifier mes infos</button>
         </div>
       </div>
       <!-- Vue : RDV déjà existant -->
@@ -3147,8 +3165,9 @@
       rdv.pendingEmail = email.trim();
       document.getElementById('rdv-verify-desc').textContent =
         'Un code de confirmation a été envoyé à ' + email.trim() + '. Entrez-le ci-dessous pour valider votre rendez-vous.';
-      document.getElementById('rdv-code').value = '';
       rdvShowView('verify');
+      initOtpInputs();
+      startResendCooldown(60);
     })
     .catch(function() {
       btn.innerHTML = 'Recevoir le code →'; btn.disabled = false;
@@ -3156,10 +3175,86 @@
     });
   }
 
-  function submitRdvCode() {
-    var code = (document.getElementById('rdv-code') || {}).value || '';
+  /* ── OTP inputs ─────────────────────────────────────────────────────── */
+  function initOtpInputs() {
+    var inputs = Array.from(document.querySelectorAll('.rdv-otp-input'));
+    inputs.forEach(function(input, i) {
+      input.value = '';
+      input.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(-1);
+        if (this.value && i < inputs.length - 1) inputs[i + 1].focus();
+        // Auto-submit si tous remplis
+        if (inputs.every(function(inp) { return inp.value.length === 1; })) {
+          submitRdvCode();
+        }
+      });
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && !this.value && i > 0) inputs[i - 1].focus();
+      });
+      input.addEventListener('paste', function(e) {
+        e.preventDefault();
+        var pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+        inputs.forEach(function(inp, j) { inp.value = pasted[j] || ''; });
+        var last = Math.min(pasted.length, inputs.length) - 1;
+        if (last >= 0) inputs[last].focus();
+        if (pasted.length >= 6) submitRdvCode();
+      });
+    });
+    inputs[0].focus();
+  }
+
+  function getOtpCode() {
+    return Array.from(document.querySelectorAll('.rdv-otp-input')).map(function(i) { return i.value; }).join('');
+  }
+
+  /* ── Resend cooldown ─────────────────────────────────────────────────── */
+  var rdvResendInterval = null;
+
+  function startResendCooldown(seconds) {
+    var btn = document.getElementById('btn-rdv-resend');
+    btn.disabled = true;
+    var remaining = seconds || 60;
+    btn.textContent = 'Renvoyer dans ' + remaining + 's';
+    clearInterval(rdvResendInterval);
+    rdvResendInterval = setInterval(function() {
+      remaining--;
+      if (remaining <= 0) {
+        clearInterval(rdvResendInterval);
+        btn.disabled = false;
+        btn.textContent = 'Renvoyer le code';
+      } else {
+        btn.textContent = 'Renvoyer dans ' + remaining + 's';
+      }
+    }, 1000);
+  }
+
+  function resendRdvCode() {
     var phone = (document.getElementById('rdv-phone') || {}).value || '';
-    if (!code.trim() || code.trim().length !== 6) { showToast('Code à 6 chiffres requis.', true); return; }
+    var name  = (document.getElementById('rdv-name')  || {}).value || '';
+    fetch(API + '/api/appointments/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ step: 'request', date: rdv.selectedDate, time: rdv.selectedTime, name: name.trim(), phone: phone.trim(), email: rdv.pendingEmail })
+    })
+    .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+    .then(function(res) {
+      if (res.ok) {
+        showToast('Code renvoyé à ' + rdv.pendingEmail + ' !');
+        Array.from(document.querySelectorAll('.rdv-otp-input')).forEach(function(i) { i.value = ''; });
+        document.querySelectorAll('.rdv-otp-input')[0].focus();
+        startResendCooldown(60);
+      } else {
+        showToast(res.data.error || 'Erreur', true);
+      }
+    })
+    .catch(function() { showToast('Erreur — réessayez.', true); });
+  }
+
+  /* ── Vérification du code ────────────────────────────────────────────── */
+  function submitRdvCode() {
+    var code  = getOtpCode();
+    var phone = (document.getElementById('rdv-phone') || {}).value || '';
+    if (code.length !== 6) { showToast('Entrez les 6 chiffres.', true); return; }
 
     var btn = document.getElementById('btn-rdv-verify');
     btn.innerHTML = '<span class="spinner"></span>Vérification…'; btn.disabled = true;
@@ -3167,22 +3262,24 @@
     fetch(API + '/api/appointments/book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ step: 'verify', date: rdv.selectedDate, time: rdv.selectedTime, phone: phone.trim(), code: code.trim() })
+      body: JSON.stringify({ step: 'verify', date: rdv.selectedDate, time: rdv.selectedTime, phone: phone.trim(), code: code })
     })
-    .then(function(r) { return r.json().then(function(d){ return {ok:r.ok, status:r.status, data:d}; }); })
+    .then(function(r) { return r.json().then(function(d){ return {ok:r.ok, data:d}; }); })
     .then(function(res) {
       btn.innerHTML = 'Confirmer le rendez-vous →'; btn.disabled = false;
       if (!res.ok) {
         showToast(res.data.error || 'Code invalide ou expiré.', true);
+        Array.from(document.querySelectorAll('.rdv-otp-input')).forEach(function(i) { i.value = ''; });
+        document.querySelectorAll('.rdv-otp-input')[0].focus();
         return;
       }
-      // Succès
       rdv.existingDate = rdv.selectedDate; rdv.existingTime = rdv.selectedTime; rdv.existingPhone = phone.trim();
       var parts = rdv.selectedDate.split('-');
       var dd = new Date(+parts[0], +parts[1]-1, +parts[2]);
       var dateLabel = dd.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
       document.getElementById('rdv-success-msg').textContent =
         'Le ' + dateLabel + ' à ' + rdv.selectedTime + '\nNous vous appellerons au ' + phone.trim() + '.';
+      clearInterval(rdvResendInterval);
       rdvShowView('success');
     })
     .catch(function() {
