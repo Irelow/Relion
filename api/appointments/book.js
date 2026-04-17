@@ -176,6 +176,15 @@ module.exports = async function handler(req, res) {
 
       const appt = result.rows[0];
 
+      // Si modification : supprimer l'ancien créneau atomiquement
+      const { cancelDate, cancelTime } = req.body || {};
+      if (cancelDate && cancelTime) {
+        await sql`
+          DELETE FROM appointments
+          WHERE date = ${cancelDate} AND time_slot = ${cancelTime} AND phone_norm = ${phoneNorm} AND status = 'booked'
+        `.catch(() => {});
+      }
+
       // Emails de confirmation
       if (process.env.RESEND_API_KEY) {
         const resend = new Resend(process.env.RESEND_API_KEY);
@@ -280,6 +289,31 @@ module.exports = async function handler(req, res) {
   // ══════════════════════════════════════════════════════════════════════
   // ÉTAPE : Vérification du code pour annulation/modification
   // ══════════════════════════════════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════════════
+  // ÉTAPE : Vérifier le code pour modification (sans supprimer l'ancien créneau)
+  // ══════════════════════════════════════════════════════════════════════
+  if (step === 'verify-modify') {
+    if (!date || !time || !phone || !code) return res.status(400).json({ error: 'Champs manquants' });
+    const phoneNorm = normalizePhone(phone);
+    try {
+      const result = await sql`
+        SELECT 1 FROM appointments
+        WHERE date = ${date} AND time_slot = ${time} AND phone_norm = ${phoneNorm}
+          AND status = 'booked' AND verification_code = ${code} AND code_expires_at > NOW()
+      `;
+      if (result.rows.length === 0) return res.status(400).json({ error: 'Code invalide ou expiré. Recommencez.' });
+      // Invalider le code après vérification
+      await sql`
+        UPDATE appointments SET verification_code = NULL, code_expires_at = NULL
+        WHERE date = ${date} AND time_slot = ${time} AND phone_norm = ${phoneNorm} AND status = 'booked'
+      `.catch(() => {});
+      return res.status(200).json({ success: true });
+    } catch (err) {
+      console.error('[book/verify-modify] Erreur:', err.message);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  }
+
   if (step === 'verify-cancel') {
     if (!date || !time || !phone || !code) return res.status(400).json({ error: 'Champs manquants' });
     const phoneNorm = normalizePhone(phone);
