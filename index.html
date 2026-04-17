@@ -2987,7 +2987,9 @@
     phone: null,
     name: null,
     existingDate: null,
-    existingTime: null
+    existingTime: null,
+    pendingEmail: null,
+    cancelContext: null
   };
 
   var ALL_SLOTS = [
@@ -3156,9 +3158,14 @@
         return;
       }
       if (!res.ok) {
-        showToast(res.data.error || 'Créneau déjà pris.', true);
-        rdv.bookedSlots.push(rdv.selectedTime); rdv.selectedTime = null;
-        renderRdvSlots(); document.getElementById('rdv-booking-form').style.display = 'none';
+        showToast(res.data.error || 'Erreur.', true);
+        // Griser uniquement si le créneau est vraiment pris en DB (pas un rate limit ou autre erreur)
+        if (res.status === 409 && !res.data.existing) {
+          rdv.bookedSlots.push(rdv.selectedTime);
+          renderRdvSlots();
+          document.getElementById('rdv-booking-form').style.display = 'none';
+        }
+        rdv.selectedTime = null;
         return;
       }
       // Code envoyé → afficher vue vérification
@@ -3229,17 +3236,24 @@
   }
 
   function resendRdvCode() {
-    var phone = (document.getElementById('rdv-phone') || {}).value || '';
-    var name  = (document.getElementById('rdv-name')  || {}).value || '';
+    var isCancelFlow = (rdv.cancelContext === 'cancel' || rdv.cancelContext === 'modify');
+    var body;
+    if (isCancelFlow) {
+      body = { step: 'request-cancel', date: rdv.existingDate, time: rdv.existingTime, phone: rdv.existingPhone || '' };
+    } else {
+      var phone = (document.getElementById('rdv-phone') || {}).value || '';
+      var name  = (document.getElementById('rdv-name')  || {}).value || '';
+      body = { step: 'request', date: rdv.selectedDate, time: rdv.selectedTime, name: name.trim(), phone: phone.trim(), email: rdv.pendingEmail };
+    }
     fetch(API + '/api/appointments/book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ step: 'request', date: rdv.selectedDate, time: rdv.selectedTime, name: name.trim(), phone: phone.trim(), email: rdv.pendingEmail })
+      body: JSON.stringify(body)
     })
     .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
     .then(function(res) {
       if (res.ok) {
-        showToast('Code renvoyé à ' + rdv.pendingEmail + ' !');
+        showToast('Code renvoyé !');
         Array.from(document.querySelectorAll('.rdv-otp-input')).forEach(function(i) { i.value = ''; });
         document.querySelectorAll('.rdv-otp-input')[0].focus();
         startResendCooldown(60);
@@ -3252,69 +3266,93 @@
 
   /* ── Vérification du code ────────────────────────────────────────────── */
   function submitRdvCode() {
-    var code  = getOtpCode();
-    var phone = (document.getElementById('rdv-phone') || {}).value || '';
+    var code = getOtpCode();
     if (code.length !== 6) { showToast('Entrez les 6 chiffres.', true); return; }
 
+    var isCancelFlow = (rdv.cancelContext === 'cancel' || rdv.cancelContext === 'modify');
+    var step   = isCancelFlow ? 'verify-cancel' : 'verify';
+    var date   = isCancelFlow ? rdv.existingDate : rdv.selectedDate;
+    var time   = isCancelFlow ? rdv.existingTime : rdv.selectedTime;
+    var phone  = isCancelFlow ? rdv.existingPhone : ((document.getElementById('rdv-phone') || {}).value || '').trim();
+
     var btn = document.getElementById('btn-rdv-verify');
+    var originalText = btn.textContent;
     btn.innerHTML = '<span class="spinner"></span>Vérification…'; btn.disabled = true;
 
     fetch(API + '/api/appointments/book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ step: 'verify', date: rdv.selectedDate, time: rdv.selectedTime, phone: phone.trim(), code: code })
+      body: JSON.stringify({ step: step, date: date, time: time, phone: phone, code: code })
     })
     .then(function(r) { return r.json().then(function(d){ return {ok:r.ok, data:d}; }); })
     .then(function(res) {
-      btn.innerHTML = 'Confirmer le rendez-vous →'; btn.disabled = false;
+      btn.innerHTML = originalText; btn.disabled = false;
       if (!res.ok) {
         showToast(res.data.error || 'Code invalide ou expiré.', true);
         Array.from(document.querySelectorAll('.rdv-otp-input')).forEach(function(i) { i.value = ''; });
         document.querySelectorAll('.rdv-otp-input')[0].focus();
         return;
       }
-      rdv.existingDate = rdv.selectedDate; rdv.existingTime = rdv.selectedTime; rdv.existingPhone = phone.trim();
-      var parts = rdv.selectedDate.split('-');
-      var dd = new Date(+parts[0], +parts[1]-1, +parts[2]);
-      var dateLabel = dd.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-      document.getElementById('rdv-success-msg').textContent =
-        'Le ' + dateLabel + ' à ' + rdv.selectedTime + '\nNous vous appellerons au ' + phone.trim() + '.';
       clearInterval(rdvResendInterval);
-      rdvShowView('success');
+
+      if (rdv.cancelContext === 'cancel') {
+        rdv.cancelContext = null;
+        showToast('Rendez-vous annulé.');
+        closeRdvDrawer();
+      } else if (rdv.cancelContext === 'modify') {
+        rdv.cancelContext = null;
+        rdv.existingDate = null; rdv.existingTime = null;
+        rdv.selectedDate = null; rdv.selectedTime = null;
+        document.getElementById('rdv-placeholder').style.display = 'block';
+        document.getElementById('rdv-slots-content').style.display = 'none';
+        document.getElementById('rdv-booking-form').style.display = 'none';
+        rdvShowView('main');
+        renderRdvCalendar();
+      } else {
+        // Réservation confirmée
+        rdv.existingDate = rdv.selectedDate; rdv.existingTime = rdv.selectedTime; rdv.existingPhone = phone;
+        var parts = rdv.selectedDate.split('-');
+        var dd = new Date(+parts[0], +parts[1]-1, +parts[2]);
+        var dateLabel = dd.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+        document.getElementById('rdv-success-msg').textContent =
+          'Le ' + dateLabel + ' à ' + rdv.selectedTime + '\nNous vous appellerons au ' + phone + '.';
+        rdvShowView('success');
+      }
     })
     .catch(function() {
-      btn.innerHTML = 'Confirmer le rendez-vous →'; btn.disabled = false;
+      btn.innerHTML = originalText; btn.disabled = false;
       showToast('Erreur — réessayez.', true);
     });
   }
 
   function annulerRdv() {
-    if (!confirm('Confirmer l\'annulation ?')) return;
-    fetch(API + '/api/appointments/cancel', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date: rdv.existingDate, time: rdv.existingTime, phone: rdv.existingPhone || '' })
-    })
-    .then(function() { showToast('Rendez-vous annulé.'); closeRdvDrawer(); })
-    .catch(function() { showToast('Erreur — réessayez.', true); });
+    requestCancelCode('cancel');
   }
 
   function modifierRdv() {
-    // Libérer l'ancien créneau silencieusement
-    if (rdv.existingDate && rdv.existingTime) {
-      fetch(API + '/api/appointments/cancel', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date: rdv.existingDate, time: rdv.existingTime, phone: rdv.existingPhone || '' })
-      }).catch(function() {});
-    }
-    rdv.existingDate = null; rdv.existingTime = null;
-    rdv.selectedDate = null; rdv.selectedTime = null;
-    document.getElementById('rdv-placeholder').style.display = 'block';
-    document.getElementById('rdv-slots-content').style.display = 'none';
-    document.getElementById('rdv-booking-form').style.display = 'none';
-    rdvShowView('main');
-    renderRdvCalendar();
+    requestCancelCode('modify');
+  }
+
+  function requestCancelCode(context) {
+    rdv.cancelContext = context;
+    fetch(API + '/api/appointments/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ step: 'request-cancel', date: rdv.existingDate, time: rdv.existingTime, phone: rdv.existingPhone || '' })
+    })
+    .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+    .then(function(res) {
+      if (!res.ok) { showToast(res.data.error || 'Erreur', true); return; }
+      var action = context === 'cancel' ? 'l\'annulation' : 'la modification';
+      document.getElementById('rdv-verify-desc').textContent =
+        'Un code de confirmation a été envoyé à ' + (res.data.email || 'votre email') + ' pour confirmer ' + action + ' de votre rendez-vous.';
+      var btnVerify = document.getElementById('btn-rdv-verify');
+      btnVerify.textContent = context === 'cancel' ? 'Confirmer l\'annulation →' : 'Confirmer la modification →';
+      rdvShowView('verify');
+      initOtpInputs();
+      startResendCooldown(60);
+    })
+    .catch(function() { showToast('Erreur — réessayez.', true); });
   }
 
   // Vérifier si déjà connecté au chargement

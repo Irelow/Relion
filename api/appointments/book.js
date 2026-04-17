@@ -229,5 +229,74 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  // ══════════════════════════════════════════════════════════════════════
+  // ÉTAPE : Demande de code pour annulation/modification
+  // ══════════════════════════════════════════════════════════════════════
+  if (step === 'request-cancel') {
+    if (!date || !time || !phone) return res.status(400).json({ error: 'Champs manquants' });
+    const phoneNorm = normalizePhone(phone);
+    try {
+      const appt = await sql`
+        SELECT * FROM appointments
+        WHERE date = ${date} AND time_slot = ${time} AND phone_norm = ${phoneNorm} AND status = 'booked'
+        LIMIT 1
+      `;
+      if (appt.rows.length === 0) return res.status(404).json({ error: 'Rendez-vous introuvable' });
+      const booking = appt.rows[0];
+      const verificationCode = generateCode();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+      await sql`
+        UPDATE appointments SET verification_code = ${verificationCode}, code_expires_at = ${expiresAt}
+        WHERE date = ${date} AND time_slot = ${time} AND phone_norm = ${phoneNorm} AND status = 'booked'
+      `;
+      if (process.env.RESEND_API_KEY && booking.email) {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const dateLabel = new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+        resend.emails.send({
+          from: 'Relion <noreply@relionapp.fr>',
+          to: booking.email,
+          subject: `Code de confirmation — modification de votre RDV Relion`,
+          html: `
+            <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;padding:40px 20px;">
+              <h2>Confirmer la modification</h2>
+              <p>Vous souhaitez modifier ou annuler votre rendez-vous du <strong>${dateLabel} à ${time}</strong>.</p>
+              <p>Votre code de confirmation :</p>
+              <div style="background:#f5f7ff;padding:24px;border-radius:10px;margin:20px 0;text-align:center;">
+                <span style="font-size:36px;font-weight:700;letter-spacing:10px;color:#1a56e8;">${verificationCode}</span>
+              </div>
+              <p style="color:#888;font-size:13px;">Ce code expire dans 10 minutes.</p>
+              <p>— L'équipe Relion</p>
+            </div>
+          `
+        }).catch(() => {});
+      }
+      return res.status(200).json({ success: true, email: booking.email || '' });
+    } catch (err) {
+      console.error('[book/request-cancel] Erreur:', err.message);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  // ÉTAPE : Vérification du code pour annulation/modification
+  // ══════════════════════════════════════════════════════════════════════
+  if (step === 'verify-cancel') {
+    if (!date || !time || !phone || !code) return res.status(400).json({ error: 'Champs manquants' });
+    const phoneNorm = normalizePhone(phone);
+    try {
+      const result = await sql`
+        DELETE FROM appointments
+        WHERE date = ${date} AND time_slot = ${time} AND phone_norm = ${phoneNorm}
+          AND status = 'booked' AND verification_code = ${code} AND code_expires_at > NOW()
+        RETURNING id
+      `;
+      if (result.rowCount === 0) return res.status(400).json({ error: 'Code invalide ou expiré. Recommencez.' });
+      return res.status(200).json({ success: true });
+    } catch (err) {
+      console.error('[book/verify-cancel] Erreur:', err.message);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  }
+
   return res.status(400).json({ error: 'Etape inconnue' });
 };
