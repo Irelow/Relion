@@ -3150,10 +3150,12 @@
       btn.innerHTML = 'Recevoir le code →'; btn.disabled = false;
       // Doublon détecté : afficher le RDV existant
       if (res.status === 409 && res.data.existing) {
-        rdv.existingDate  = res.data.existing.date;
+        var rawDate = res.data.existing.date;
+        var dateStr = typeof rawDate === 'string' ? rawDate.split('T')[0] : rawDate;
+        rdv.existingDate  = dateStr;
         rdv.existingTime  = res.data.existing.time_slot;
         rdv.existingPhone = phone.trim();
-        var d = new Date(res.data.existing.date + 'T12:00:00');
+        var d = new Date(dateStr + 'T12:00:00');
         var label = d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
         document.getElementById('rdv-existing-info').textContent =
           '📅 ' + label.charAt(0).toUpperCase() + label.slice(1) + '\n⏰ ' + res.data.existing.time_slot;

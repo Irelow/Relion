@@ -68,9 +68,15 @@ module.exports = async function handler(req, res) {
         return res.status(409).json({ error: 'Ce creneau est deja pris, choisissez-en un autre.' });
       }
 
-      // Vérifier si ce numéro a déjà un RDV actif
+      // Vérifier si ce numéro a déjà un RDV actif (sauf l'ancien créneau en cours de modification)
       const today = new Date().toISOString().split('T')[0];
-      const existing = await sql`
+      const { cancelDate, cancelTime } = req.body || {};
+      const existing = (cancelDate && cancelTime) ? await sql`
+        SELECT date, time_slot FROM appointments
+        WHERE phone_norm = ${phoneNorm} AND status = 'booked' AND date >= ${today}
+          AND NOT (date = ${cancelDate} AND time_slot = ${cancelTime})
+        ORDER BY date ASC LIMIT 1
+      ` : await sql`
         SELECT date, time_slot FROM appointments
         WHERE phone_norm = ${phoneNorm} AND status = 'booked' AND date >= ${today}
         ORDER BY date ASC LIMIT 1
