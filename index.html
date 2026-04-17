@@ -2213,10 +2213,26 @@
                 <div class="form-group">
                   <input class="form-input" id="rdv-phone" type="tel" placeholder="Votre numéro de téléphone" autocomplete="tel" />
                 </div>
-                <button type="button" class="btn-primary" style="width:100%;margin-top:4px;" id="btn-rdv-confirm" onclick="submitRdv()">Confirmer →</button>
+                <div class="form-group">
+                  <input class="form-input" id="rdv-email" type="email" placeholder="Votre email (pour confirmer)" autocomplete="email" />
+                </div>
+                <button type="button" class="btn-primary" style="width:100%;margin-top:4px;" id="btn-rdv-confirm" onclick="submitRdv()">Recevoir le code →</button>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      <!-- Vue : Vérification email -->
+      <div id="rdv-view-verify" style="display:none;">
+        <div style="text-align:center;padding:8px 0 24px;">
+          <div style="font-size:40px;margin-bottom:16px;">📧</div>
+          <h3 style="margin-bottom:10px;font-family:'Sora',sans-serif;">Vérifiez votre email</h3>
+          <p id="rdv-verify-desc" style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:24px;"></p>
+          <div class="form-group" style="text-align:left;">
+            <input class="form-input" id="rdv-code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="Code à 6 chiffres" style="text-align:center;font-size:22px;letter-spacing:8px;font-weight:700;" />
+          </div>
+          <button type="button" class="btn-primary" style="width:100%;margin-top:8px;" id="btn-rdv-verify" onclick="submitRdvCode()">Confirmer le rendez-vous →</button>
+          <button type="button" class="btn-ghost" style="width:100%;margin-top:8px;font-size:13px;" onclick="rdvShowView('main')">← Modifier mes infos</button>
         </div>
       </div>
       <!-- Vue : RDV déjà existant -->
@@ -2964,7 +2980,7 @@
   var MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 
   function rdvShowView(view) {
-    ['login','main','existing','success'].forEach(function(v) {
+    ['login','main','verify','existing','success'].forEach(function(v) {
       document.getElementById('rdv-view-' + v).style.display = (v === view) ? 'block' : 'none';
     });
   }
@@ -3092,21 +3108,23 @@
   function submitRdv() {
     var name  = (document.getElementById('rdv-name')  || {}).value || '';
     var phone = (document.getElementById('rdv-phone') || {}).value || '';
+    var email = (document.getElementById('rdv-email') || {}).value || '';
     if (!name.trim())          { showToast('Prénom requis.', true); return; }
     if (!isValidPhone(phone))  { showToast('Numéro invalide.', true); return; }
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) { showToast('Email invalide.', true); return; }
     if (!rdv.selectedDate || !rdv.selectedTime) { showToast('Sélectionnez un créneau.', true); return; }
 
     var btn = document.getElementById('btn-rdv-confirm');
-    btn.innerHTML = '<span class="spinner"></span>Confirmation…'; btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Envoi du code…'; btn.disabled = true;
 
     fetch(API + '/api/appointments/book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date: rdv.selectedDate, time: rdv.selectedTime, name: name.trim(), phone: phone.trim() })
+      body: JSON.stringify({ step: 'request', date: rdv.selectedDate, time: rdv.selectedTime, name: name.trim(), phone: phone.trim(), email: email.trim() })
     })
     .then(function(r) { return r.json().then(function(d){ return {ok:r.ok, status:r.status, data:d}; }); })
     .then(function(res) {
-      btn.innerHTML = 'Confirmer →'; btn.disabled = false;
+      btn.innerHTML = 'Recevoir le code →'; btn.disabled = false;
       // Doublon détecté : afficher le RDV existant
       if (res.status === 409 && res.data.existing) {
         rdv.existingDate  = res.data.existing.date;
@@ -3125,6 +3143,39 @@
         renderRdvSlots(); document.getElementById('rdv-booking-form').style.display = 'none';
         return;
       }
+      // Code envoyé → afficher vue vérification
+      rdv.pendingEmail = email.trim();
+      document.getElementById('rdv-verify-desc').textContent =
+        'Un code de confirmation a été envoyé à ' + email.trim() + '. Entrez-le ci-dessous pour valider votre rendez-vous.';
+      document.getElementById('rdv-code').value = '';
+      rdvShowView('verify');
+    })
+    .catch(function() {
+      btn.innerHTML = 'Recevoir le code →'; btn.disabled = false;
+      showToast('Erreur — réessayez.', true);
+    });
+  }
+
+  function submitRdvCode() {
+    var code = (document.getElementById('rdv-code') || {}).value || '';
+    var phone = (document.getElementById('rdv-phone') || {}).value || '';
+    if (!code.trim() || code.trim().length !== 6) { showToast('Code à 6 chiffres requis.', true); return; }
+
+    var btn = document.getElementById('btn-rdv-verify');
+    btn.innerHTML = '<span class="spinner"></span>Vérification…'; btn.disabled = true;
+
+    fetch(API + '/api/appointments/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ step: 'verify', date: rdv.selectedDate, time: rdv.selectedTime, phone: phone.trim(), code: code.trim() })
+    })
+    .then(function(r) { return r.json().then(function(d){ return {ok:r.ok, status:r.status, data:d}; }); })
+    .then(function(res) {
+      btn.innerHTML = 'Confirmer le rendez-vous →'; btn.disabled = false;
+      if (!res.ok) {
+        showToast(res.data.error || 'Code invalide ou expiré.', true);
+        return;
+      }
       // Succès
       rdv.existingDate = rdv.selectedDate; rdv.existingTime = rdv.selectedTime; rdv.existingPhone = phone.trim();
       var parts = rdv.selectedDate.split('-');
@@ -3135,7 +3186,7 @@
       rdvShowView('success');
     })
     .catch(function() {
-      btn.innerHTML = 'Confirmer →'; btn.disabled = false;
+      btn.innerHTML = 'Confirmer le rendez-vous →'; btn.disabled = false;
       showToast('Erreur — réessayez.', true);
     });
   }

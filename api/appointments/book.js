@@ -8,6 +8,10 @@ function normalizePhone(raw) {
   return p;
 }
 
+function generateCode() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -15,109 +19,197 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Methode non autorisee' });
 
-  const { date, time, name, phone, email } = req.body || {};
-  if (!date || !time || !name || !phone) {
-    return res.status(400).json({ error: 'Champs manquants' });
-  }
+  const { step, date, time, name, phone, email, code } = req.body || {};
 
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-    return res.status(400).json({ error: 'Date invalide' });
-  }
-
-  const phoneNorm = normalizePhone(phone);
-  if (!/^(0|\+33)[0-9]{9}$/.test(phoneNorm) && !/^[0-9]{8,15}$/.test(phoneNorm)) {
-    return res.status(400).json({ error: 'Numero de telephone invalide' });
-  }
-
-  const d = new Date(date + 'T12:00:00');
-  if (d.getDay() === 0 || d.getDay() === 6) {
-    return res.status(400).json({ error: 'Jour non disponible' });
-  }
-
-  const VALID_SLOTS = [
-    '09:00','09:30','10:00','10:30','11:00','11:30',
-    '14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30'
-  ];
-  if (!VALID_SLOTS.includes(time)) {
-    return res.status(400).json({ error: 'Creneau invalide' });
-  }
-
-  // Migration automatique si phone_norm manque
+  // ── Migrations automatiques ────────────────────────────────────────────
   await sql`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS phone_norm VARCHAR(20)`.catch(() => {});
   await sql`CREATE INDEX IF NOT EXISTS idx_appointments_phone_norm ON appointments(phone_norm)`.catch(() => {});
+  await sql`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS verification_code VARCHAR(6)`.catch(() => {});
+  await sql`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS code_expires_at TIMESTAMPTZ`.catch(() => {});
 
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    const existing = await sql`
-      SELECT date, time_slot FROM appointments
-      WHERE phone_norm = ${phoneNorm}
-        AND status = 'booked'
-        AND date >= ${today}
-      ORDER BY date ASC LIMIT 1
-    `;
-    if (existing.rows.length > 0) {
-      return res.status(409).json({
-        error: 'Vous avez deja un rendez-vous.',
-        existing: existing.rows[0]
-      });
+  // ══════════════════════════════════════════════════════════════════════
+  // ÉTAPE 1 : Demande de code — valider + envoyer l'email
+  // ══════════════════════════════════════════════════════════════════════
+  if (!step || step === 'request') {
+    if (!date || !time || !name || !phone || !email) {
+      return res.status(400).json({ error: 'Champs manquants' });
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: 'Date invalide' });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      return res.status(400).json({ error: 'Email invalide' });
     }
 
-    await sql`
-      INSERT INTO appointments (date, time_slot, name, phone, phone_norm, email, status)
-      VALUES (${date}, ${time}, ${name.trim()}, ${phone.trim()}, ${phoneNorm}, ${email || ''}, 'booked')
-    `;
+    const phoneNorm = normalizePhone(phone);
+    if (!/^(0|\+33)[0-9]{9}$/.test(phoneNorm) && !/^[0-9]{8,15}$/.test(phoneNorm)) {
+      return res.status(400).json({ error: 'Numero de telephone invalide' });
+    }
 
-    if (process.env.RESEND_API_KEY) {
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      const dateLabel = new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', {
-        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-      });
+    const d = new Date(date + 'T12:00:00');
+    if (d.getDay() === 0 || d.getDay() === 6) {
+      return res.status(400).json({ error: 'Jour non disponible' });
+    }
 
-      if (email) {
+    const VALID_SLOTS = [
+      '09:00','09:30','10:00','10:30','11:00','11:30',
+      '14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30'
+    ];
+    if (!VALID_SLOTS.includes(time)) {
+      return res.status(400).json({ error: 'Creneau invalide' });
+    }
+
+    try {
+      // Vérifier si le slot est déjà définitivement réservé
+      const booked = await sql`
+        SELECT 1 FROM appointments WHERE date = ${date} AND time_slot = ${time} AND status = 'booked' LIMIT 1
+      `;
+      if (booked.rows.length > 0) {
+        return res.status(409).json({ error: 'Ce creneau est deja pris, choisissez-en un autre.' });
+      }
+
+      // Vérifier si ce numéro a déjà un RDV actif
+      const today = new Date().toISOString().split('T')[0];
+      const existing = await sql`
+        SELECT date, time_slot FROM appointments
+        WHERE phone_norm = ${phoneNorm} AND status = 'booked' AND date >= ${today}
+        ORDER BY date ASC LIMIT 1
+      `;
+      if (existing.rows.length > 0) {
+        return res.status(409).json({ error: 'Vous avez deja un rendez-vous.', existing: existing.rows[0] });
+      }
+
+      // Nettoyer les anciens pending pour ce slot ou ce numéro
+      await sql`DELETE FROM appointments WHERE status = 'pending' AND (date = ${date} AND time_slot = ${time})`.catch(() => {});
+      await sql`DELETE FROM appointments WHERE status = 'pending' AND phone_norm = ${phoneNorm}`.catch(() => {});
+
+      // Générer le code et insérer le pending
+      const verificationCode = generateCode();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+      await sql`
+        INSERT INTO appointments (date, time_slot, name, phone, phone_norm, email, status, verification_code, code_expires_at)
+        VALUES (${date}, ${time}, ${name.trim()}, ${phone.trim()}, ${phoneNorm}, ${email.trim()}, 'pending', ${verificationCode}, ${expiresAt})
+      `;
+
+      // Envoyer le code par email
+      if (process.env.RESEND_API_KEY) {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const dateLabel = new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', {
+          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+        });
         resend.emails.send({
           from: 'Relion <noreply@relionapp.fr>',
-          to: email,
-          subject: `Rendez-vous confirmé — ${dateLabel} à ${time}`,
+          to: email.trim(),
+          subject: `Votre code de confirmation Relion : ${verificationCode}`,
           html: `
             <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;padding:40px 20px;">
-              <h2 style="font-size:22px;margin-bottom:8px;">Votre rendez-vous est confirmé ✓</h2>
+              <h2 style="font-size:22px;margin-bottom:8px;">Confirmez votre rendez-vous</h2>
               <p>Bonjour ${name.trim()},</p>
-              <p>Votre appel avec l'équipe Relion est planifié :</p>
-              <div style="background:#f5f7ff;padding:16px;border-radius:10px;margin:20px 0;">
-                <p style="margin:4px 0;"><strong>📅 Date :</strong> ${dateLabel}</p>
-                <p style="margin:4px 0;"><strong>⏰ Heure :</strong> ${time}</p>
-                <p style="margin:4px 0;"><strong>📞 Numéro :</strong> ${phone.trim()}</p>
+              <p>Vous avez demandé un rendez-vous le <strong>${dateLabel} à ${time}</strong>.</p>
+              <p>Votre code de confirmation :</p>
+              <div style="background:#f5f7ff;padding:24px;border-radius:10px;margin:20px 0;text-align:center;">
+                <span style="font-size:36px;font-weight:700;letter-spacing:10px;color:#1a56e8;">${verificationCode}</span>
               </div>
-              <p>Nous vous appellerons à l'heure prévue. À bientôt !</p>
+              <p style="color:#888;font-size:13px;">Ce code expire dans 10 minutes.</p>
               <p>— L'équipe Relion</p>
             </div>
           `
         }).catch(() => {});
       }
 
-      resend.emails.send({
-        from: 'Relion <noreply@relionapp.fr>',
-        to: 'alix.sarikabadayi@gmail.com',
-        subject: `📅 Nouveau RDV — ${name.trim()} le ${dateLabel} à ${time}`,
-        html: `
-          <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;padding:40px 20px;">
-            <h2>Nouveau rendez-vous 📞</h2>
-            <p><strong>Nom :</strong> ${name.trim()}</p>
-            <p><strong>Téléphone :</strong> ${phone.trim()}</p>
-            <p><strong>Email :</strong> ${email || 'non renseigné'}</p>
-            <p><strong>Date :</strong> ${dateLabel} à ${time}</p>
-          </div>
-        `
-      }).catch(() => {});
-    }
+      return res.status(200).json({ success: true });
 
-    return res.status(200).json({ success: true });
-
-  } catch (err) {
-    if (err.message && err.message.toLowerCase().includes('unique')) {
-      return res.status(409).json({ error: 'Ce creneau est deja pris, choisissez-en un autre.' });
+    } catch (err) {
+      if (err.message && err.message.toLowerCase().includes('unique')) {
+        return res.status(409).json({ error: 'Ce creneau est deja pris, choisissez-en un autre.' });
+      }
+      console.error('[book/request] Erreur:', err.message);
+      return res.status(500).json({ error: 'Erreur serveur' });
     }
-    console.error('[book] Erreur:', err.message);
-    return res.status(500).json({ error: 'Erreur serveur' });
   }
+
+  // ══════════════════════════════════════════════════════════════════════
+  // ÉTAPE 2 : Vérification du code — confirmer le RDV
+  // ══════════════════════════════════════════════════════════════════════
+  if (step === 'verify') {
+    if (!date || !time || !phone || !code) {
+      return res.status(400).json({ error: 'Champs manquants' });
+    }
+
+    const phoneNorm = normalizePhone(phone);
+
+    try {
+      const result = await sql`
+        UPDATE appointments
+        SET status = 'booked', verification_code = NULL, code_expires_at = NULL
+        WHERE date = ${date}
+          AND time_slot = ${time}
+          AND phone_norm = ${phoneNorm}
+          AND status = 'pending'
+          AND verification_code = ${code}
+          AND code_expires_at > NOW()
+        RETURNING name, phone, email, date, time_slot
+      `;
+
+      if (result.rowCount === 0) {
+        return res.status(400).json({ error: 'Code invalide ou expiré. Recommencez.' });
+      }
+
+      const appt = result.rows[0];
+
+      // Emails de confirmation
+      if (process.env.RESEND_API_KEY) {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const dateLabel = new Date(appt.date + 'T12:00:00').toLocaleDateString('fr-FR', {
+          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+        });
+
+        if (appt.email) {
+          resend.emails.send({
+            from: 'Relion <noreply@relionapp.fr>',
+            to: appt.email,
+            subject: `Rendez-vous confirmé — ${dateLabel} à ${appt.time_slot}`,
+            html: `
+              <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;padding:40px 20px;">
+                <h2 style="font-size:22px;margin-bottom:8px;">Votre rendez-vous est confirmé ✓</h2>
+                <p>Bonjour ${appt.name},</p>
+                <p>Votre appel avec l'équipe Relion est planifié :</p>
+                <div style="background:#f5f7ff;padding:16px;border-radius:10px;margin:20px 0;">
+                  <p style="margin:4px 0;"><strong>📅 Date :</strong> ${dateLabel}</p>
+                  <p style="margin:4px 0;"><strong>⏰ Heure :</strong> ${appt.time_slot}</p>
+                  <p style="margin:4px 0;"><strong>📞 Numéro :</strong> ${appt.phone}</p>
+                </div>
+                <p>Nous vous appellerons à l'heure prévue. À bientôt !</p>
+                <p>— L'équipe Relion</p>
+              </div>
+            `
+          }).catch(() => {});
+        }
+
+        resend.emails.send({
+          from: 'Relion <noreply@relionapp.fr>',
+          to: 'alix.sarikabadayi@gmail.com',
+          subject: `📅 Nouveau RDV — ${appt.name} le ${dateLabel} à ${appt.time_slot}`,
+          html: `
+            <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;padding:40px 20px;">
+              <h2>Nouveau rendez-vous 📞</h2>
+              <p><strong>Nom :</strong> ${appt.name}</p>
+              <p><strong>Téléphone :</strong> ${appt.phone}</p>
+              <p><strong>Email :</strong> ${appt.email || 'non renseigné'}</p>
+              <p><strong>Date :</strong> ${dateLabel} à ${appt.time_slot}</p>
+            </div>
+          `
+        }).catch(() => {});
+      }
+
+      return res.status(200).json({ success: true });
+
+    } catch (err) {
+      console.error('[book/verify] Erreur:', err.message);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  }
+
+  return res.status(400).json({ error: 'Etape inconnue' });
 };
