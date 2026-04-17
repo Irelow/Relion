@@ -1,7 +1,6 @@
 const { sql } = require('@vercel/postgres');
 const { Resend } = require('resend');
 
-// Normalise un numéro : retire espaces/points/tirets, convertit +33/0033 en 0
 function normalizePhone(raw) {
   let p = (raw || '').trim().replace(/[\s\-\.]/g, '');
   if (p.startsWith('+33')) p = '0' + p.slice(3);
@@ -21,24 +20,20 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Champs manquants' });
   }
 
-  // Valider format date
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     return res.status(400).json({ error: 'Date invalide' });
   }
 
-  // Normaliser + valider le numéro
   const phoneNorm = normalizePhone(phone);
   if (!/^(0|\+33)[0-9]{9}$/.test(phoneNorm) && !/^[0-9]{8,15}$/.test(phoneNorm)) {
     return res.status(400).json({ error: 'Numero de telephone invalide' });
   }
 
-  // Vérifier que c'est un jour ouvrable (lundi-vendredi)
   const d = new Date(date + 'T12:00:00');
   if (d.getDay() === 0 || d.getDay() === 6) {
     return res.status(400).json({ error: 'Jour non disponible' });
   }
 
-  // Créneaux autorisés
   const VALID_SLOTS = [
     '09:00','09:30','10:00','10:30','11:00','11:30',
     '14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30'
@@ -47,8 +42,11 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Creneau invalide' });
   }
 
+  // Migration automatique si phone_norm manque
+  await sql`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS phone_norm VARCHAR(20)`.catch(() => {});
+  await sql`CREATE INDEX IF NOT EXISTS idx_appointments_phone_norm ON appointments(phone_norm)`.catch(() => {});
+
   try {
-    // ── Un seul RDV actif par numéro (normalisé) ──────────────────────
     const today = new Date().toISOString().split('T')[0];
     const existing = await sql`
       SELECT date, time_slot FROM appointments
@@ -64,20 +62,17 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // ── Insérer (UNIQUE(date, time_slot) protège le créneau) ──────────
     await sql`
       INSERT INTO appointments (date, time_slot, name, phone, phone_norm, email, status)
       VALUES (${date}, ${time}, ${name.trim()}, ${phone.trim()}, ${phoneNorm}, ${email || ''}, 'booked')
     `;
 
-    // ── Emails de confirmation ─────────────────────────────────────────
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
       const dateLabel = new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', {
         weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
       });
 
-      // Email à l'artisan (si email fourni)
       if (email) {
         resend.emails.send({
           from: 'Relion <noreply@relionapp.fr>',
@@ -100,7 +95,6 @@ module.exports = async function handler(req, res) {
         }).catch(() => {});
       }
 
-      // Notification interne
       resend.emails.send({
         from: 'Relion <noreply@relionapp.fr>',
         to: 'alix.sarikabadayi@gmail.com',
@@ -120,13 +114,8 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ success: true });
 
   } catch (err) {
-    // Contrainte unique = créneau déjà pris par quelqu'un d'autre
     if (err.message && err.message.toLowerCase().includes('unique')) {
       return res.status(409).json({ error: 'Ce creneau est deja pris, choisissez-en un autre.' });
-    }
-    // Colonne phone_norm manquante → migration nécessaire
-    if (err.message && err.message.includes('phone_norm')) {
-      return res.status(500).json({ error: 'Migration DB requise — relancez /api/setup-db' });
     }
     console.error('[book] Erreur:', err.message);
     return res.status(500).json({ error: 'Erreur serveur' });
