@@ -267,23 +267,27 @@ module.exports = async function handler(req, res) {
       if (process.env.RESEND_API_KEY && booking.email) {
         const resend = new Resend(process.env.RESEND_API_KEY);
         const dateLabel = new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-        resend.emails.send({
-          from: 'Relion <noreply@relionapp.fr>',
-          to: booking.email,
-          subject: `Code de confirmation — modification de votre RDV Relion`,
-          html: `
-            <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;padding:40px 20px;">
-              <h2>Confirmer la modification</h2>
-              <p>Vous souhaitez modifier ou annuler votre rendez-vous du <strong>${dateLabel} à ${time}</strong>.</p>
-              <p>Votre code de confirmation :</p>
-              <div style="background:#f5f7ff;padding:24px;border-radius:10px;margin:20px 0;text-align:center;">
-                <span style="font-size:36px;font-weight:700;letter-spacing:10px;color:#1a56e8;">${verificationCode}</span>
+        try {
+          await resend.emails.send({
+            from: 'Relion <noreply@relionapp.fr>',
+            to: booking.email,
+            subject: `Code de confirmation — modification de votre RDV Relion`,
+            html: `
+              <div style="font-family:Inter,sans-serif;max-width:480px;margin:0 auto;padding:40px 20px;">
+                <h2>Confirmer la modification</h2>
+                <p>Vous souhaitez modifier ou annuler votre rendez-vous du <strong>${dateLabel} à ${time}</strong>.</p>
+                <p>Votre code de confirmation :</p>
+                <div style="background:#f5f7ff;padding:24px;border-radius:10px;margin:20px 0;text-align:center;">
+                  <span style="font-size:36px;font-weight:700;letter-spacing:10px;color:#1a56e8;">${verificationCode}</span>
+                </div>
+                <p style="color:#888;font-size:13px;">Ce code expire dans 10 minutes.</p>
+                <p>— L'équipe Relion</p>
               </div>
-              <p style="color:#888;font-size:13px;">Ce code expire dans 10 minutes.</p>
-              <p>— L'équipe Relion</p>
-            </div>
-          `
-        }).catch(() => {});
+            `
+          });
+        } catch (emailErr) {
+          console.error('[book/request-cancel] Erreur Resend:', emailErr.message);
+        }
       }
       return res.status(200).json({ success: true, email: booking.email || '' });
     } catch (err) {
