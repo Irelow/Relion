@@ -31,6 +31,7 @@ async function runMigrations() {
   await sql`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS phone_norm VARCHAR(20)`.catch(() => {});
   await sql`CREATE INDEX IF NOT EXISTS idx_appointments_phone_norm ON appointments(phone_norm)`.catch(() => {});
   await sql`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS verification_code VARCHAR(64)`.catch(() => {});
+  await sql`ALTER TABLE appointments ALTER COLUMN verification_code TYPE VARCHAR(64)`.catch(() => {});
   await sql`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS code_expires_at TIMESTAMPTZ`.catch(() => {});
 }
 
