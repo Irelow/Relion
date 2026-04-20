@@ -103,7 +103,7 @@ module.exports = async function handler(req, res) {
 
     // --- Envoi de l'email de vérification ---
     const resendClient = new Resend(process.env.RESEND_API_KEY);
-    const verifyUrl    = `https://relion-five.vercel.app/api/auth/verify?token=${verifyToken}`;
+    const verifyUrl    = `https://relionapp.fr/api/auth/verify?token=${verifyToken}`;
 
     await resendClient.emails.send({
       from:    'Relion <noreply@relionapp.fr>',

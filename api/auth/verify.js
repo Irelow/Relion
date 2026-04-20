@@ -12,6 +12,9 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    // Migration : ajouter colonne nom si manquante
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS nom VARCHAR(100) DEFAULT ''`.catch(() => {});
+
     // Décoder et vérifier la signature + expiration
     const payload = jwt.verify(token, process.env.JWT_SECRET);
 
