@@ -82,9 +82,28 @@ async function sendConfirmationEmails(appt) {
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
+
+  // GET → liste des prochains RDV (pour le dashboard)
+  if (req.method === 'GET') {
+    try {
+      await runMigrations();
+      const today = new Date().toISOString().split('T')[0];
+      const result = await sql`
+        SELECT name, phone, email, date, time_slot
+        FROM appointments
+        WHERE status = 'booked' AND date >= ${today}
+        ORDER BY date ASC, time_slot ASC
+        LIMIT 20
+      `;
+      return res.status(200).json({ appointments: result.rows.map(r => ({ ...r, date: normalizeDate(r.date) })) });
+    } catch (err) {
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+  }
+
   if (req.method !== 'POST') return res.status(405).json({ error: 'Methode non autorisee' });
 
   await runMigrations();
