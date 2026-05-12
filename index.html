@@ -1497,52 +1497,165 @@
       background: var(--bg);
     }
 
-    .dash-wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 6rem 2rem 3rem;
-    }
-    .dash-top {
+    /* ── Dashboard topbar ───────────────────────────── */
+    .dash-topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      height: 64px;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
-      margin-bottom: 2rem;
-      gap: 1rem;
+      padding: 0 2.5rem;
+      background: rgba(24,27,46,0.92);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border2);
     }
-    .dash-top h1 { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 700; }
-    .dash-top p { font-size: 14px; color: var(--muted); margin-top: 4px; }
+    .dash-logo-btn {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: .08em;
+      color: var(--text);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: opacity .2s;
+      padding: 0;
+    }
+    .dash-logo-btn span { color: var(--blue); }
+    .dash-logo-btn:hover { opacity: 0.7; }
+    .dash-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    /* ── Dashboard body ─────────────────────────────── */
+    .dash-body {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 88px 2rem 3rem;
+    }
+    .dash-greeting-row {
+      margin-bottom: 2rem;
+      padding-top: 1.5rem;
+    }
+    .dash-greeting-row h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .dash-greeting-row p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 5px;
+      text-transform: capitalize;
+    }
+
+    /* ── KPI cards ──────────────────────────────────── */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
     .kpi-card {
       background: var(--surface);
       border: 1px solid var(--border2);
       border-radius: var(--radius-lg);
-      padding: 1.25rem 1.5rem;
+      padding: 1.4rem 1.5rem 1.4rem 1.75rem;
+      position: relative;
+      overflow: hidden;
     }
-    .kpi-label { font-size: 12px; color: var(--muted); margin-bottom: .5rem; }
-    .kpi-val { font-family: 'Sora', sans-serif; font-size: 30px; font-weight: 700; }
-    .kpi-delta { font-size: 12px; color: var(--success); margin-top: 4px; }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--blue);
+      border-radius: 2px 0 0 2px;
+    }
+    .kpi-icon {
+      width: 34px; height: 34px;
+      background: var(--blue-dim);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 14px;
+      color: var(--blue-light);
+    }
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      margin-bottom: 5px;
+    }
+    .kpi-val {
+      font-family: 'Sora', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .kpi-delta {
+      font-size: 12px;
+      color: var(--success);
+      margin-top: 5px;
+    }
 
+    /* ── Tables ─────────────────────────────────────── */
     .table-wrap {
       background: var(--surface);
       border: 1px solid var(--border2);
       border-radius: var(--radius-lg);
       overflow: hidden;
+      margin-bottom: 20px;
     }
     .table-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.25rem 1.5rem;
+      padding: 1.1rem 1.5rem;
       border-bottom: 1px solid var(--border2);
     }
-    .table-head h2 { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 600; }
-
+    .table-head h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+    }
+    .table-head h2 .th-icon {
+      width: 28px; height: 28px;
+      background: var(--blue-dim);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--blue-light);
+      flex-shrink: 0;
+    }
     table { width: 100%; border-collapse: collapse; }
-    th { padding: .75rem 1.25rem; text-align: left; font-size: 12px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--border2); }
-    td { padding: .9rem 1.25rem; font-size: 14px; border-bottom: 1px solid var(--border2); }
+    th {
+      padding: .6rem 1.25rem;
+      text-align: left;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      border-bottom: 1px solid var(--border2);
+      background: rgba(255,255,255,0.018);
+    }
+    td {
+      padding: .85rem 1.25rem;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
     tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,0.015); }
+    tr:hover td { background: rgba(255,255,255,0.02); }
 
     .badge {
       display: inline-block;
@@ -1568,6 +1681,13 @@
     }
     .action-btn:hover { background: rgba(26,86,232,0.2); }
     .action-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* ── Dashboard responsive ───────────────────────── */
+    @media (max-width: 600px) {
+      .dash-topbar { padding: 0 1.25rem; }
+      .dash-body { padding: 80px 1.25rem 2rem; }
+      .kpi-row { grid-template-columns: 1fr; }
+    }
 
     /* ═══════════════════════════════ RESPONSIVE ════════════════════════ */
     @media (max-width: 1060px) {
@@ -1807,7 +1927,10 @@
   <!-- NAV -->
   <nav id="main-nav">
     <div class="nav-left">
-      <a class="logo" href="#">Reli<span>on</span></a>
+      <div style="display:flex;flex-direction:column;gap:0px;line-height:1;">
+        <a class="logo" href="#">Reli<span>on</span></a>
+        <span style="font-size:11px;color:rgba(255,255,255,0.5);font-weight:400;letter-spacing:.02em;">by Alix Sarikabadayi</span>
+      </div>
       <ul class="nav-links">
         <li><a href="javascript:void(0)" onclick="scrollTo_('#how')">Comment ça marche</a></li>
         <li><a href="javascript:void(0)" onclick="scrollTo_('#features')">Fonctionnalités</a></li>
@@ -1820,9 +1943,9 @@
       <button class="btn-nav-cta" type="button" onclick="openModal('modal-signup')">Inscription</button>
     </div>
     <div class="nav-actions" id="nav-user" style="display:none;">
-      <span id="nav-user-name" style="font-size:14px;font-weight:500;color:var(--text);padding:0 6px;"></span>
-      <button class="btn-ghost" type="button" onclick="openSmsEditor()">✏️ Mon SMS</button>
-      <button class="btn-ghost" type="button" onclick="logoutUser()" style="color:var(--muted);">Déconnexion</button>
+      <span id="nav-user-name" style="font-size:14px;font-weight:500;color:var(--muted);padding:0 6px;"></span>
+      <button class="btn-nav-cta" type="button" onclick="showPage('dashboard')">Mon espace →</button>
+      <button class="btn-ghost" type="button" onclick="logoutUser()" style="color:var(--muted);font-size:13px;">Déconnexion</button>
     </div>
   </nav>
 
@@ -2177,7 +2300,7 @@
       <a href="javascript:void(0)" onclick="scrollTo_('#faq')">FAQ</a>
       <a href="mailto:contact@relion.fr">Contact</a>
     </div>
-    <small>© 2026 Relion · France · contact@relion.fr</small>
+    <small style="font-size:13px;color:rgba(255,255,255,0.6);">© 2026 Relion · Service exploité par Alix Sarikabadayi · <a href="mailto:alix@relionapp.fr" style="color:inherit;">alix@relionapp.fr</a> · France</small>
   </footer>
 
   <!-- DRAWER RDV -->
@@ -2228,7 +2351,7 @@
                 <div class="form-group">
                   <input class="form-input" id="rdv-email" type="email" placeholder="Votre email (pour confirmer)" autocomplete="email" />
                 </div>
-                <button type="button" class="btn-primary" style="width:100%;margin-top:4px;" id="btn-rdv-confirm" onclick="submitRdv()">Recevoir le code →</button>
+                <button type="button" class="btn-primary" style="width:100%;margin-top:4px;" id="btn-rdv-confirm" onclick="submitForm()">Recevoir le code →</button>
               </div>
             </div>
           </div>
@@ -2238,7 +2361,7 @@
       <div id="rdv-view-verify" style="display:none;">
         <div style="text-align:center;padding:8px 0 24px;">
           <div style="font-size:40px;margin-bottom:16px;">📧</div>
-          <h3 style="margin-bottom:10px;font-family:'Sora',sans-serif;">Vérifiez votre email</h3>
+          <h3 id="rdv-verify-title" style="margin-bottom:10px;font-family:'Sora',sans-serif;">Vérifiez votre email</h3>
           <p id="rdv-verify-desc" style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:8px;"></p>
           <div class="rdv-otp-wrap">
             <input class="rdv-otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" />
@@ -2248,9 +2371,9 @@
             <input class="rdv-otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" />
             <input class="rdv-otp-input" type="text" inputmode="numeric" pattern="[0-9]" maxlength="1" />
           </div>
-          <button type="button" class="btn-primary" style="width:100%;margin-top:8px;" id="btn-rdv-verify" onclick="submitRdvCode()">Confirmer le rendez-vous →</button>
-          <button type="button" id="btn-rdv-resend" class="btn-ghost" style="width:100%;margin-top:8px;font-size:13px;" onclick="resendRdvCode()">Renvoyer le code</button>
-          <button type="button" class="btn-ghost" style="width:100%;margin-top:4px;font-size:13px;color:var(--muted);" onclick="rdvShowView('main')">← Modifier mes infos</button>
+          <button type="button" class="btn-primary" style="width:100%;margin-top:8px;" id="btn-rdv-verify" onclick="submitVerifyCode()">Confirmer le rendez-vous →</button>
+          <button type="button" id="btn-rdv-resend" class="btn-ghost" style="width:100%;margin-top:8px;font-size:13px;" onclick="resendCode()">Renvoyer le code</button>
+          <button type="button" id="btn-rdv-back" class="btn-ghost" style="width:100%;margin-top:4px;font-size:13px;color:var(--muted);" onclick="goBackFromVerify()">← Modifier mes infos</button>
         </div>
       </div>
       <!-- Vue : RDV déjà existant -->
@@ -2260,8 +2383,8 @@
           <p id="rdv-existing-info" style="font-size:16px;font-weight:600;line-height:1.8;white-space:pre-line;"></p>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button type="button" class="btn-primary" style="flex:1;" onclick="modifierRdv()">Modifier la date</button>
-          <button type="button" class="btn-ghost" style="flex:1;color:#E07070;" onclick="annulerRdv()">Annuler ce RDV</button>
+          <button type="button" class="btn-primary" style="flex:1;" onclick="requestModify()">Modifier la date</button>
+          <button type="button" class="btn-ghost" style="flex:1;color:#E07070;" onclick="requestCancel()">Annuler ce RDV</button>
         </div>
         <button type="button" class="btn-ghost" style="width:100%;margin-top:8px;" onclick="closeRdvDrawer()">Fermer</button>
       </div>
@@ -2272,7 +2395,7 @@
           <h3 style="margin-bottom:12px;">Rendez-vous confirmé !</h3>
           <p id="rdv-success-msg" style="color:var(--muted);line-height:1.7;white-space:pre-line;"></p>
           <div style="display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap;">
-            <button type="button" class="btn-primary" onclick="modifierRdv()">Modifier la date</button>
+            <button type="button" class="btn-primary" onclick="requestModify()">Modifier la date</button>
             <button type="button" class="btn-ghost" onclick="closeRdvDrawer()">Fermer</button>
           </div>
         </div>
@@ -2285,91 +2408,121 @@
 
 <!-- ══════════════════════════ DASHBOARD ═══════════════════════════════ -->
 <div id="page-dashboard">
-  <div class="dash-wrap">
-    <div class="dash-top">
-      <div>
-        <h1>Tableau de bord</h1>
-        <p id="dash-subtitle">Chargement…</p>
-      </div>
-      <div style="display:flex;gap:10px;align-items:center;">
-        <button type="button" class="btn-ghost" onclick="openSmsEditor()">✏️ Mon SMS</button>
-        <button type="button" class="btn-ghost" onclick="logoutUser()" style="color:var(--muted);">Déconnexion</button>
-      </div>
+
+  <!-- Topbar fixe -->
+  <div class="dash-topbar">
+    <button type="button" class="dash-logo-btn" onclick="showPage('landing')">
+      RELI<span>ON</span>
+    </button>
+    <div class="dash-topbar-right">
+      <button type="button" class="btn-ghost" style="font-size:13px;" onclick="openSmsEditor()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;vertical-align:-2px;"><path d="M11 4H4a2 2 0 0 0-2 2v14l4-4h14a2 2 0 0 0 2-2v-5"/><path d="M18 2l4 4-8 8H10v-4l8-8z"/></svg>
+        Mon SMS
+      </button>
+      <button type="button" class="btn-ghost" onclick="logoutUser()" style="color:var(--muted);font-size:13px;">Déconnexion</button>
+    </div>
+  </div>
+
+  <!-- Corps -->
+  <div class="dash-body">
+
+    <!-- Greeting -->
+    <div class="dash-greeting-row">
+      <h1 id="dash-greeting">Bonjour</h1>
+      <p id="dash-date"></p>
     </div>
 
-    <!-- SMS EDITOR -->
-    <div id="sms-editor" style="display:none;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:20px;">
-      <h3 style="margin-bottom:12px;font-size:15px;">Message SMS automatique</h3>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Ce message est envoyé à vos clients quand vous manquez un appel.</p>
-      <textarea id="sms-textarea" rows="3" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:10px;color:var(--text);font-family:inherit;font-size:14px;resize:vertical;"></textarea>
-      <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end;">
+    <!-- SMS EDITOR (caché par défaut) -->
+    <div id="sms-editor" style="display:none;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:24px;">
+      <h3 style="margin-bottom:8px;font-size:15px;font-family:'Sora',sans-serif;">Message SMS automatique</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Ce message est envoyé à vos clients quand vous manquez un appel.</p>
+      <textarea id="sms-textarea" rows="3" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:inherit;font-size:14px;resize:vertical;line-height:1.6;"></textarea>
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end;">
         <button type="button" class="btn-ghost" onclick="closeSmsEditor()">Annuler</button>
         <button type="button" class="btn-primary" style="padding:8px 20px;" onclick="saveSmsMessage()">Enregistrer</button>
       </div>
     </div>
 
-    <div class="kpi-grid">
+    <!-- KPI row -->
+    <div class="kpi-row">
       <div class="kpi-card">
-        <div class="kpi-label">Appels manqués ce mois</div>
-        <div class="kpi-val">14</div>
-        <div class="kpi-delta">↑ +3 vs mars</div>
+        <div class="kpi-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/><line x1="23" y1="1" x2="1" y2="23"/></svg>
+        </div>
+        <div class="kpi-label">À rappeler</div>
+        <div class="kpi-val" id="kpi-to-call">0</div>
+        <div class="kpi-delta" id="kpi-to-call-sub">aucun appel en attente</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Prospects relancés</div>
-        <div class="kpi-val">11</div>
-        <div class="kpi-delta">79% de taux de rappel</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">Devis envoyés</div>
-        <div class="kpi-val">7</div>
-        <div class="kpi-delta">↑ +2 cette semaine</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-label">CA récupéré</div>
-        <div class="kpi-val">4 200€</div>
-        <div class="kpi-delta">↑ Meilleur mois</div>
+        <div class="kpi-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="kpi-label">Prochain RDV</div>
+        <div class="kpi-val" id="kpi-next-rdv" style="font-size:20px;line-height:1.25;">—</div>
+        <div class="kpi-delta" id="kpi-next-rdv-sub">aucun RDV à venir</div>
       </div>
     </div>
 
+    <!-- Appels manqués -->
     <div class="table-wrap">
       <div class="table-head">
-        <h2>Appels manqués récents</h2>
-        <span style="font-size:12px;color:var(--muted);">5 entrées &nbsp;·&nbsp; 2 nouveaux</span>
+        <h2>
+          <span class="th-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/><line x1="23" y1="1" x2="1" y2="23"/></svg>
+          </span>
+          Appels manqués
+        </h2>
+        <button type="button" class="action-btn" onclick="showAddCallModal()">+ Ajouter</button>
       </div>
-      <table>
+      <div id="missed-empty" style="padding:32px;text-align:center;color:var(--muted);font-size:14px;">
+        Tout est rappelé ✓
+      </div>
+      <table id="missed-table" style="display:none;">
         <thead>
-          <tr>
-            <th>Client</th><th>Date & heure</th><th>Motif probable</th><th>SMS envoyé</th><th>Statut</th><th>Action</th>
-          </tr>
+          <tr><th>Numéro</th><th>Heure</th><th>SMS auto</th><th>Statut</th><th></th></tr>
         </thead>
-        <tbody id="tbody">
-          <tr>
-            <td>06 12 34 56 78</td><td>Aujourd'hui, 09h14</td><td>Fuite détectée</td><td>✓ 09h14</td>
-            <td><span class="badge badge-new">Nouveau</span></td>
-            <td><button type="button" class="action-btn" onclick="markDone(this)">Rappeler</button></td>
-          </tr>
-          <tr>
-            <td>Sophie Riedinger</td><td>Aujourd'hui, 08h51</td><td>Installation robinet</td><td>✓ 08h51</td>
-            <td><span class="badge badge-wait">En attente</span></td>
-            <td><button type="button" class="action-btn" onclick="markDone(this)">Rappeler</button></td>
-          </tr>
-          <tr>
-            <td>Jean-Paul Muller</td><td>Hier, 17h30</td><td>Chauffe-eau HS</td><td>✓ 17h30</td>
-            <td><span class="badge badge-done">Rappelé</span></td>
-            <td><button type="button" class="action-btn" disabled>Fait</button></td>
-          </tr>
-          <tr>
-            <td>07 89 01 23 45</td><td>Hier, 14h12</td><td>Devis rénovation</td><td>✓ 14h13</td>
-            <td><span class="badge badge-done">Rappelé</span></td>
-            <td><button type="button" class="action-btn" disabled>Fait</button></td>
-          </tr>
-          <tr>
-            <td>Fatima Benali</td><td>11/04, 11h05</td><td>Dégât des eaux</td><td>✓ 11h05</td>
-            <td><span class="badge badge-new">Nouveau</span></td>
-            <td><button type="button" class="action-btn" onclick="markDone(this)">Rappeler</button></td>
-          </tr>
-        </tbody>
+        <tbody id="missed-body"></tbody>
       </table>
+    </div>
+
+    <!-- Prochains RDV -->
+    <div class="table-wrap">
+      <div class="table-head">
+        <h2>
+          <span class="th-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </span>
+          Prochains rendez-vous
+        </h2>
+        <span id="rdv-count" style="font-size:12px;color:var(--muted);"></span>
+      </div>
+      <div id="rdv-empty" style="padding:32px;text-align:center;color:var(--muted);font-size:14px;">
+        Aucun RDV à venir.
+      </div>
+      <table id="rdv-table" style="display:none;">
+        <thead>
+          <tr><th>Nom</th><th>Date</th><th>Heure</th><th>Téléphone</th></tr>
+        </thead>
+        <tbody id="rdv-body"></tbody>
+      </table>
+    </div>
+
+  </div><!-- /.dash-body -->
+</div>
+
+<!-- Modal : ajouter un appel manqué -->
+<div id="modal-add-call" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;display:none;align-items:center;justify-content:center;">
+  <div style="background:#1e2240;border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:380px;margin:0 16px;">
+    <h3 style="margin-bottom:20px;font-family:'Sora',sans-serif;">Appel manqué</h3>
+    <div class="form-group" style="margin-bottom:12px;">
+      <input class="form-input" id="add-call-phone" type="tel" placeholder="Numéro de téléphone" />
+    </div>
+    <div class="form-group" style="margin-bottom:20px;">
+      <input class="form-input" id="add-call-time" type="time" />
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button type="button" class="btn-ghost" style="flex:1;" onclick="closeAddCallModal()">Annuler</button>
+      <button type="button" class="btn-primary" style="flex:1;" onclick="saveNewCall()">Enregistrer</button>
     </div>
   </div>
 </div>
@@ -2584,6 +2737,9 @@
       var el = document.getElementById('page-' + p);
       if (el) el.style.display = (p === name) ? 'block' : 'none';
     });
+    // Cacher la nav principale sur les pages internes
+    var mainNav = document.getElementById('main-nav');
+    if (mainNav) mainNav.style.display = (name === 'landing') ? '' : 'none';
     window.scrollTo(0, 0);
   }
 
@@ -2676,20 +2832,7 @@
   }
 
   /* ─── ÉTAT CONNECTÉ ─────────────────────────────── */
-  function loadDashboard(user) {
-    // Mettre à jour la nav
-    var guestNav = document.getElementById('nav-guest');
-    var userNav  = document.getElementById('nav-user');
-    var userName = document.getElementById('nav-user-name');
-    if (guestNav) guestNav.style.display = 'none';
-    if (userNav)  userNav.style.display  = 'flex';
-    if (userName) userName.textContent = user.prenom || user.email;
-    // Stocker le message SMS si présent
-    var textarea = document.getElementById('sms-textarea');
-    if (textarea && user.sms_message) textarea.value = user.sms_message;
-    // Rester sur la landing page
-    showPage('landing');
-  }
+  // (fonction principale définie plus bas dans la section DASHBOARD)
 
   /* ─── LOGOUT ────────────────────────────────────── */
   function logoutUser() {
@@ -2954,14 +3097,201 @@
   }
 
   /* ─── DASHBOARD ──────────────────────────────────── */
+
+  var MISSED_KEY = 'relion_missed_calls';
+
+  function loadDashboard(user) {
+    // ── Mettre à jour la nav ──────────────────────────
+    var guestNav = document.getElementById('nav-guest');
+    var userNav  = document.getElementById('nav-user');
+    var userName = document.getElementById('nav-user-name');
+    if (guestNav) guestNav.style.display = 'none';
+    if (userNav)  userNav.style.display  = 'flex';
+    if (userName) userName.textContent = user.prenom || user.email;
+    // ── Stocker le message SMS si présent ─────────────
+    var textarea = document.getElementById('sms-textarea');
+    if (textarea && user.sms_message) textarea.value = user.sms_message;
+    // ── Greeting + date ───────────────────────────────
+    var greet = document.getElementById('dash-greeting');
+    if (greet) greet.textContent = 'Bonjour ' + (user.prenom || '') + ' 👋';
+    var dateEl = document.getElementById('dash-date');
+    if (dateEl) {
+      var now = new Date();
+      dateEl.textContent = now.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    }
+    // ── Données ───────────────────────────────────────
+    renderMissedCalls();
+    loadUpcomingRdv();
+  }
+
+  // ── Appels manqués (localStorage) ────────────────────────────────────────
+  function getMissedCalls() {
+    try { return JSON.parse(localStorage.getItem(MISSED_KEY) || '[]'); } catch(e) { return []; }
+  }
+  function saveMissedCalls(calls) {
+    localStorage.setItem(MISSED_KEY, JSON.stringify(calls));
+  }
+
+  function renderMissedCalls() {
+    var calls = getMissedCalls();
+    var pending = calls.filter(function(c) { return !c.rappele; });
+    var kpiEl = document.getElementById('kpi-to-call');
+    var kpiSub = document.getElementById('kpi-to-call-sub');
+    if (kpiEl) {
+      kpiEl.textContent = pending.length;
+      kpiEl.style.color = pending.length > 0 ? '#E07070' : 'var(--success)';
+    }
+    if (kpiSub) kpiSub.textContent = pending.length > 0 ? 'à rappeler de toute urgence' : 'tout est rappelé ✓';
+
+    var tbody = document.getElementById('missed-body');
+    var table = document.getElementById('missed-table');
+    var empty = document.getElementById('missed-empty');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    // Trier : non-rappelés en premier
+    calls.sort(function(a, b) { return a.rappele - b.rappele; });
+
+    calls.forEach(function(call) {
+      var tr = document.createElement('tr');
+      if (call.rappele) tr.style.opacity = '0.45';
+      tr.innerHTML =
+        '<td style="font-weight:600;">' + escHtml(call.phone) + '</td>' +
+        '<td style="color:var(--muted);">' + escHtml(call.timeLabel) + '</td>' +
+        '<td>' + (call.sms ? '<span style="color:var(--success);">✓ envoyé</span>' : '<span style="color:var(--muted);">—</span>') + '</td>' +
+        '<td>' + (call.rappele ? '<span class="badge badge-done">Rappelé</span>' : '<span class="badge badge-new">À rappeler</span>') + '</td>' +
+        '<td>' + (!call.rappele ? '<button type="button" class="action-btn" onclick="markCallDone(\'' + call.id + '\')">Rappelé ✓</button>' : '') + '</td>';
+      tbody.appendChild(tr);
+    });
+
+    if (calls.length === 0) {
+      if (empty) empty.style.display = 'block';
+      if (table) table.style.display = 'none';
+    } else {
+      if (empty) empty.style.display = 'none';
+      if (table) table.style.display = 'table';
+    }
+  }
+
+  function markCallDone(id) {
+    var calls = getMissedCalls();
+    calls = calls.map(function(c) { return c.id === id ? Object.assign({}, c, { rappele: true }) : c; });
+    saveMissedCalls(calls);
+    renderMissedCalls();
+    showToast('Marqué comme rappelé ✓');
+  }
+
+  function showAddCallModal() {
+    var modal = document.getElementById('modal-add-call');
+    if (!modal) return;
+    // Heure actuelle par défaut
+    var now = new Date();
+    var hh = String(now.getHours()).padStart(2,'0');
+    var mm = String(now.getMinutes()).padStart(2,'0');
+    var timeInput = document.getElementById('add-call-time');
+    var phoneInput = document.getElementById('add-call-phone');
+    if (timeInput) timeInput.value = hh + ':' + mm;
+    if (phoneInput) phoneInput.value = '';
+    modal.style.display = 'flex';
+    if (phoneInput) phoneInput.focus();
+  }
+
+  function closeAddCallModal() {
+    var modal = document.getElementById('modal-add-call');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function saveNewCall() {
+    var phone = (document.getElementById('add-call-phone') || {}).value || '';
+    var time  = (document.getElementById('add-call-time')  || {}).value || '';
+    if (!phone.trim()) { showToast('Numéro requis.', true); return; }
+    var calls = getMissedCalls();
+    var now = new Date();
+    var today = now.toLocaleDateString('fr-FR', { day:'numeric', month:'long' });
+    calls.unshift({
+      id: String(Date.now()),
+      phone: phone.trim(),
+      timeLabel: "Aujourd'hui " + time,
+      sms: false,
+      rappele: false,
+      createdAt: now.toISOString()
+    });
+    saveMissedCalls(calls);
+    closeAddCallModal();
+    renderMissedCalls();
+    showToast('Appel enregistré.');
+  }
+
+  function escHtml(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Prochains RDV (API) ───────────────────────────────────────────────────
+  function loadUpcomingRdv() {
+    fetch(API + '/api/appointments/book')
+      .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function(data) {
+        var appts = data.appointments || [];
+        var tbody = document.getElementById('rdv-body');
+        var table = document.getElementById('rdv-table');
+        var empty = document.getElementById('rdv-empty');
+        var count = document.getElementById('rdv-count');
+        if (count) count.textContent = appts.length + ' à venir';
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (appts.length === 0) {
+          if (empty) empty.style.display = 'block';
+          if (table) table.style.display = 'none';
+          // KPI prochain RDV
+          var kpi = document.getElementById('kpi-next-rdv');
+          var kpiSub = document.getElementById('kpi-next-rdv-sub');
+          if (kpi) kpi.textContent = '—';
+          if (kpiSub) kpiSub.textContent = 'aucun RDV à venir';
+          return;
+        }
+
+        if (empty) empty.style.display = 'none';
+        if (table) table.style.display = 'table';
+
+        // KPI : prochain RDV
+        var first = appts[0];
+        var firstDate = new Date(first.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short' });
+        var kpi = document.getElementById('kpi-next-rdv');
+        var kpiSub = document.getElementById('kpi-next-rdv-sub');
+        if (kpi) kpi.textContent = firstDate;
+        if (kpiSub) kpiSub.textContent = first.time_slot + ' · ' + first.name;
+
+        appts.forEach(function(a) {
+          var d = new Date(a.date + 'T12:00:00');
+          var today = new Date(); today.setHours(0,0,0,0);
+          var tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+          var label;
+          if (d.toDateString() === today.toDateString()) label = "Aujourd'hui";
+          else if (d.toDateString() === tomorrow.toDateString()) label = 'Demain';
+          else label = d.toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short' });
+
+          var tr = document.createElement('tr');
+          tr.innerHTML =
+            '<td style="font-weight:600;">' + escHtml(a.name) + '</td>' +
+            '<td>' + label + '</td>' +
+            '<td style="color:var(--blue-light);font-weight:600;">' + escHtml(a.time_slot) + '</td>' +
+            '<td style="color:var(--muted);">' + escHtml(a.phone) + '</td>';
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(function() {
+        var empty = document.getElementById('rdv-empty');
+        if (empty) empty.textContent = 'Impossible de charger les RDV.';
+      });
+  }
+
   function markDone(btn) {
     var row = btn.closest('tr');
     var badge = row.querySelector('.badge');
-    badge.className   = 'badge badge-done';
-    badge.textContent = 'Rappelé';
-    btn.disabled      = true;
-    btn.textContent   = 'Fait';
-    showToast('Statut mis à jour ✓', false);
+    if (badge) { badge.className = 'badge badge-done'; badge.textContent = 'Rappelé'; }
+    btn.disabled = true; btn.textContent = 'Fait';
+    showToast('Statut mis à jour ✓');
   }
 
   /* ─── TOAST ──────────────────────────────────────── */
@@ -2978,58 +3308,60 @@
   calcSim();
 
   /* ─── SYSTÈME DE RENDEZ-VOUS ─────────────────────── */
+
+  // ── State ─────────────────────────────────────────────────────────────────
   var rdv = {
+    mode: 'idle',        // 'idle' | 'selecting' | 'verifying-book' | 'verifying-cancel' | 'verifying-modify' | 'swapping'
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
     selectedDate: null,
     selectedTime: null,
     bookedSlots: [],
-    phone: null,
-    name: null,
-    existingDate: null,
-    existingTime: null,
-    pendingEmail: null,
-    cancelContext: null,
-    modifyFromDate: null,
-    modifyFromTime: null,
-    modifyFromPhone: null
+    existing: null,      // { date, time, phone }
+    modify: null,        // { fromDate, fromTime, fromPhone, swapToken }
+    form: null           // { name, phone, email }
   };
 
   var ALL_SLOTS = [
     '09:00','09:30','10:00','10:30','11:00','11:30',
     '14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30'
   ];
-
   var MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 
+  // ── View manager ───────────────────────────────────────────────────────────
   function rdvShowView(view) {
     ['login','main','verify','existing','success'].forEach(function(v) {
       document.getElementById('rdv-view-' + v).style.display = (v === view) ? 'block' : 'none';
     });
   }
 
-  function openRdvDrawer() {
-    rdv.year = new Date().getFullYear();
-    rdv.month = new Date().getMonth();
-    rdv.selectedDate = null; rdv.selectedTime = null;
-    rdv.existingDate = null; rdv.existingTime = null; rdv.existingPhone = null;
+  function resetMainView() {
     document.getElementById('rdv-placeholder').style.display = 'block';
     document.getElementById('rdv-slots-content').style.display = 'none';
     document.getElementById('rdv-booking-form').style.display = 'none';
+  }
+
+  // ── Drawer ─────────────────────────────────────────────────────────────────
+  function openRdvDrawer() {
+    rdv.mode = 'idle';
+    rdv.year = new Date().getFullYear();
+    rdv.month = new Date().getMonth();
+    rdv.selectedDate = null; rdv.selectedTime = null;
+    rdv.bookedSlots = []; rdv.existing = null; rdv.modify = null; rdv.form = null;
+    resetMainView();
     document.getElementById('rdv-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
-
     var token = localStorage.getItem('relion_token');
     if (token) {
-      // Connecté → pré-remplir et aller direct au calendrier
       fetch(API + '/api/auth/me', { headers: { 'Authorization': 'Bearer ' + token } })
         .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
         .then(function(data) {
           var u = data.user;
           var nameEl  = document.getElementById('rdv-name');
           var phoneEl = document.getElementById('rdv-phone');
-          if (nameEl)  nameEl.value  = u.prenom || '';
+          if (nameEl)  nameEl.value = u.prenom || '';
           if (phoneEl) phoneEl.value = u.telephone || '';
+          rdv.mode = 'selecting';
           rdvShowView('main');
           renderRdvCalendar();
         })
@@ -3039,23 +3371,24 @@
     }
   }
 
+  function closeRdvDrawer() {
+    document.getElementById('rdv-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
   function rdvDoLogin() {
-    // Fermer le drawer, ouvrir le modal login, rouvrir le drawer après
     rdv.pendingAfterLogin = true;
     closeRdvDrawer();
     openModal('modal-login');
   }
 
   function rdvContinueGuest() {
+    rdv.mode = 'selecting';
     rdvShowView('main');
     renderRdvCalendar();
   }
 
-  function closeRdvDrawer() {
-    document.getElementById('rdv-overlay').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
+  // ── Calendar ───────────────────────────────────────────────────────────────
   function rdvPrevMonth() {
     if (rdv.month === 0) { rdv.month = 11; rdv.year--; } else rdv.month--;
     renderRdvCalendar();
@@ -3103,7 +3436,7 @@
     document.getElementById('rdv-slots-title').textContent = label.charAt(0).toUpperCase() + label.slice(1);
     var g = document.getElementById('rdv-slots-grid');
     g.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;grid-column:1/-1;">Chargement…</div>';
-    fetch(API + '/api/appointments/slots?date=' + dateStr)
+    fetch(API + '/api/appointments/book?action=slots&date=' + dateStr)
       .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
       .then(function(data) { rdv.bookedSlots = data.booked || []; renderRdvSlots(); })
       .catch(function() { rdv.bookedSlots = []; renderRdvSlots(); });
@@ -3115,46 +3448,72 @@
     ALL_SLOTS.forEach(function(time) {
       var el = document.createElement('button');
       el.type = 'button'; el.className = 'rdv-slot'; el.textContent = time;
-      if (rdv.bookedSlots.indexOf(time) !== -1) { el.classList.add('booked'); el.disabled = true; }
-      else {
+      // In swap mode: gray old slot ONLY on its original date
+      var isOldSlot = (rdv.mode === 'swapping' && rdv.modify &&
+                       rdv.selectedDate === rdv.modify.fromDate && time === rdv.modify.fromTime);
+      if (rdv.bookedSlots.indexOf(time) !== -1 || isOldSlot) {
+        el.classList.add('booked'); el.disabled = true;
+      } else {
         if (rdv.selectedTime === time) el.classList.add('selected');
         el.onclick = function() {
-          rdv.selectedTime = time; renderRdvSlots();
-          document.getElementById('rdv-booking-form').style.display = 'block';
-          document.getElementById('rdv-booking-form').scrollIntoView({ behavior:'smooth', block:'nearest' });
+          rdv.selectedTime = time;
+          renderRdvSlots();
+          var form = document.getElementById('rdv-booking-form');
+          var confirmBtn = document.getElementById('btn-rdv-confirm');
+          if (rdv.mode === 'swapping') {
+            // Pre-fill with stored info if available
+            if (rdv.form) {
+              var ne = document.getElementById('rdv-name');
+              var pe = document.getElementById('rdv-phone');
+              var ee = document.getElementById('rdv-email');
+              if (ne) ne.value = rdv.form.name || '';
+              if (pe) pe.value = rdv.form.phone || '';
+              if (ee) ee.value = rdv.form.email || '';
+            } else if (rdv.modify) {
+              var pe2 = document.getElementById('rdv-phone');
+              if (pe2) pe2.value = rdv.modify.fromPhone || '';
+            }
+            if (confirmBtn) confirmBtn.textContent = 'Confirmer le changement →';
+          } else {
+            if (confirmBtn) confirmBtn.textContent = 'Recevoir le code →';
+          }
+          form.style.display = 'block';
+          form.scrollIntoView({ behavior:'smooth', block:'nearest' });
         };
       }
       grid.appendChild(el);
     });
   }
 
-  function submitRdv() {
+  // ── Booking: submit form ───────────────────────────────────────────────────
+  function submitForm() {
+    // In swap mode: skip the email step, do a direct swap
+    if (rdv.mode === 'swapping') { submitSwap(); return; }
+
     var name  = (document.getElementById('rdv-name')  || {}).value || '';
     var phone = (document.getElementById('rdv-phone') || {}).value || '';
     var email = (document.getElementById('rdv-email') || {}).value || '';
-    if (!name.trim())          { showToast('Prénom requis.', true); return; }
-    if (!isValidPhone(phone))  { showToast('Numéro invalide.', true); return; }
+    if (!name.trim())         { showToast('Prénom requis.', true); return; }
+    if (!isValidPhone(phone)) { showToast('Numéro invalide.', true); return; }
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) { showToast('Email invalide.', true); return; }
     if (!rdv.selectedDate || !rdv.selectedTime) { showToast('Sélectionnez un créneau.', true); return; }
 
+    rdv.form = { name: name.trim(), phone: phone.trim(), email: email.trim() };
     var btn = document.getElementById('btn-rdv-confirm');
     btn.innerHTML = '<span class="spinner"></span>Envoi du code…'; btn.disabled = true;
 
     fetch(API + '/api/appointments/book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ step: 'request', date: rdv.selectedDate, time: rdv.selectedTime, name: name.trim(), phone: phone.trim(), email: email.trim(), cancelDate: rdv.modifyFromDate || null, cancelTime: rdv.modifyFromTime || null })
+      body: JSON.stringify({ step: 'request', date: rdv.selectedDate, time: rdv.selectedTime, name: name.trim(), phone: phone.trim(), email: email.trim() })
     })
     .then(function(r) { return r.json().then(function(d){ return {ok:r.ok, status:r.status, data:d}; }); })
     .then(function(res) {
       btn.innerHTML = 'Recevoir le code →'; btn.disabled = false;
-      // Doublon détecté : afficher le RDV existant
       if (res.status === 409 && res.data.existing) {
         var rawDate = res.data.existing.date;
         var dateStr = typeof rawDate === 'string' ? rawDate.split('T')[0] : rawDate;
-        rdv.existingDate  = dateStr;
-        rdv.existingTime  = res.data.existing.time_slot;
-        rdv.existingPhone = phone.trim();
+        rdv.existing = { date: dateStr, time: res.data.existing.time_slot, phone: phone.trim() };
         var d = new Date(dateStr + 'T12:00:00');
         var label = d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
         document.getElementById('rdv-existing-info').textContent =
@@ -3164,21 +3523,21 @@
       }
       if (!res.ok) {
         showToast(res.data.error || 'Erreur.', true);
-        // Griser uniquement si le créneau est vraiment pris en DB (pas un rate limit ou autre erreur)
-        if (res.status === 409 && !res.data.existing) {
+        if (res.status === 409) {
           rdv.bookedSlots.push(rdv.selectedTime);
           renderRdvSlots();
           document.getElementById('rdv-booking-form').style.display = 'none';
+          rdv.selectedTime = null;
         }
-        rdv.selectedTime = null;
         return;
       }
-      // Code envoyé → afficher vue vérification
-      rdv.pendingEmail = email.trim();
-      document.getElementById('rdv-verify-desc').textContent =
-        'Un code de confirmation a été envoyé à ' + email.trim() + '. Entrez-le ci-dessous pour valider votre rendez-vous.';
-      rdvShowView('verify');
-      initOtpInputs();
+      rdv.mode = 'verifying-book';
+      showVerifyView(
+        'Vérifiez votre email',
+        'Un code de confirmation a été envoyé à ' + email.trim() + '. Entrez-le ci-dessous pour valider votre rendez-vous.',
+        'Confirmer le rendez-vous →',
+        true
+      );
       startResendCooldown(60);
     })
     .catch(function() {
@@ -3187,18 +3546,85 @@
     });
   }
 
-  /* ── OTP inputs ─────────────────────────────────────────────────────── */
+  // ── Cancel / Modify: request code ─────────────────────────────────────────
+  function requestCancel() {
+    if (!rdv.existing) return;
+    fetch(API + '/api/appointments/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ step: 'request-cancel', date: rdv.existing.date, time: rdv.existing.time, phone: rdv.existing.phone })
+    })
+    .then(function(r) { return r.json().then(function(d){ return {ok:r.ok, data:d}; }); })
+    .then(function(res) {
+      if (!res.ok) { showToast(res.data.error || 'Erreur', true); return; }
+      rdv.mode = 'verifying-cancel';
+      showVerifyView(
+        'Confirmer l\'annulation',
+        'Un code a été envoyé à ' + (res.data.email || 'votre email') + ' pour confirmer l\'annulation de votre rendez-vous.',
+        'Confirmer l\'annulation →',
+        false
+      );
+    })
+    .catch(function() { showToast('Erreur — réessayez.', true); });
+  }
+
+  function requestModify() {
+    if (!rdv.existing) return;
+    fetch(API + '/api/appointments/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ step: 'request-cancel', date: rdv.existing.date, time: rdv.existing.time, phone: rdv.existing.phone })
+    })
+    .then(function(r) { return r.json().then(function(d){ return {ok:r.ok, data:d}; }); })
+    .then(function(res) {
+      if (!res.ok) { showToast(res.data.error || 'Erreur', true); return; }
+      rdv.mode = 'verifying-modify';
+      showVerifyView(
+        'Confirmer la modification',
+        'Un code a été envoyé à ' + (res.data.email || 'votre email') + ' pour confirmer la modification de votre rendez-vous.',
+        'Confirmer la modification →',
+        false
+      );
+    })
+    .catch(function() { showToast('Erreur — réessayez.', true); });
+  }
+
+  // ── Verify view ────────────────────────────────────────────────────────────
+  function showVerifyView(title, desc, btnText, showBack) {
+    document.getElementById('rdv-verify-title').textContent = title;
+    document.getElementById('rdv-verify-desc').textContent = desc;
+    document.getElementById('btn-rdv-verify').textContent = btnText;
+    document.getElementById('btn-rdv-back').style.display = showBack ? 'block' : 'none';
+    var resendBtn = document.getElementById('btn-rdv-resend');
+    resendBtn.textContent = 'Renvoyer le code'; resendBtn.disabled = false;
+    rdvShowView('verify');
+    initOtpInputs();
+  }
+
+  function goBackFromVerify() {
+    if (rdv.mode === 'verifying-book') {
+      rdv.mode = 'selecting';
+      clearInterval(rdvResendInterval);
+      rdvShowView('main');
+    }
+  }
+
+  // ── OTP inputs ─────────────────────────────────────────────────────────────
   function initOtpInputs() {
-    var inputs = Array.from(document.querySelectorAll('.rdv-otp-input'));
+    // Clone inputs to wipe any stale event listeners
+    var wrap = document.querySelector('.rdv-otp-wrap');
+    var oldInputs = wrap.querySelectorAll('.rdv-otp-input');
+    oldInputs.forEach(function(inp) {
+      var fresh = inp.cloneNode(false);
+      inp.parentNode.replaceChild(fresh, inp);
+    });
+    var inputs = Array.from(wrap.querySelectorAll('.rdv-otp-input'));
     inputs.forEach(function(input, i) {
       input.value = '';
       input.addEventListener('input', function() {
         this.value = this.value.replace(/[^0-9]/g, '').slice(-1);
         if (this.value && i < inputs.length - 1) inputs[i + 1].focus();
-        // Auto-submit si tous remplis
-        if (inputs.every(function(inp) { return inp.value.length === 1; })) {
-          submitRdvCode();
-        }
+        if (inputs.every(function(inp) { return inp.value.length === 1; })) submitVerifyCode();
       });
       input.addEventListener('keydown', function(e) {
         if (e.key === 'Backspace' && !this.value && i > 0) inputs[i - 1].focus();
@@ -3209,7 +3635,7 @@
         inputs.forEach(function(inp, j) { inp.value = pasted[j] || ''; });
         var last = Math.min(pasted.length, inputs.length) - 1;
         if (last >= 0) inputs[last].focus();
-        if (pasted.length >= 6) submitRdvCode();
+        if (pasted.length >= 6) submitVerifyCode();
       });
     });
     inputs[0].focus();
@@ -3219,7 +3645,13 @@
     return Array.from(document.querySelectorAll('.rdv-otp-input')).map(function(i) { return i.value; }).join('');
   }
 
-  /* ── Resend cooldown ─────────────────────────────────────────────────── */
+  function clearOtp() {
+    Array.from(document.querySelectorAll('.rdv-otp-input')).forEach(function(i) { i.value = ''; });
+    var first = document.querySelector('.rdv-otp-input');
+    if (first) first.focus();
+  }
+
+  // ── Resend cooldown ────────────────────────────────────────────────────────
   var rdvResendInterval = null;
 
   function startResendCooldown(seconds) {
@@ -3240,28 +3672,24 @@
     }, 1000);
   }
 
-  function resendRdvCode() {
-    var isCancelFlow = (rdv.cancelContext === 'cancel' || rdv.cancelContext === 'modify');
+  function resendCode() {
     var body;
-    if (isCancelFlow) {
-      body = { step: 'request-cancel', date: rdv.existingDate, time: rdv.existingTime, phone: rdv.existingPhone || '' };
-    } else {
-      var phone = (document.getElementById('rdv-phone') || {}).value || '';
-      var name  = (document.getElementById('rdv-name')  || {}).value || '';
-      body = { step: 'request', date: rdv.selectedDate, time: rdv.selectedTime, name: name.trim(), phone: phone.trim(), email: rdv.pendingEmail };
-    }
+    if ((rdv.mode === 'verifying-cancel' || rdv.mode === 'verifying-modify') && rdv.existing) {
+      body = { step: 'request-cancel', date: rdv.existing.date, time: rdv.existing.time, phone: rdv.existing.phone };
+    } else if (rdv.mode === 'verifying-book' && rdv.form) {
+      body = { step: 'request', date: rdv.selectedDate, time: rdv.selectedTime, name: rdv.form.name, phone: rdv.form.phone, email: rdv.form.email };
+    } else { return; }
     fetch(API + '/api/appointments/book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     })
-    .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+    .then(function(r) { return r.json().then(function(d){ return {ok:r.ok, data:d}; }); })
     .then(function(res) {
       if (res.ok) {
         showToast('Code renvoyé !');
-        Array.from(document.querySelectorAll('.rdv-otp-input')).forEach(function(i) { i.value = ''; });
-        document.querySelectorAll('.rdv-otp-input')[0].focus();
-        startResendCooldown(60);
+        clearOtp();
+        if (rdv.mode === 'verifying-book') startResendCooldown(60);
       } else {
         showToast(res.data.error || 'Erreur', true);
       }
@@ -3269,103 +3697,124 @@
     .catch(function() { showToast('Erreur — réessayez.', true); });
   }
 
-  /* ── Vérification du code ────────────────────────────────────────────── */
-  function submitRdvCode() {
+  // ── Verify dispatch ────────────────────────────────────────────────────────
+  function submitVerifyCode() {
     var code = getOtpCode();
     if (code.length !== 6) { showToast('Entrez les 6 chiffres.', true); return; }
+    if (rdv.mode === 'verifying-cancel')       handleCancelVerify(code);
+    else if (rdv.mode === 'verifying-modify')  handleModifyVerify(code);
+    else                                       handleBookingVerify(code);
+  }
 
-    var isCancelFlow = (rdv.cancelContext === 'cancel' || rdv.cancelContext === 'modify');
-    var step   = rdv.cancelContext === 'cancel' ? 'verify-cancel' : rdv.cancelContext === 'modify' ? 'verify-modify' : 'verify';
-    var date   = isCancelFlow ? rdv.existingDate : rdv.selectedDate;
-    var time   = isCancelFlow ? rdv.existingTime : rdv.selectedTime;
-    var phone  = isCancelFlow ? rdv.existingPhone : ((document.getElementById('rdv-phone') || {}).value || '').trim();
-
+  function handleBookingVerify(code) {
+    if (!rdv.form) return;
     var btn = document.getElementById('btn-rdv-verify');
-    var originalText = btn.textContent;
     btn.innerHTML = '<span class="spinner"></span>Vérification…'; btn.disabled = true;
-
     fetch(API + '/api/appointments/book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ step: step, date: date, time: time, phone: phone, code: code })
+      body: JSON.stringify({ step: 'verify', date: rdv.selectedDate, time: rdv.selectedTime, phone: rdv.form.phone, code: code })
     })
     .then(function(r) { return r.json().then(function(d){ return {ok:r.ok, data:d}; }); })
     .then(function(res) {
-      btn.innerHTML = originalText; btn.disabled = false;
-      if (!res.ok) {
-        showToast(res.data.error || 'Code invalide ou expiré.', true);
-        Array.from(document.querySelectorAll('.rdv-otp-input')).forEach(function(i) { i.value = ''; });
-        document.querySelectorAll('.rdv-otp-input')[0].focus();
-        return;
-      }
+      btn.textContent = 'Confirmer le rendez-vous →'; btn.disabled = false;
+      if (!res.ok) { showToast(res.data.error || 'Code invalide ou expiré.', true); clearOtp(); return; }
       clearInterval(rdvResendInterval);
-
-      if (rdv.cancelContext === 'cancel') {
-        rdv.cancelContext = null;
-        showToast('Rendez-vous annulé.');
-        closeRdvDrawer();
-      } else if (rdv.cancelContext === 'modify') {
-        // Stocker l'ancien créneau pour suppression après nouvelle réservation
-        rdv.modifyFromDate  = rdv.existingDate;
-        rdv.modifyFromTime  = rdv.existingTime;
-        rdv.modifyFromPhone = rdv.existingPhone;
-        rdv.cancelContext = null;
-        rdv.existingDate = null; rdv.existingTime = null;
-        rdv.selectedDate = null; rdv.selectedTime = null;
-        // Griser l'ancien créneau dans le calendrier
-        rdv.bookedSlots = [rdv.modifyFromTime];
-        document.getElementById('rdv-placeholder').style.display = 'block';
-        document.getElementById('rdv-slots-content').style.display = 'none';
-        document.getElementById('rdv-booking-form').style.display = 'none';
-        rdvShowView('main');
-        renderRdvCalendar();
-        showToast('Choisissez un nouveau créneau.');
-      } else {
-        // Réservation confirmée
-        rdv.existingDate = rdv.selectedDate; rdv.existingTime = rdv.selectedTime; rdv.existingPhone = phone;
-        rdv.modifyFromDate = null; rdv.modifyFromTime = null; rdv.modifyFromPhone = null;
-        var parts = rdv.selectedDate.split('-');
-        var dd = new Date(+parts[0], +parts[1]-1, +parts[2]);
-        var dateLabel = dd.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-        document.getElementById('rdv-success-msg').textContent =
-          'Le ' + dateLabel + ' à ' + rdv.selectedTime + '\nNous vous appellerons au ' + phone + '.';
-        rdvShowView('success');
-      }
+      rdv.mode = 'idle';
+      rdv.existing = { date: rdv.selectedDate, time: rdv.selectedTime, phone: rdv.form.phone };
+      var parts = rdv.selectedDate.split('-');
+      var label = new Date(+parts[0], +parts[1]-1, +parts[2]).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+      document.getElementById('rdv-success-msg').textContent =
+        'Le ' + label + ' à ' + rdv.selectedTime + '\nNous vous appellerons au ' + rdv.form.phone + '.';
+      rdvShowView('success');
     })
-    .catch(function() {
-      btn.innerHTML = originalText; btn.disabled = false;
-      showToast('Erreur — réessayez.', true);
-    });
+    .catch(function() { btn.textContent = 'Confirmer le rendez-vous →'; btn.disabled = false; showToast('Erreur — réessayez.', true); });
   }
 
-  function annulerRdv() {
-    requestCancelCode('cancel');
-  }
-
-  function modifierRdv() {
-    requestCancelCode('modify');
-  }
-
-  function requestCancelCode(context) {
-    rdv.cancelContext = context;
+  function handleCancelVerify(code) {
+    if (!rdv.existing) return;
+    var btn = document.getElementById('btn-rdv-verify');
+    btn.innerHTML = '<span class="spinner"></span>Vérification…'; btn.disabled = true;
     fetch(API + '/api/appointments/book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ step: 'request-cancel', date: rdv.existingDate, time: rdv.existingTime, phone: rdv.existingPhone || '' })
+      body: JSON.stringify({ step: 'verify-cancel', date: rdv.existing.date, time: rdv.existing.time, phone: rdv.existing.phone, code: code })
     })
-    .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+    .then(function(r) { return r.json().then(function(d){ return {ok:r.ok, data:d}; }); })
     .then(function(res) {
-      if (!res.ok) { showToast(res.data.error || 'Erreur', true); return; }
-      var action = context === 'cancel' ? 'l\'annulation' : 'la modification';
-      document.getElementById('rdv-verify-desc').textContent =
-        'Un code de confirmation a été envoyé à ' + (res.data.email || 'votre email') + ' pour confirmer ' + action + ' de votre rendez-vous.';
-      var btnVerify = document.getElementById('btn-rdv-verify');
-      btnVerify.textContent = context === 'cancel' ? 'Confirmer l\'annulation →' : 'Confirmer la modification →';
-      rdvShowView('verify');
-      initOtpInputs();
-      startResendCooldown(60);
+      btn.textContent = 'Confirmer l\'annulation →'; btn.disabled = false;
+      if (!res.ok) { showToast(res.data.error || 'Code invalide.', true); clearOtp(); return; }
+      rdv.mode = 'idle'; rdv.existing = null;
+      showToast('Rendez-vous annulé.');
+      closeRdvDrawer();
     })
-    .catch(function() { showToast('Erreur — réessayez.', true); });
+    .catch(function() { btn.textContent = 'Confirmer l\'annulation →'; btn.disabled = false; showToast('Erreur — réessayez.', true); });
+  }
+
+  function handleModifyVerify(code) {
+    if (!rdv.existing) return;
+    var btn = document.getElementById('btn-rdv-verify');
+    btn.innerHTML = '<span class="spinner"></span>Vérification…'; btn.disabled = true;
+    fetch(API + '/api/appointments/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ step: 'verify-modify', date: rdv.existing.date, time: rdv.existing.time, phone: rdv.existing.phone, code: code })
+    })
+    .then(function(r) { return r.json().then(function(d){ return {ok:r.ok, data:d}; }); })
+    .then(function(res) {
+      btn.textContent = 'Confirmer la modification →'; btn.disabled = false;
+      if (!res.ok) { showToast(res.data.error || 'Code invalide.', true); clearOtp(); return; }
+      // Store swap info, enter swap mode, open calendar
+      rdv.modify = { fromDate: rdv.existing.date, fromTime: rdv.existing.time, fromPhone: rdv.existing.phone, swapToken: res.data.swapToken };
+      rdv.mode = 'swapping';
+      rdv.selectedDate = null; rdv.selectedTime = null;
+      resetMainView();
+      rdvShowView('main');
+      renderRdvCalendar();
+      showToast('Choisissez un nouveau créneau.');
+    })
+    .catch(function() { btn.textContent = 'Confirmer la modification →'; btn.disabled = false; showToast('Erreur — réessayez.', true); });
+  }
+
+  // ── Swap ───────────────────────────────────────────────────────────────────
+  function submitSwap() {
+    if (!rdv.modify || !rdv.selectedDate || !rdv.selectedTime) { showToast('Sélectionnez un créneau.', true); return; }
+    var name  = ((document.getElementById('rdv-name')  || {}).value || '').trim() || (rdv.form ? rdv.form.name  : '');
+    var phone = ((document.getElementById('rdv-phone') || {}).value || '').trim() || rdv.modify.fromPhone;
+    var email = ((document.getElementById('rdv-email') || {}).value || '').trim() || (rdv.form ? rdv.form.email : '');
+    if (!name) { showToast('Prénom requis.', true); return; }
+
+    var btn = document.getElementById('btn-rdv-confirm');
+    btn.innerHTML = '<span class="spinner"></span>Confirmation…'; btn.disabled = true;
+
+    fetch(API + '/api/appointments/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ step: 'swap', date: rdv.selectedDate, time: rdv.selectedTime, name: name, phone: phone, email: email, fromDate: rdv.modify.fromDate, fromTime: rdv.modify.fromTime, swapToken: rdv.modify.swapToken })
+    })
+    .then(function(r) { return r.json().then(function(d){ return {ok:r.ok, data:d}; }); })
+    .then(function(res) {
+      btn.textContent = 'Confirmer le changement →'; btn.disabled = false;
+      if (!res.ok) {
+        showToast(res.data.error || 'Erreur.', true);
+        if (res.data.error && res.data.error.indexOf('pris') !== -1) {
+          rdv.bookedSlots.push(rdv.selectedTime);
+          renderRdvSlots();
+          document.getElementById('rdv-booking-form').style.display = 'none';
+          rdv.selectedTime = null;
+        }
+        return;
+      }
+      rdv.mode = 'idle';
+      rdv.existing = { date: rdv.selectedDate, time: rdv.selectedTime, phone: phone };
+      rdv.modify = null;
+      var parts = rdv.selectedDate.split('-');
+      var label = new Date(+parts[0], +parts[1]-1, +parts[2]).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+      document.getElementById('rdv-success-msg').textContent =
+        'Le ' + label + ' à ' + rdv.selectedTime + '\nNous vous appellerons au ' + phone + '.';
+      rdvShowView('success');
+    })
+    .catch(function() { btn.textContent = 'Confirmer le changement →'; btn.disabled = false; showToast('Erreur — réessayez.', true); });
   }
 
   // Vérifier si déjà connecté au chargement
