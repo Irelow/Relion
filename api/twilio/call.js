@@ -57,7 +57,7 @@ module.exports = async function handler(req, res) {
 
   const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Dial timeout="20" action="${callbackUrl}" method="POST">
+  <Dial timeout="15" action="${callbackUrl}" method="POST">
     <Number>${ARTISAN_PHONE}</Number>
   </Dial>
 </Response>`;
